@@ -19,7 +19,21 @@ public class Action {
 	  private int id;
 	  
 	 
-	  @ManyToOne
+	  @Column(name = "action_name")
+	  private String actionName;
+	 
+	 
+	  public String getActionName() {
+		return actionName;
+	}
+
+
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
+
+
+	@ManyToOne
 	  @JoinColumn(name = "category_id")
 	  private Category  category;
 	  

@@ -14,6 +14,8 @@ public interface CategoryRepo extends JpaRepository<Category, Integer>,CategoryC
 	Optional<Category> getCategoryByName(String categoryname);
 	@Query("From Category c where c.parrentCategory.id=?1")
 	List<Category> getAllCategoryByParentId(int parentCategoryId);
+	@Query("From Category c where c.parrentCategory.id=?1")
+	List<Category> getChildByCategoryId(int id);
 
 	
 }

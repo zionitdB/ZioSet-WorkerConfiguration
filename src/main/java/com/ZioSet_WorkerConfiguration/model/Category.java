@@ -2,6 +2,7 @@ package com.ZioSet_WorkerConfiguration.model;
 
 
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "category")
@@ -29,6 +31,9 @@ public class Category {
 	  @ManyToOne
 	  @JoinColumn(name = "parent_id")
 	  private Category  parrentCategory;
+	  
+	  @Transient
+	  private List<Category> childs;
 
 	public int getId() {
 		return id;
@@ -56,6 +61,14 @@ public class Category {
 
 	public Category getParrentCategory() {
 		return parrentCategory;
+	}
+
+	public List<Category> getChilds() {
+		return childs;
+	}
+
+	public void setChilds(List<Category> childs) {
+		this.childs = childs;
 	}
 
 	public void setParrentCategory(Category parrentCategory) {

@@ -1,5 +1,9 @@
 package com.ZioSet_WorkerConfiguration.model;
 
+import java.util.List;
+
+import com.ZioSet_WorkerConfiguration.dto.CammandDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "commands_configuration")
@@ -19,13 +24,11 @@ public class CommandConfiguration {
 	  private int id;
 	  
 	 
-	  @ManyToOne
-	  @JoinColumn(name = "category_id")
-	  private Category  category;
+	 
 	  
 	  @ManyToOne
-	  @JoinColumn(name = "sub_category_id")
-	  private Category  subCategory;
+	  @JoinColumn(name = "action_id")
+	  private Action  action;
 	  
 	  @Column(name = "commandstr")
 	  private String commandstr;
@@ -33,6 +36,19 @@ public class CommandConfiguration {
 	  
 	  @Column(name = "schemastr")
 	  private String schemastr ;
+	  
+	  @Transient
+	  List<CammandDTO> list;
+
+
+	public List<CammandDTO> getList() {
+		return list;
+	}
+
+
+	public void setList(List<CammandDTO> list) {
+		this.list = list;
+	}
 
 
 	public int getId() {
@@ -45,23 +61,13 @@ public class CommandConfiguration {
 	}
 
 
-	public Category getCategory() {
-		return category;
+	public Action getAction() {
+		return action;
 	}
 
 
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-
-	public Category getSubCategory() {
-		return subCategory;
-	}
-
-
-	public void setSubCategory(Category subCategory) {
-		this.subCategory = subCategory;
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ZioSet_WorkerConfiguration.dto.CammandDTO;
+import com.ZioSet_WorkerConfiguration.dto.CategoryTreeDTO;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.Action;
@@ -50,9 +52,15 @@ public class ConfigurationController {
 	    try {
 	   
 	   System.out.println("Config "+commandConfiguration.toString());
+	    	for(CammandDTO cammandDTO:commandConfiguration.getList()) {
+	    		CommandConfiguration commandConfigurationNew= new CommandConfiguration();
+	    		commandConfigurationNew.setAction(commandConfiguration.getAction());
+	    		commandConfigurationNew.setCommandstr(cammandDTO.getCommandstr());
+	    		commandConfigurationNew.setSchemastr(cammandDTO.getSchemastr());
+	    		commandConfigurationRepo.save(commandConfigurationNew);
+	    	}
 	    	
-	    	commandConfigurationRepo.save(commandConfiguration);
-	        status.setCode(200);
+	    							status.setCode(200);
 	          status.setMessage("CommandConfiguration Added.... Successfully");
 	      
 	    } catch (Exception e) {
@@ -120,6 +128,19 @@ public class ConfigurationController {
 	    return count;
 	  }
 	  
+	  
+	  @GetMapping({"/getAllCommandConfigurationByActionId"})
+	  @ResponseBody
+	  public List<CommandConfiguration> getAllCommandConfigurationByActionId(@RequestParam("actionId") int actionId) {
+	    List<CommandConfiguration> list = new ArrayList<CommandConfiguration>();
+	    try {
+	      list = this.commandConfigurationRepo.getAllCommandConfigurationByActionId(actionId);
+	      boolean bool = false;
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    } 
+	    return list;
+	  }
 	  
 	  @PostMapping({"/getAllCommandConfigurationByLimitAndGroupSearch"})
 	  @ResponseBody
@@ -317,6 +338,30 @@ public class ConfigurationController {
 	    } 
 	    return list;
 	  }
+	  
+	  
+	  @GetMapping({"/getAllCategoriesTreeById"})
+	  @ResponseBody
+	  public  CategoryTreeDTO getAllCategoriesTreeById(@RequestParam("categoryId") int categoryId) {
+		  CategoryTreeDTO treeDTO = new CategoryTreeDTO();
+	    try {
+	      Optional<Category>  optional= this.categoryRepop.findById(categoryId);
+	     
+	      System.out.println("CAT NAME "+optional.get().getCategoryname());
+	      if(optional.get().getParrentCategory()!=null) {
+		      System.out.println("Parent NAME "+optional.get().getParrentCategory().getCategoryname());
+		      treeDTO.setParent(optional.get().getParrentCategory());
+	      }
+	     List<Category> categories=categoryRepop.getChildByCategoryId(categoryId);
+	      System.out.println("Clinds -------------------------------");
+	      treeDTO.setChilds(categories);
+	   
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    } 
+	    return treeDTO;
+	  }
+	
 	
 	  @GetMapping({"/getCategoryByLimit"})
 	  @ResponseBody
