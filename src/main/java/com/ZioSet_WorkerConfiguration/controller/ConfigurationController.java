@@ -51,9 +51,12 @@ public class ConfigurationController {
 		  ResponceObj status = new ResponceObj();
 	    try {
 	   
-	   System.out.println("Config "+commandConfiguration.toString());
+	 
+	   
+	  
 	    	for(CammandDTO cammandDTO:commandConfiguration.getList()) {
 	    		CommandConfiguration commandConfigurationNew= new CommandConfiguration();
+	    		  System.out.println("Config "+commandConfiguration.toString());
 	    		commandConfigurationNew.setAction(commandConfiguration.getAction());
 	    		commandConfigurationNew.setCommandstr(cammandDTO.getCommandstr());
 	    		commandConfigurationNew.setSchemastr(cammandDTO.getSchemastr());
@@ -70,6 +73,27 @@ public class ConfigurationController {
 	    } 
 	    return status;
 	  }
+	@PostMapping({"/updateCommandConfiguration"})
+	  @ResponseBody
+	  public ResponceObj updateCommandConfiguration(@RequestBody CommandConfiguration commandConfiguration )  {
+		  ResponceObj status = new ResponceObj();
+	    try {
+	   
+	   System.out.println("Config "+commandConfiguration.toString());
+	    	
+	    	commandConfigurationRepo.save(commandConfiguration);
+	        status.setCode(200);
+	          status.setMessage("CommandConfiguration Updated.... Successfully");
+	      
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	      status.setCode(500);
+	      status.setMessage("Something Wrong");
+	    } 
+	    return status;
+	  }
+	
+	
 	
 	@PostMapping({"/delteCommandConfiguration"})
 	  @ResponseBody
