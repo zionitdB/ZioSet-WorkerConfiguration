@@ -14,4 +14,5 @@ public interface CommandConfigurationCustomeRepo  {
 	List<CommandConfiguration> getAllCommandConfigurationByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO);
 
 	int getCountAllCommandConfigurationByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO);
+	String getMaxCode(String string);
 }

@@ -4,6 +4,7 @@ public class CammandDTO {
 
 	private String commandstr;
 	  private String schemastr ;
+	  private String commandId ;
 	public String getCommandstr() {
 		return commandstr;
 	}
@@ -15,6 +16,16 @@ public class CammandDTO {
 	}
 	public void setSchemastr(String schemastr) {
 		this.schemastr = schemastr;
+	}
+	public String getCommandId() {
+		return commandId;
+	}
+	public void setCommandId(String commandId) {
+		this.commandId = commandId;
+	}
+	@Override
+	public String toString() {
+		return "CammandDTO [commandstr=" + commandstr + ", schemastr=" + schemastr + ", commandId=" + commandId + "]";
 	}
 	  
 	  

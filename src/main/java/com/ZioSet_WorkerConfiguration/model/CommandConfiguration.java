@@ -32,9 +32,22 @@ public class CommandConfiguration {
 	  
 	  @Column(name = "commandstr")
 	  private String commandstr;
+	  
+	  @Column(name = "command_id")
+	  private String commandId;
 	   
 	  
-	  @Column(name = "schemastr")
+	  public String getCommandId() {
+		return commandId;
+	}
+
+
+	public void setCommandId(String commandId) {
+		this.commandId = commandId;
+	}
+
+
+	@Column(name = "schemastr")
 	  private String schemastr ;
 	  
 	  @Transient
@@ -88,6 +101,13 @@ public class CommandConfiguration {
 
 	public void setSchemastr(String schemastr) {
 		this.schemastr = schemastr;
+	}
+
+
+	@Override
+	public String toString() {
+		return "CommandConfiguration [id=" + id + ", action=" + action + ", commandstr=" + commandstr + ", commandId="
+				+ commandId + ", schemastr=" + schemastr + ", list=" + list + "]";
 	}
 
 

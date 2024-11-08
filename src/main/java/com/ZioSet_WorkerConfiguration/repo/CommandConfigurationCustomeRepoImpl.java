@@ -130,4 +130,24 @@ public class CommandConfigurationCustomeRepoImpl implements CommandConfiguration
 		return total_count;
 	}
 
+	@Override
+	public String getMaxCode(String yearMonth) {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+				long result = (long) entityManager.createQuery("SELECT count(c) FROM CommandConfiguration c where  substr(c.commandId,1,4)=:yearMonth").setParameter("yearMonth", yearMonth).getSingleResult();
+				int total_count=(int) result;
+				if(total_count==0){
+					return "0001";
+				}else{
+					String maxCode= (String) entityManager.createQuery("select MAX(c.commandId) from CommandConfiguration c where substr(c.commandId,1,4)=:yearMonth").setParameter("yearMonth", yearMonth).getSingleResult();
+					String subCode="1"+maxCode.substring(4,8);
+					int intCode=Integer.parseInt(subCode);
+					intCode++;
+					String code=String.valueOf(intCode).substring(1,5);
+					return code;
+				}
+				
+		
+	}
+
 }

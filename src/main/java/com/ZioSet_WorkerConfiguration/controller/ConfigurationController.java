@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -60,6 +61,7 @@ public class ConfigurationController {
 	    		commandConfigurationNew.setAction(commandConfiguration.getAction());
 	    		commandConfigurationNew.setCommandstr(cammandDTO.getCommandstr());
 	    		commandConfigurationNew.setSchemastr(cammandDTO.getSchemastr());
+	    		commandConfigurationNew.setCommandId(cammandDTO.getCommandId());
 	    		commandConfigurationRepo.save(commandConfigurationNew);
 	    	}
 	    	
@@ -80,8 +82,13 @@ public class ConfigurationController {
 	    try {
 	   
 	   System.out.println("Config "+commandConfiguration.toString());
+	    	Optional<CommandConfiguration> optional=commandConfigurationRepo.findById(commandConfiguration.getId());
+	    	System.out.println(" OP IS "+optional.isPresent());
 	    	
-	    	commandConfigurationRepo.save(commandConfiguration);
+	    	CommandConfiguration commandConfiguration2=optional.get();
+	    	commandConfiguration2.setCommandstr(commandConfiguration.getList().get(0).getCommandstr());
+	    	commandConfiguration2.setSchemastr(commandConfiguration.getList().get(0).getSchemastr());
+	    	commandConfigurationRepo.save(commandConfiguration2);
 	        status.setCode(200);
 	          status.setMessage("CommandConfiguration Updated.... Successfully");
 	      
@@ -114,6 +121,37 @@ public class ConfigurationController {
 	    } 
 	    return status;
 	  }
+	
+	
+	  @GetMapping({"/getNewCommandId"})
+	  @ResponseBody
+	  public String getNewCommandId() {
+		  String commandId = null ;
+	    try {
+	    	
+	    	
+	    	 LocalDate currentdate = LocalDate.now();
+			  int currentYear = currentdate.getYear();
+			  int currentMonth=currentdate.getMonthValue();
+			  String month; 
+			  if(currentMonth<9){
+				  month ="0"+Integer.toString(currentMonth);
+			  }else{
+				  month=Integer.toString(currentMonth);
+			  }
+			  String year=Integer.toString(currentYear).substring(2,4);
+			String maxCode=commandConfigurationRepo.getMaxCode(year+month);
+		
+			 commandId=year+month+maxCode;
+			System.out.println("configuration :: "+commandId);
+			
+	      //String commandId = this.commandConfigurationRepo.getNewCommandId();
+	    } catch (Exception e) {
+	      e.printStackTrace();
+	    } 
+	    return commandId;
+	  }
+	  
 	
 	  @GetMapping({"/getAllCommandConfigurations"})
 	  @ResponseBody

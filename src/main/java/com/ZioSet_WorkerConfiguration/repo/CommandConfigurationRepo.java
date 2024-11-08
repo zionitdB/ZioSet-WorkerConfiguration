@@ -15,4 +15,6 @@ public interface CommandConfigurationRepo extends JpaRepository<CommandConfigura
 
 	
 
+	
+
 }
