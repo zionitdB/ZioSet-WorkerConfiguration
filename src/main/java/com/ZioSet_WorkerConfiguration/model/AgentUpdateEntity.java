@@ -1,14 +1,14 @@
 package com.ZioSet_WorkerConfiguration.model;
 
-import com.ZioSet_WorkerConfiguration.enums.AgentUpdateCategory;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 
 @Entity
-@Table(name = "agent_update")
+@Table(name = "agent_updates")
 public class AgentUpdateEntity {
     @Id
     @GeneratedValue
@@ -17,24 +17,13 @@ public class AgentUpdateEntity {
     @Column(name = "uuid", nullable = false, unique = true)
     private String uuid;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
+    @OneToMany(mappedBy = "agentUpdate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AgentUpdateFileEntity> files;
 
-    @Column(name = "download_endpoint", nullable = false)
-    private String downloadEndpoint;
-
-    @Column(name = "directory_action")
-    private boolean directoryAction;
-
-    @Column(name = "directory_name")
-    private String directoryName;
-
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "update_category", nullable = false)
-    private AgentUpdateCategory updateCategory;
-
-    @ElementCollection
-    private Set<String> stopProcesses;
+    @OneToMany(mappedBy = "agentUpdate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<AgentUpdateSystemsEntity> targetSystems;
 
     @Column(name = "target_date_time", nullable = false)
     private LocalDateTime targetDateTime;
@@ -46,10 +35,23 @@ public class AgentUpdateEntity {
     @Transient
     private long targetSystemsCount;
 
-    @Transient
-    private String updateCategoryLabel;
-
     public AgentUpdateEntity() {
+    }
+
+    public AgentUpdateEntity(String uuid, List<AgentUpdateFileEntity> files, List<AgentUpdateSystemsEntity> targetSystems, LocalDateTime targetDateTime) {
+        this.uuid = uuid;
+        this.files = files;
+        this.targetSystems = targetSystems;
+        this.targetDateTime = targetDateTime;
+    }
+
+    public AgentUpdateEntity(long id, String uuid, List<AgentUpdateFileEntity> files, List<AgentUpdateSystemsEntity> targetSystems, LocalDateTime targetDateTime, LocalDateTime createdAt) {
+        this.id = id;
+        this.uuid = uuid;
+        this.files = files;
+        this.targetSystems = targetSystems;
+        this.targetDateTime = targetDateTime;
+        this.createdAt = createdAt;
     }
 
     public long getId() {
@@ -60,38 +62,28 @@ public class AgentUpdateEntity {
         this.id = id;
     }
 
-    public AgentUpdateCategory getUpdateCategory() {
-        return updateCategory;
+    public String getUuid() {
+        return uuid;
     }
 
-    public AgentUpdateEntity(long id, String uuid, String fileName, String downloadEndpoint, boolean directoryAction, String directoryName, AgentUpdateCategory updateCategory, Set<String> stopProcesses, LocalDateTime targetDateTime, LocalDateTime createdAt, long targetSystemsCount, String updateCategoryLabel) {
-        this.id = id;
+    public void setUuid(String uuid) {
         this.uuid = uuid;
-        this.fileName = fileName;
-        this.downloadEndpoint = downloadEndpoint;
-        this.directoryAction = directoryAction;
-        this.directoryName = directoryName;
-        this.updateCategory = updateCategory;
-        this.stopProcesses = stopProcesses;
-        this.targetDateTime = targetDateTime;
-        this.createdAt = createdAt;
-        this.targetSystemsCount = targetSystemsCount;
-        this.updateCategoryLabel = updateCategoryLabel;
     }
 
-    public AgentUpdateEntity(String uuid, String fileName, String downloadEndpoint, boolean directoryAction, String directoryName, AgentUpdateCategory updateCategory, Set<String> stopProcesses, LocalDateTime targetDateTime) {
-        this.uuid = uuid;
-        this.fileName = fileName;
-        this.downloadEndpoint = downloadEndpoint;
-        this.directoryAction = directoryAction;
-        this.directoryName = directoryName;
-        this.updateCategory = updateCategory;
-        this.stopProcesses = stopProcesses;
-        this.targetDateTime = targetDateTime;
+    public List<AgentUpdateFileEntity> getFiles() {
+        return files;
     }
 
-    public void setUpdateCategory(AgentUpdateCategory updateCategory) {
-        this.updateCategory = updateCategory;
+    public void setFiles(List<AgentUpdateFileEntity> files) {
+        this.files = files;
+    }
+
+    public List<AgentUpdateSystemsEntity> getTargetSystems() {
+        return targetSystems;
+    }
+
+    public void setTargetSystems(List<AgentUpdateSystemsEntity> targetSystems) {
+        this.targetSystems = targetSystems;
     }
 
     public LocalDateTime getTargetDateTime() {
@@ -102,14 +94,6 @@ public class AgentUpdateEntity {
         this.targetDateTime = targetDateTime;
     }
 
-    public String getDownloadEndpoint() {
-        return downloadEndpoint;
-    }
-
-    public void setDownloadEndpoint(String downloadLink) {
-        this.downloadEndpoint = downloadLink;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -118,55 +102,13 @@ public class AgentUpdateEntity {
         this.createdAt = createdAt;
     }
 
-    public void setTargetSystemsCount(long targetSystemsCount) {
-        this.targetSystemsCount = targetSystemsCount;
-    }
-
     public long getTargetSystemsCount() {
         return targetSystemsCount;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public boolean isDirectoryAction() {
-        return directoryAction;
-    }
-
-    public void setDirectoryAction(boolean directoryAction) {
-        this.directoryAction = directoryAction;
-    }
-
-    public String getDirectoryName() {
-        return directoryName;
-    }
-
-    public void setDirectoryName(String directoryName) {
-        this.directoryName = directoryName;
-    }
-
-    public Set<String> getStopProcesses() {
-        return stopProcesses;
-    }
-
-    public void setStopProcesses(Set<String> stopProcesses) {
-        this.stopProcesses = stopProcesses;
-    }
-
-    public String getUpdateCategoryLabel() {
-        return updateCategory.getValue();
+    public void setTargetSystemsCount(long targetSystemsCount) {
+        this.targetSystemsCount = targetSystemsCount;
     }
 }
+
+

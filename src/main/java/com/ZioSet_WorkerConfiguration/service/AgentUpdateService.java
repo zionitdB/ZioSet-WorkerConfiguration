@@ -1,6 +1,7 @@
 package com.ZioSet_WorkerConfiguration.service;
 
-import com.ZioSet_WorkerConfiguration.dto.AddAgentUpdateDTO;
+import com.ZioSet_WorkerConfiguration.components.AgentUpdateMapper;
+import com.ZioSet_WorkerConfiguration.dto.AgentUpdateCreateDto;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
 import com.ZioSet_WorkerConfiguration.repo.AgentUpdateRepository;
@@ -15,24 +16,26 @@ public class AgentUpdateService {
 
     private final AgentUpdateRepository agentUpdateRepository;
     private final AgentUpdateSystemsRepository agentUpdateSystemsRepository;
+    private final AgentUpdateMapper agentUpdateMapper;
 
-    public AgentUpdateService(AgentUpdateRepository agentUpdateRepository, AgentUpdateSystemsRepository agentUpdateSystemsRepository) {
+    public AgentUpdateService(AgentUpdateRepository agentUpdateRepository, AgentUpdateSystemsRepository agentUpdateSystemsRepository, AgentUpdateMapper agentUpdateMapper) {
         this.agentUpdateRepository = agentUpdateRepository;
         this.agentUpdateSystemsRepository = agentUpdateSystemsRepository;
+        this.agentUpdateMapper = agentUpdateMapper;
     }
 
-    public void addAgentUpdate(AddAgentUpdateDTO agentUpdate) {
+    public void addAgentUpdate(AgentUpdateCreateDto agentUpdate) {
         String uuid = UUID.randomUUID().toString();
-        AgentUpdateEntity agentUpdateEntity = agentUpdate.toAgentUpdateEntity(uuid);
+        AgentUpdateEntity agentUpdateEntity =  agentUpdateMapper.toEntity(uuid, agentUpdate);
         agentUpdateRepository.save(agentUpdateEntity);
 
-        try {
+/*        try {
             List<AgentUpdateSystemsEntity> systemsEntities = agentUpdate.toAgentUpdateSystemsEntities(agentUpdateEntity);
             agentUpdateSystemsRepository.saveAll(systemsEntities);
         } catch (Exception e) {
             agentUpdateRepository.delete(agentUpdateEntity);
             throw e;
-        }
+        }*/
     }
 
     public void deleteAgentUpdate(long updateId) {

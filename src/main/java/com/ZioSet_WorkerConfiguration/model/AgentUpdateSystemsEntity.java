@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,6 +12,7 @@ public class AgentUpdateSystemsEntity {
 
     @ManyToOne
     @JoinColumn(name = "agent_update_id", nullable = false)
+    @JsonBackReference
     private AgentUpdateEntity agentUpdate;
 
     @Column(name = "system_serial_number", nullable = false)
@@ -22,13 +24,7 @@ public class AgentUpdateSystemsEntity {
     @Column(name = "updated_at")
     private String updatedAt;
 
-
     public AgentUpdateSystemsEntity() {
-    }
-
-    public AgentUpdateSystemsEntity(AgentUpdateEntity agentUpdate, String systemSerialNumber) {
-        this.agentUpdate = agentUpdate;
-        this.systemSerialNumber = systemSerialNumber;
     }
 
     public AgentUpdateSystemsEntity(long id, AgentUpdateEntity agentUpdate, String systemSerialNumber, boolean isUpdated, String updatedAt) {

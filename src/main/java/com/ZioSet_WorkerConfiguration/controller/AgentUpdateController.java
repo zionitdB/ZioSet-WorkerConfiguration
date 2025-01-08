@@ -1,6 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
-import com.ZioSet_WorkerConfiguration.dto.AddAgentUpdateDTO;
+import com.ZioSet_WorkerConfiguration.dto.AgentUpdateCreateDto;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
@@ -21,7 +21,7 @@ public class AgentUpdateController {
     }
 
     @PostMapping("/add-update")
-    public ResponceObj addAgentUpdate(@RequestBody AddAgentUpdateDTO agentUpdate) {
+    public ResponceObj addAgentUpdate(@RequestBody AgentUpdateCreateDto agentUpdate) {
         ResponceObj status = new ResponceObj();
         try {
             agentUpdateService.addAgentUpdate(agentUpdate);

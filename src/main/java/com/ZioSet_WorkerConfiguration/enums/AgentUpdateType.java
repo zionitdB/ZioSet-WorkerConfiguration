@@ -1,11 +1,10 @@
 package com.ZioSet_WorkerConfiguration.enums;
 
-public enum AgentUpdateCategory {
-    PLUGIN("Plugin"),
-    PROCESS("Process"),
+public enum AgentUpdateType {
     STORE("Store"),
     WORKS("Works");
-    AgentUpdateCategory(String value) {
+
+    AgentUpdateType(String value) {
         this.value = value;
     }
 
