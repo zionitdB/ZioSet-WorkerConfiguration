@@ -1,0 +1,20 @@
+.Tour-Card{
+    display: flex;
+    margin: 10px 10px;
+    gap: 20px;
+    flex-wrap: wrap ;
+    /* justify-content: space-between; */
+}
+.dashboardContent{
+    display: flex;
+    flex: row;
+}
+.card-dashCard{
+    /* width: 220px; */                                                                                                                                 
+}
+.grid-container{
+    grid-template-columns: none;
+}
+.tourcard1{
+    width: 220px;
+}

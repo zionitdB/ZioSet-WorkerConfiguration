@@ -1,0 +1,45 @@
+.boxes{
+    /* background-color: yellow; */
+    color:  var(--dashboard-color);
+
+    display: flex;
+}
+
+.boxes .box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 12px;
+    width: calc(100% / 3 - 15px);
+    padding: 15px 20px;
+    margin: 10px 33px;
+    background-color: var(--dashboard-bg-color);
+    color: var(--dashboard-color);
+    transition: var(--tran-05);
+}
+.boxes .box i{
+    font-size: 35px;
+    color: var(--text-color);
+}
+.boxes .box .text{
+    white-space: nowrap;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--dashboard-color);
+}
+.boxes .box .number{
+    font-size: 40px;
+    font-weight: 500;
+    color: var(--dashboard-color);
+}
+.boxes .box.box2{
+    background-color: var(--dashboard-bg-color);
+}
+.boxes .box.box3{
+    background-color: var(--dashboard-bg-color);
+}
+.boxes .box.box4{
+    background-color: var(--dashboard-bg-color);
+}
+
+

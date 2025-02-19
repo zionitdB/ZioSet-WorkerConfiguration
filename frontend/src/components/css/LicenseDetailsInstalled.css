@@ -1,0 +1,48 @@
+.List-view{
+    justify-content: space-evenly;
+    /* border: 2px solid red; */
+    background-color: var(--white-color);
+    /* height: 88vh; */
+    min-height: 100vh;
+    /* transition: all 5s ease !important; */
+}
+.List1, .container{
+    /* transition: all 5s ease !important; */
+}
+.List1{
+    /* border: 3px solid red; */
+    margin: 0 5px;
+    border: 1px solid grey;
+    padding: 10px 10px;
+    width: fit-content;
+}
+.List1 h1{
+    color: var(--grey-color);
+    font-size: 1rem;
+  
+}
+.List1 h1 span{
+    color: blue;
+    font-size: 1rem;
+  
+}
+
+.List2{
+    /* background-color: red; */
+    /* border: 2px solid black; */
+    height: 282px;
+    margin: 10px 10px;
+    width: 400px;
+    overflow: auto;
+    border: 1px solid grey;
+}
+.margin-list{
+    margin: 10px 40px;
+}
+.virtual-list-item{
+    overflow: auto;
+    height: 69vh;
+}
+.virtual-list-item{
+    color: var(--grey-color) !important;
+}

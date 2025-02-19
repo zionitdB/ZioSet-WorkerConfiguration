@@ -3,10 +3,10 @@ package com.ZioSet_WorkerConfiguration.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-
+// Installed systems list for windows
 @Entity
-@Table(name = "mac_installed_systems")
-public class MACInstalledSystemEntity {
+@Table(name = "installed_systems")
+public class InstalledSystemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -30,10 +30,10 @@ public class MACInstalledSystemEntity {
     private String installationResponse;
 
 
-    public MACInstalledSystemEntity() {
+    public InstalledSystemEntity() {
     }
 
-    public MACInstalledSystemEntity(long id, String uuid, String systemSerialNo, boolean installed, LocalDateTime installedAt, LocalDateTime installReqAt, String installationResponse) {
+    public InstalledSystemEntity(long id, String uuid, String systemSerialNo, boolean installed, LocalDateTime installedAt, LocalDateTime installReqAt, String installationResponse) {
         this.id = id;
         this.uuid = uuid;
         this.systemSerialNo = systemSerialNo;

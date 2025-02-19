@@ -1,0 +1,735 @@
+/* Import Google font - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+:root {
+  --primary-color: #1976d2;
+  /* ====== Colors ====== */
+  --text-color:"#000"
+  --white-color: #fff;
+  --blue-color: #4070f4;
+  --blue-color2: #4070f4;
+  --grey-color: #707070;
+  --black-color: #000000;
+  --grey-color-light: #aaa;
+  --dashboard-bg-color: white;
+  --dashboard-color: blue;
+  --card-color: linear-gradient(-20deg,
+      rgb(233, 222, 250) 0%,
+      rgb(251, 252, 219) 100%);
+  /* --dark-card-color: linear-gradient(-20deg, rgb(31, 31, 31) 0%, rgb(55, 56, 27) 100%); */
+  
+  --card-active: radial-gradient(circle at 10% 20%,
+  rgb(0, 52, 89) 0%,
+  rgb(0, 168, 232) 90%);
+  --tour-heading: rgb(234, 106, 213);
+  --tour--pTags: #000;
+
+
+    /* for dark mode */
+    --midNight-blue: #101720;
+    --deepNavy-blue: #ffffff;
+    --Navy-blue: #ffffff;
+    --Charcoal-gray: #171717;
+    --rich-black: #020D19;
+    --oil-black: #0C0C0C;
+    --darkSlate-grey:radial-gradient(circle at 10% 20%,
+        rgb(0, 52, 89) 0%,
+        rgb(0, 168, 232) 90%);
+    --obsidian-color: #ffffff;
+    --table-color: #e6e6e6;
+    --modal-bg: #ffffff;
+    --role-card: rgb(152, 255, 152, 0.8);
+    --hr-color: rgb(250 250 250);
+   
+  
+
+  /* ====== Transition ====== */
+  --tran-05: all 0.5s ease;
+  --tran-03: all 0.3s ease;
+  --tran-03: all 0.2s ease;
+}
+
+body {
+  background-color: #e7f2fd;
+  transition: all 0.5s ease;
+  scroll-behavior: smooth;
+}
+
+body.dark {
+  background-color: #333;
+}
+
+body.dark {
+  --text-color:#fff;
+  --white-color: #6b6b6b;
+  /* --blue-color: #fff; */
+  --blue-color: #ffffff;
+  --grey-color: #f2f2f2;
+  --black-color: #f2f2f2;
+  --grey-color-light: #aaa;
+  --dashboard-bg-color: #202a40;
+  --dashboard-color: white;
+  /* --card-active: #0B1215; */
+  --card-active: #0D1717;
+  --modal-bg: #0D1717;
+  --card-color: black;
+
+  /* for dark mode */
+  --midNight-blue: grey;
+  --deepNavy-blue: #011222;
+  --Navy-blue: #0D1717;
+  --table-color: #0D1717;
+  /* --Navy-blue2: #1e2442; */
+  --Charcoal-gray: #171717;
+  --rich-black: #020D19;
+  --oil-black: #0C0C0C;
+  --darkSlate-grey: #0D1717;
+  /* --obsidian-color: #0B1215; */
+  --obsidian-color: #000000;
+  --tour-heading: rgb(234, 106, 213);
+  --tour--pTags:#fff;
+  --role-card: #011222;
+  --hr-color: rgb(34 34 34);
+}
+
+.Overview-home {
+  /* background-color: yellow; */
+  position: relative;
+  left: 220px;
+  position: relative;
+  overflow: auto;
+  overflow-x: hidden;
+  /* background-color: red; */
+  z-index: 999;
+  min-height: 100vh;
+  width: calc(100% - 220px);
+  /* padding: 9px 1px; */
+  /* margin-top: 65px; */
+  transition: all 0.5s ease-in-out;
+  min-height: calc(100vh - 100px);
+  border-left: 1px solid var(--grey-color);
+  /* border: 1px solid rgba(255); */
+  top: 61px;
+  background: var(--obsidian-color) !important;
+  height: calc(100vh - 61px) !important;
+}
+.dark .Overview-home{
+  border-left: 1px solid rgb(45, 45, 45);
+}
+
+.close+.Overview-home {
+  /* background-color: black !important; */
+  /* color: white; */
+  transition: all 0.5s ease-in-out;
+}
+
+.sidebar.close + .Overview-home {
+  /* color: white; */
+  left: 80px !important;
+  width: calc(100% - 80px);
+  transition: all 0.5s ease-in-out;
+  /* background-color: red !important; */
+}
+
+/* For WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px;
+  /* Set width of the scrollbar */
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  /* Set color of the track */
+}
+.dark ::-webkit-scrollbar-track {
+  background-color: var(--Navy-blue);
+  /* Set color of the track */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  /* Set color of the thumb/handle */
+  border-radius: 6px;
+  /* Set border radius of the thumb/handle */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+  /* Set color of the thumb/handle on hover */
+}
+
+.container {
+  max-width: 100%;
+  min-height: calc(100vh - 90px);
+  background: var(--obsidian-color) !important;
+  /* background: #fff; */
+  width: 100%;
+  /* padding: 25px 200px 10px 200px; */
+  /* box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); */
+  /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px !important; */
+  /* background: rgba( 255, 255, 255, 0.2 );
+  box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+  backdrop-filter: blur( 10px );
+  -webkit-backdrop-filter: blur( 10px ); */
+  /* border-radius: 10px; */
+  /* border: 1px solid rgba(255, 255, 255, 0.18); */
+  padding: 0 16px;
+}
+
+.d-flexx {
+  display: flex;
+}
+
+.content-center {
+  justify-content: center;
+}
+
+.content-space-around {
+  justify-content: space-around;
+}
+
+button {
+  text-transform: capitalize !important;
+}
+
+.container .text {
+  text-align: center;
+  font-size: 3rem;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  /* font-family: "Bebas Neue", sans-serif; */
+  background: -webkit-linear-gradient(right,
+      #56d8e4,
+      #9f01ea,
+      #56d8e4,
+      #9f01ea);
+      /* background: var(--card-active); */
+  /* background: -webkit-linear-gradient(74deg, var(--bard-color-brand-text-gradient-stop-1) 0, var(--bard-color-brand-text-gradient-stop-2) 9%, var(--bard-color-brand-text-gradient-stop-3) 20%, var(--bard-color-brand-text-gradient-stop-3) 24%, var(--bard-color-brand-text-gradient-stop-2) 35%, var(--bard-color-brand-text-gradient-stop-1) 44%, var(--bard-color-brand-text-gradient-stop-2) 50%, var(--bard-color-brand-text-gradient-stop-3) 56%, var(--bard-color-surface) 75%, var(--bard-color-surface) 100%); */
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dark .container .text {
+  background: -webkit-linear-gradient(right, #ffffff, #ffffff, #56d8e4, #332e36);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.dark .container .text {
+  /* background: -webkit-linear-gradient(74deg, #3b4561 0, #4d5a7a 9%, #607191 20%, #607191 24%, #4d5a7a 35%, #3b4561 44%, #4d5a7a 50%, #607191 56%, #eef2f7 75%, #eef2f7 100%); */
+}
+
+/* for table css style */
+.MuiDataGrid-cell {
+  width: 100%;
+  /* Initially set all cells to 100% width */
+  /* background-color: blue; */
+  /* color: white; */
+  /* width: fit-content !important;
+  max-width: fit-content !important; */
+  /* border: 1px solid red; */
+}
+
+.MuiDataGrid-columnHeaderDraggableContainer {
+  /* background-color: yellow; */
+}
+
+/* MuiDataGrid-cell MuiDataGrid-cell--textLeft MuiDataGrid-withBorderColor */
+
+.Loading-spinner {
+  /* position: 'fixed',
+  top: 0,
+  left: 274, // Enclose '274px' in quotes
+  width: 'calc(100vw - 287px)', // Use the 'calc' function for subtraction
+  height: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  background: 'white',
+  zIndex: 9999,
+  opacity: 1 */
+}
+
+.location-dropdown select {
+  width: 93%;
+  height: 60px;
+  margin-left: 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  /* border: 2px solid #011222; */
+  border-bottom: 3px solid #3498db;
+  transition: var(--tran-03);
+  background: none;
+  outline: none;
+  border: none;
+  border-bottom: 3px solid #3498db;
+  color: var(--grey-color);
+}
+
+.location-dropdown select:focus {
+  background-color: var(--Navy-blue);
+  /* color: white; */
+  border: none;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.box-shadow-none {
+  box-shadow: none;
+}
+
+/* AnimatedLineChart.css */
+
+canvas {
+  animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  }
+
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+  }
+
+  100% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  }
+}
+
+.profile-container {
+  min-height: 100vh;
+  overflow: auto;
+  height: 110vh;
+}
+
+.pagination-box {
+  margin: 25px;
+}
+
+.MuiDataGrid-columnHeaders {
+  background: var(--card-color);
+
+}
+.dark .MuiDataGrid-columnHeaders {
+  background: #0B1215;
+  /* color: white; */
+  /* font-weight: bolder; */
+}
+
+.warning-container-login {
+  position: absolute;
+  height: 100px;
+  background-color: black;
+  color: white;
+  font-size: 2rem;
+  top: 50%;
+  border: 2px solid black;
+  z-index: 999;
+  left: 22%;
+}
+
+.row-per-page{
+  color: var(--grey-color);
+}
+.css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root{
+  color: var(--grey-color) !important;
+}
+.css-1to7aaw-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected{
+  /* background-color: black !important; */
+  color: white !important;
+}
+.css-1v2lvtn-MuiPaginationItem-root{
+  color: var(--grey-color) !;
+}
+
+.css-1sfyh8e {
+  color: var(--grey-color);
+}
+
+.dark .css-1ygcj2i-MuiTableCell-root, .dark .MuiTableHead-root tr th{
+  color: var(--grey-color);
+}
+.dark .css-1ex1afd-MuiTableCell-root{
+  color: var(--grey-color);
+}
+.css-12xchza-control{
+  background: var(--card-color);
+}
+h2{
+  color: var(--grey-color);
+}
+p {
+  color: var(--grey-color);
+}
+
+.warning-modal{
+     /* display: none; */
+     position: absolute;
+     z-index: 9999;
+     background: var(--Navy-blue);
+     /* border: 2px solid red; */
+     top: 50%;
+     left: 31%;
+     width: 50%;
+     height: 200px;
+     justify-content: center;
+     font-size: 2rem;
+}
+.progress-bar-w{
+  line-height: 70px;
+}
+label{
+  color: var(--grey-color);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); /* Adjust the opacity and color as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure the overlay is on top of other content */
+}
+
+.css-3udsob-control{
+  background: var(--Navy-color) !important;
+}
+.css-1eaqvnp-MuiPaper-root-MuiPopover-paper-MuiMenu-paper{
+  background-color: var(--Navy-blue) !important;
+  color: var(--grey-color) !important;
+}
+.dark .css-1eaqvnp-MuiPaper-root-MuiPopover-paper-MuiMenu-paper svg{
+  color: white;
+}
+.table-body tr td  {
+  color: var(--grey-color) !important ;
+}
+.css-q34dxg{
+  color: blue !important;
+}
+.pagination-box li button{
+   color: var(--grey-color) !important;
+}
+.MuiMenu-list {
+  background: var(--Navy-blue);
+}
+.css-ffqxj4.Mui-selected{
+  background-color: rgb(25, 118, 210) !important;
+  color: white !important;
+}
+.css-1klh9lh-control, .css-14n0wk2-control{
+  background-color:var(--Navy-blue) !important;
+}
+.dark .css-1t1j96h-MuiPaper-root-MuiDialog-paper{
+  background-color: #121212;
+}
+.dark .css-qfso29-MuiTypography-root-MuiDialogContentText-root{
+  color: #fff;
+}
+.dark .css-jzcd7z-MuiFormControlLabel-root .MuiFormControlLabel-label {
+  color: #fff;
+}
+hr{
+  background-color: var(--hr-color);
+} 
+.empty-page{
+  color:red;
+  font-size: 30px;
+  text-align: center;
+  margin-top: 200px;
+}
+
+.react-organizational-chart-tree li:last-child::before {
+  display: none;
+}
+
+/*Tour Css*/
+
+/* .introjs-overlay{
+  opacity: 1 !important;
+  backdrop-filter: blur(5px) !important;
+} */
+
+.introjs-tooltip {
+  box-sizing: border-box !important;
+  position: absolute !important;
+  visibility: visible !important;
+  background-color: #000000 !important;
+  /* color: #fff; */
+  min-width: 500px !important;
+  max-width: 100% !important;
+  border-radius: 12px !important;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.5) !important;
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, white, lightgreen);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.introjs-arrow {
+  border: 5px solid transparent;
+  content: "";
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.introjs-arrow.top {
+  top: -10px;
+  left: 10px;
+  border-bottom-color: #28a745;
+  border-width: 0 5px 10px 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+
+}
+
+.introjs-arrow.top-right {
+  top: -10px;
+  right: 10px;
+  border-bottom-color: #28a745;
+  border-width: 0 5px 10px 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.top-middle {
+  top: -10px;
+  left: 50%;
+  margin-left: -5px;
+  border-bottom-color: #28a745;
+  border-width: 0 5px 10px 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.right {
+  right: -10px;
+  top: 10px;
+  border-left: 5px solid transparent;
+  border-right: 10px solid #28a745;
+  /* Green color */
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.right-bottom {
+  bottom: 10px;
+  right: -10px;
+  border-left: 5px solid transparent;
+  border-right: 10px solid #28a745;
+  /* Green color */
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.bottom {
+  bottom: -10px;
+  left: 10px;
+  border-top: 10px solid #28a745;
+  /* Green color */
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.bottom-right {
+  bottom: -10px;
+  right: 10px;
+  border-top: 10px solid #28a745;
+  /* Green color */
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.bottom-middle {
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: 10px solid #28a745;
+  /* Green color */
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 0;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.left {
+  left: -10px;
+  top: 10px;
+  border-right: 5px solid transparent;
+  border-left: 10px solid #28a745;
+  /* Green color */
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-arrow.left-bottom {
+  left: -10px;
+  bottom: 10px;
+  border-right: 5px solid transparent;
+  border-left: 10px solid #28a745;
+  /* Green color */
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.introjs-button {
+  padding: 0.5rem 1rem !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  background-color: #28a745 !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.introjs-button:hover {
+  background-color: #218838;
+  color: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.introjs-button:focus {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.5);
+  border: 1px solid #28a745;
+  color: #212121;
+  outline: none;
+}
+
+.introjs-button:active {
+  background-color: #218838;
+  color: #f8f9fa;
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.introjs-button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.introjs-skipbutton {
+  position: absolute;
+  top: 10px;
+  /* Adjusted for spacing from the top */
+  right: 10px;
+  /* Adjusted for spacing from the right */
+  display: inline-block;
+  width: 50px;
+  /* Increased width for better visibility */
+  height: 50px;
+  /* Increased height for better visibility */
+  line-height: 50px;
+  /* Centered text vertically */
+  color: #fff;
+  /* White text color */
+  font-size: 24px;
+  /* Increased font size for better readability */
+  cursor: pointer;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 50%;
+  /* Rounded corners */
+  background: linear-gradient(135deg, #4CAF50, #8BC34A);
+  /* Green gradient background */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  /* Subtle shadow */
+  transition: background 0.3s, box-shadow 0.3s;
+  /* Smooth transition for hover effect */
+}
+
+.introjs-skipbutton:focus,
+.introjs-skipbutton:hover {
+  color: #fff;
+  /* White text color on hover */
+  background: linear-gradient(135deg, #388E3C, #7CFC00);
+  /* Darker green gradient on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  /* Enhanced shadow on hover */
+  outline: 0;
+  text-decoration: none;
+}
+
+.introjs-progressbar {
+  /* box-sizing: content-box;
+  float: left;
+  width: 0%;
+  height: 100%;
+  font-size: 10px;
+  line-height: 10px;
+  text-align: center; */
+  background-color: rgb(1, 128, 14) !important;
+}
+
+.btn-start-tour {
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  border: 1px solid #6b7280;
+  /* gray-500 */
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-start-tour:hover {
+  background-color: black;
+  color: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-start-tour {
+    background-color: black;
+    color: white;
+  }
+
+  .btn-start-tour:hover {
+    background-color: white;
+    color: black;
+  }
+}

@@ -1,0 +1,15 @@
+.List1{
+    /* border: 3px solid red; */
+    margin: 0 5px;
+    border: 1px solid grey;
+    padding: 10px 10px;
+}
+.List1 h1{
+    color: var(--grey-color);
+  
+}
+.List1 h1 span{
+    color: blue;
+    font-size: 1rem;
+  
+}

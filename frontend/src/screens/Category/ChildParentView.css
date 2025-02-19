@@ -1,0 +1,32 @@
+.diagram-container {
+    display: flex;
+    flex-direction: column-reverse; /* Start from the bottom */
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .node-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  
+  /* .node {
+    width: 100px;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    line-height: 50px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+   */
+  .arrow {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: green;
+  }
+  

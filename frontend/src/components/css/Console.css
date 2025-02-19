@@ -1,0 +1,82 @@
+.console-container {
+  /* background-color: red; */
+}
+.cards {
+  margin: 33px;
+  padding: 33px;
+  /* justify-content:space-between; */
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cards .child-card{
+  width: 30%;
+}
+.fetchHistoryContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+  height: 100%;
+  align-items: center;
+}
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 150px;
+  width: 100%;
+  /* background-color: red;
+  margin: 10px 0px; */
+}
+.leftSide {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+  align-items: flex-end;
+}
+.center {
+  display: flex;
+  flex-direction: column;
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(to bottom, #6a11cb, #2575fc, #2575fc, #6a11cb);
+}
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+}
+.date {
+  width: 200px;
+  transform: rotateZ(-90deg) translateY(-80px) translateX(0px);
+  color: #fff;
+  font-weight: bold;
+}
+.false {
+  background-color: #fbd9d9;
+  color: #eb4143;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: solid 1px #eb4143;
+  width: fit-content;
+  font-weight: bold;
+}
+.true {
+  background: var(--Semantics-Success-Success-100, #d0f6dc);
+  color: #26bf56;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: solid 1px #26bf56;
+  width: fit-content;
+  font-weight: bold;
+  /* text-align: right; */
+}
+
+.MuiTab-root{
+  color: var(--grey-color) !important;
+}
+.MuiTabs-scrollableX .Mui-selected{
+  color: var(--primary-color) !important;
+}

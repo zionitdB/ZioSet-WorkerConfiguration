@@ -1,0 +1,7 @@
+.pagination-box{
+    display: flex;
+    justify-content: center;
+}
+.table-box{
+    margin: 10px 33px;
+}
