@@ -1,0 +1,42 @@
+.form-row {
+  display: flex;
+  /* margin: 32px 0; */
+}
+
+.UserInvForm{
+    margin: 25px 30px 10px 30px;
+    /* box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px; */
+    padding: 3px 10px;
+}
+.table-body, .table-btn-group{
+    /* margin: 23px 33px; */
+}
+.submit-btn{
+  justify-content: center;
+  padding: 33px 10px;
+}
+
+.green-table-user,
+.red-table-user {
+  padding: 8px 16px;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.green-table-user {
+  background: #597e5233;
+  color: #597e52;
+}
+.dark .green-table-user {
+  background: #1fb800ba;
+  color: #fff;
+}
+
+.red-table-user {
+  background: #c7003933;
+  color: #c70039;
+}
+.dark .red-table-user {
+  background: #c70000bc;
+  color: #fff;
+}

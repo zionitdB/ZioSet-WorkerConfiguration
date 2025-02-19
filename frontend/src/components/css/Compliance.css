@@ -1,0 +1,65 @@
+.compliance-main{
+    /* background-color: white; */
+    margin: 20px 0px 0px 0px;
+    padding: 10px;
+    
+   
+}
+.compliance-box1{
+    display: flex;
+    width: 100%;
+    /* background-color:white; */
+    margin: 20px 0px 0px 0px;
+}
+.box1{
+    display: flex;
+    margin-bottom: 30px;
+}
+.Compliance-card {
+    background: var(--card-color);
+    border-radius: 8px;
+    font-size: 19px;
+    font-weight: 400;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 18%;
+    height: 120px;  
+    margin-bottom: 10px;
+    color: black;
+    transition: all 0.5s ease-in-out;
+    border: 1px solid var(--grey-color);
+}
+.Compliance-card:hover{
+    /* background-color: blueviolet; */
+        background: var(--card-active);
+        color: #fff !important;
+        transform: scale(0.9);
+        cursor: pointer;
+        transition: var(--trans-05);
+}
+.Compliance-card:hover p{
+    /* background-color: blueviolet; */
+        color: #fff !important;
+}
+.Compliance-card:hover h2{
+    /* background-color: blueviolet; */
+        color: #fff !important;
+}
+
+.Compliance-active{
+  background: var(--card-active);
+        transition: all 0.6s ease;
+        color: white !important;
+}
+.Compliance-active p {
+    color: white !important;
+}
+.Compliance-active h2 {
+    color: white !important;
+}
+
+.dropdown-container{
+    gap: 20px;
+}
+

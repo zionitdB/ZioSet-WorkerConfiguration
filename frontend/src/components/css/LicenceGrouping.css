@@ -1,0 +1,22 @@
+.groupingCard {
+  margin: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: var(--white-color);
+  padding: 10px;
+  width: fit-content;
+  color: var(--grey-color);
+}
+.groupingGroupCard {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-color: var(--white-color);
+  padding: 10px;
+  width: fit-content;
+  color: var(--grey-color);
+}
+.css-1dimb5e-singleValue{
+  color: var(--grey-color) !important;
+}

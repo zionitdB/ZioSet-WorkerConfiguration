@@ -1,0 +1,6 @@
+.css-12n0uxm-MuiGrid-root>.MuiGrid-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}

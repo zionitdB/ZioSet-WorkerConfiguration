@@ -1,0 +1,130 @@
+.container-role {
+  /* border: 2px solid red; */
+  height: auto;
+  margin: 0 !important;
+  padding: 0 !important;
+  background-color: white;
+}
+
+.container-box {
+  /* background-color: red; */
+  border: 3px solid;
+  width: 100%;
+}
+
+.left-container,
+.right-container {
+  /* border: 1px solid rgb(0, 0, 0); */
+  /* width: 100%; */
+  /* flex-basis: 50%; */
+  padding: 33px 40px !important;
+}
+
+.box {
+  background-color: rgb(161, 255, 161);
+  /* border: 1px solid red; */
+  margin: 10px 10px;
+}
+
+.flex-basis-50 {
+  flex-basis: 50% !important;
+}
+
+.checkBox {
+  width: 50%;
+  margin: 0 20px;
+}
+
+.header-Justify {
+  justify-content: space-between;
+}
+
+.container-role h3 {
+  color: var(--grey-color);
+}
+
+/* Add this to your RolePermission.css file */
+
+.container-role {
+  padding: 16px;
+  /* Add some padding to the container */
+}
+
+.role-box {
+  margin-bottom: 16px;
+  padding: 12px 20px;
+  margin: 25px 0;
+  background-color: #dbeefc !important;
+  /* box-shadow: rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset !important; */
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px !important;
+}
+
+@media (max-width: 600px) {
+  .box {
+    width: 100%;
+    /* Make the boxes full width on smaller screens */
+  }
+}
+
+.box-content {
+  background-color: green;
+}
+
+
+
+Paper {
+  background-color: red;
+}
+.header-Justify span:nth-child(1) {
+  font-size: 0.8rem !important;
+  font-weight: 800;
+  font-style: italic;
+}
+.select {
+  height: 35px;
+  border-radius: 10px;
+  font-size: 16px;
+  max-width: 100%;
+  /* width: 100px; */
+  border-width: 2px;
+}
+.gridContainer {
+  display: flex;
+  /* grid-template-columns: repeat(2, 1fr); */
+  flex-direction: column;
+  padding: 30px;
+  gap: 30px;
+}
+.gridContainer > h3 {
+  font-size: 16px;
+  font-weight: bold;
+
+}
+.accordion p{
+  color: var(--grey-color);
+}
+.permissionCard {
+  /* box-shadow: 0px 0px 10px #0005; */
+  border-radius: 15px;
+  overflow: hidden;
+  /* display: flex; */
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  /* background: var(--card-color); */
+  /* border: 1px solid #fff; */
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+}
+.accordion {
+  /* background-color: rgb(164, 253, 199); */
+  border-radius: 100px;
+}
+
+.permissionCard span, .MuiSvgIcon-root {
+  color:var(--grey-color)
+}
+

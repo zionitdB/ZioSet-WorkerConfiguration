@@ -1,0 +1,13 @@
+.installedDashboardCards{
+    padding:  20px;
+}
+
+.installedtables{
+    /* margin:  20px; */
+    width: -webkit-fill-available;
+    height: 452px;
+    overflow: auto;
+}
+.installLicenseGraph{
+    margin: 40px 2px 20px 2px ;
+}

@@ -1,0 +1,22 @@
+.profile-A{
+    font-size: 5rem;
+}
+
+
+
+/* .welcomeMsg{
+    font-size: 1.5rem;
+    margin: 20px;
+    color: #135eff;
+    background: rgb(196, 196, 196);
+    border-radius: 5px;
+} */
+
+.updatedData{
+    margin: 10px;
+}
+
+.editButton{
+    background: aqua;
+    border: 2px solid black;
+}

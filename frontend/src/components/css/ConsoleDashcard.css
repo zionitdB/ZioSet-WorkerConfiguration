@@ -1,0 +1,48 @@
+
+.outerConsoleCard {
+  /* background: linear-gradient(to right, #6a11cb, #2575fc); */
+  border-radius: 10px;
+  padding: 4px;
+  overflow: hidden;
+  width: fit-content;
+}
+.consoleCard {
+  display: flex;
+  flex-direction: column;
+  /* background: #fff; */
+  border-radius: 10px;
+  padding: 12px;
+  width: fit-content;
+  border: 1px solid var(--grey-color);
+}
+.gradientText {
+  font-weight: bold;
+  /* background: linear-gradient(to right, #6a11cb, #2575fc); */
+  -webkit-background-clip: text;
+  /* color: transparent; */
+  color: var(--grey-color);
+}
+.space-card {
+  width: 300px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+}
+
+.progress-bar {
+  height: 20px;
+  background-color: #eee;
+  border-radius: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  /* background-color: rgb(45, 113, 222); */
+  background: linear-gradient(to right, #6a11cb, #2575fc);
+  width: 0;
+}
+
