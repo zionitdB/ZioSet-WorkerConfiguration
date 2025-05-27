@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://zensar.zioset.com/";
+const BASE_URL = "https://zensar.zioset.com/"; //Zensar
+//const BASE_URL = "https://ador.zioset.com/"; //Zensar
 
 const instance = axios.create({ baseURL: BASE_URL });
 
