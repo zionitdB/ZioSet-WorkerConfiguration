@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 @Table(name = "agent_update_systems")
 public class AgentUpdateSystemsEntity {
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "agent_update_id", nullable = false)
