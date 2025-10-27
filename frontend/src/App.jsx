@@ -38,6 +38,7 @@ import AgentUpdatesScreen from "./screens/AgentUpdates/AgentUpdatesScreen";
 import AgentUpdatesTargetSystemsScreen from "./screens/AgentUpdatesTargetSystems/AgentUpdatesTargetSystemsScreen";
 import WindowsInstalledSystemsScreen from "./screens/WindowsInstalledSystems/WindowsInstalledSystemsScreen";
 import MacInstalledSystemsScreen from "./screens/MacInstalledSystems/MacInstalledSystemsScreen";
+import UnRegisteredAssetsScreen from "./screens/UnRegisteredAssets/UnRegisteredAssetsScreen";
 
 function App() {
   // Light theme
@@ -315,6 +316,16 @@ function LocationAwareApp() {
                 element={
                   <AgentUIPrivateRoute>
                     <MacInstalledSystemsScreen/>
+                  </AgentUIPrivateRoute>
+                }
+              />
+
+              <Route
+                exact
+                path="/app/unregisteredAssets"
+                element={
+                  <AgentUIPrivateRoute>
+                    <UnRegisteredAssetsScreen />
                   </AgentUIPrivateRoute>
                 }
               />
