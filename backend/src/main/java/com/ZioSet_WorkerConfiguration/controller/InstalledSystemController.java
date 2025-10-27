@@ -11,6 +11,9 @@ import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,6 +44,23 @@ public class InstalledSystemController {
     public List<InstalledSystemEntity> getNotInstalledSystemsList(){
         return repository.findAll().stream().filter((e) -> !e.isInstalled()).collect(Collectors.toList());
     }
+
+    @GetMapping("/get-installed-systems-by-date-range")
+    public List<InstalledSystemEntity> getInstalledSystemsByDateRange(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+
+        // Parse as LocalDate
+        LocalDate startLocalDate = LocalDate.parse(startDate);
+        LocalDate endLocalDate = LocalDate.parse(endDate);
+
+        // Convert to LocalDateTime
+        LocalDateTime startDateTime = startLocalDate.atStartOfDay();
+        LocalDateTime endDateTime = endLocalDate.atTime(LocalTime.MAX);
+
+        return repository.findByInstalledAtBetweenAndInstalledIsTrue(startDateTime, endDateTime);
+    }
+
 
     @GetMapping("delete-by-system-serial-number")
     public ResponceObj deleteBySystemSerialNumber(String serialNumber, String deletedById){

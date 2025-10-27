@@ -193,6 +193,24 @@ function AgentUISidenav() {
             </ListItem>
           </Link>
 
+          <Link to="/app/unregisteredAssets">
+            <ListItem button className="">
+              <ListItemIcon>
+                <span className="navlink_icon2">
+                  <i className="">
+                    <span>
+                      <TerminalIcon />
+                    </span>
+                  </i>
+                </span>
+              </ListItemIcon>
+
+              <ListItemText
+                style={ListItemTextStyle}
+                primary="Unregistered Assets"
+              />
+            </ListItem>
+          </Link>
         </List>
       </div>
     </nav>

@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const BASE_URL = "http://20.219.1.165:8085/";
-//const BASE_URL = "https://zensar-agent.zioset.com/";
+//const BASE_URL = "http://localhost:8085/";
+const BASE_URL = "https://zensar-agent.zioset.com/";
 //const BASE_URL = "https://ador-agent.zionit.in/";
 
-export const LOGIN_BASE_URL = "http://20.219.1.165:8085/user/loginWithOutOTP";
-//export const LOGIN_BASE_URL = "https://zensar-agent.zioset.com/user/loginWithOutOTP";
+//export const LOGIN_BASE_URL = "http://localhost:8085/user/loginWithOutOTP";
+export const LOGIN_BASE_URL = "https://zensar-agent.zioset.com/user/loginWithOutOTP";
 // export const LOGIN_BASE_URL = "https://ador-agent.zionit.in/user/loginWithOutOTP";
 
 
