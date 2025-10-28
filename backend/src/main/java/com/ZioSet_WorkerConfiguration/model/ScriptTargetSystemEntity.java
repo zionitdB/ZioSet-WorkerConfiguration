@@ -23,9 +23,12 @@ public class ScriptTargetSystemEntity {
     @Column(name = "system_serial_number", nullable = false)
     private String systemSerialNumber;
 
-    @Column(length = 128)
+    @Column(name = "assigned_by", length = 128)
     private String assignedBy;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "assigned_at", nullable = false, updatable = false)
     private Instant assignedAt = Instant.now();
+
+    @Column(name = "last_run_at")
+    private Instant lastRunAt;
 }
