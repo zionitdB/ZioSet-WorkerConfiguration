@@ -25,16 +25,21 @@ public class ScriptExecutionResultEntity {
     @Column(name = "system_serial_number")
     private String systemSerialNumber;
 
+    @Column(name = "started_at")
     private Instant startedAt;
+    @Column(name = "finished_at")
     private Instant finishedAt;
+    @Column(name = "return_code")
     private Integer returnCode;
 
     @Lob
+    @Column(name = "stdout")
     private String stdout;
 
     @Lob
+    @Column(name = "stderr")
     private String stderr;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "received_at", nullable = false, updatable = false)
     private Instant receivedAt = Instant.now();
 }
