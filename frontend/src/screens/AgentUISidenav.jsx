@@ -9,6 +9,8 @@ import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import CategoryIcon from "@mui/icons-material/Category";
 import TerminalIcon from "@mui/icons-material/Terminal";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
 
 function AgentUISidenav() {
   const ListItemTextStyle = {
@@ -211,6 +213,64 @@ function AgentUISidenav() {
               />
             </ListItem>
           </Link>
+
+  <Link to="/app/scriptRunner">
+            <ListItem button className="">
+              <ListItemIcon>
+                <span className="navlink_icon2">
+                  <i className="">
+                    <span>
+                      <SmartToyIcon />
+                    </span>
+                  </i>
+                </span>
+              </ListItemIcon>
+
+              <ListItemText
+                style={ListItemTextStyle}
+                primary="Script Runner"
+              />
+            </ListItem>
+          </Link>
+
+          <Link to="/app/scriptList">
+            <ListItem button className="">
+              <ListItemIcon>
+                <span className="navlink_icon2">
+                  <i className="">
+                    <span>
+                      <SmartToyIcon />
+                    </span>
+                  </i>
+                </span>
+              </ListItemIcon>
+
+              <ListItemText
+                style={ListItemTextStyle}
+                primary="Script List"
+              />
+            </ListItem>
+          </Link>
+
+            <Link to="/app/executionResult">
+            <ListItem button className="">
+              <ListItemIcon>
+                <span className="navlink_icon2">
+                  <i className="">
+                    <span>
+                      <PersonSearchIcon />
+                    </span>
+                  </i>
+                </span>
+              </ListItemIcon>
+
+              <ListItemText
+                style={ListItemTextStyle}
+                primary="Execution Result"
+              />
+            </ListItem>
+          </Link>
+          
         </List>
       </div>
     </nav>
