@@ -39,6 +39,9 @@ import AgentUpdatesTargetSystemsScreen from "./screens/AgentUpdatesTargetSystems
 import WindowsInstalledSystemsScreen from "./screens/WindowsInstalledSystems/WindowsInstalledSystemsScreen";
 import MacInstalledSystemsScreen from "./screens/MacInstalledSystems/MacInstalledSystemsScreen";
 import UnRegisteredAssetsScreen from "./screens/UnRegisteredAssets/UnRegisteredAssetsScreen";
+import ScriptRunnerScreen from "./screens/ScriptRunner";
+import ExecutionResultScreen from "./screens/ExecutionResult";
+import AgentListScreen from "./screens/AgentList";
 
 function App() {
   // Light theme
@@ -329,6 +332,36 @@ function LocationAwareApp() {
                   </AgentUIPrivateRoute>
                 }
               />
+                 <Route
+                exact
+                path="/app/scriptRunner"
+                element={
+                  <AgentUIPrivateRoute>
+                    <ScriptRunnerScreen />
+                  </AgentUIPrivateRoute>
+                }
+              />
+              
+                <Route
+                exact
+                path="/app/executionResult"
+                element={
+                  <AgentUIPrivateRoute>
+                    <ExecutionResultScreen />
+                  </AgentUIPrivateRoute>
+                }
+              />
+              
+                <Route
+                exact
+                path="/app/scriptList"
+                element={
+                  <AgentUIPrivateRoute>
+                    <AgentListScreen />
+                  </AgentUIPrivateRoute>
+                }
+              />
+              
 
               <Route path="/ErrorPage" element={<ErrorPage />} />
               <Route path="/app/ErrorPage" element={<AgentUIErrorPage />} />

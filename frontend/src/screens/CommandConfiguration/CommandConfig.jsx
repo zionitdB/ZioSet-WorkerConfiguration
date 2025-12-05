@@ -19,6 +19,7 @@ import { ToastTypes, showToast } from "../../utils/toast";
 import ConfigurationForm from "./ConfigurationForm";
 import { Autocomplete, TextField, Button } from "@mui/material";
 
+
 function CommandConfig() {
   const [commandData, setCommandData] = useState([]);
   const [open, setOpen] = useState(false);
