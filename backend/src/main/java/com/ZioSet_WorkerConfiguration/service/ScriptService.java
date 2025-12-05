@@ -40,6 +40,20 @@ public class ScriptService {
             script.setScriptFile(file);
         }
 
+        // Scheduling fields
+        script.setScheduleType(dto.getScheduleType());
+        script.setStartDateTime(dto.getStartDateTime());
+        script.setRepeatEverySeconds(dto.getRepeatEverySeconds());
+
+        if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
+            script.setWeekDaysCsv(String.join(",", dto.getWeekDays()));
+        } else {
+            script.setWeekDaysCsv(null);
+        }
+
+        script.setMonthDay(dto.getMonthDay());
+        script.setTimeOfDay(dto.getTimeOfDay());
+
         script = scriptRepository.save(script);
 
         // Save dependencies
@@ -80,4 +94,14 @@ public class ScriptService {
     public void deleteScript(Long id) {
         scriptRepository.deleteById(id);
     }
+
+    @Transactional
+    public ScriptEntity setScriptActive(Long id, boolean active) {
+        ScriptEntity script = scriptRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Script not found"));
+        script.setIsActive(active);
+        return scriptRepository.save(script);
+    }
+
+
 }

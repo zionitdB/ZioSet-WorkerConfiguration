@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -56,6 +57,21 @@ public class ScriptEntity {
 
     @Column(nullable = false)
     private Boolean isActive = true;
+
+
+    @Enumerated(EnumType.STRING)
+    private ScheduleType scheduleType;
+
+    private Instant startDateTime;          // for all types
+
+    private Long repeatEverySeconds;    // for INTERVAL
+
+    @Column(name = "week_days")
+    private String weekDaysCsv;        // "MON,FRI"
+
+    private Integer monthDay;          // e.g., 2, 15, 31
+
+    private LocalTime timeOfDay;
 
     @PreUpdate
     public void setUpdatedAt() {
