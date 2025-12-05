@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/script-files")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class ScriptFileController {
 
     private final ScriptFileService scriptFileService;
@@ -16,6 +17,6 @@ public class ScriptFileController {
     @PostMapping("/upload")
     public ScriptFileEntity uploadFile(@RequestParam("file") MultipartFile file,
                                        @RequestParam("uploadedBy") String uploadedBy) throws Exception {
-        return scriptFileService.uploadFile(file, uploadedBy);
+        return scriptFileService.uploadFileLocally(file, uploadedBy);
     }
 }

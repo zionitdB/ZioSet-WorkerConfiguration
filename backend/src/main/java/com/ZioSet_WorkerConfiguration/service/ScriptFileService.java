@@ -46,4 +46,35 @@ public class ScriptFileService {
         entity.setUploadedBy(uploadedBy);
         return scriptFileRepository.save(entity);
     }
+
+    public ScriptFileEntity uploadFileLocally(MultipartFile file, String uploadedBy) throws Exception {
+        // Create local folder if not exists
+        String uploadDir = "uploads/";
+        java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+        if (!java.nio.file.Files.exists(uploadPath)) {
+            java.nio.file.Files.createDirectories(uploadPath);
+        }
+
+        // Unique filename
+        String storageKey = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        // Target file path
+        java.nio.file.Path filePath = uploadPath.resolve(storageKey);
+
+        // Save file to local directory
+        try (InputStream inputStream = file.getInputStream()) {
+            java.nio.file.Files.copy(inputStream, filePath);
+        }
+
+        // Save DB entity
+        ScriptFileEntity entity = new ScriptFileEntity();
+        entity.setFilename(file.getOriginalFilename());
+        entity.setStorageKey(storageKey);  // local storage key
+        entity.setContentType(file.getContentType());
+        entity.setSizeBytes(file.getSize());
+        entity.setUploadedBy(uploadedBy);
+
+        return scriptFileRepository.save(entity);
+    }
+
 }
