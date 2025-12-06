@@ -17,6 +17,11 @@ public class ScriptFileController {
     @PostMapping("/upload")
     public ScriptFileEntity uploadFile(@RequestParam("file") MultipartFile file,
                                        @RequestParam("uploadedBy") String uploadedBy) throws Exception {
-        return scriptFileService.uploadFileLocally(file, uploadedBy);
+        return scriptFileService.uploadFile(file, uploadedBy);
+    }
+
+    @GetMapping("/url/{storageKey}")
+    public String getFileUrl(@PathVariable String storageKey) {
+        return scriptFileService.getBlobUrl(storageKey);
     }
 }
