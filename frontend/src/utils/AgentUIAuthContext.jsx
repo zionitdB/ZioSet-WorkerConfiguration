@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 const AuthContext = createContext();
 
 const initialState = {
-  isAuthenticated: sessionStorage.getItem('agentUser') ? true : false,
+  isAuthenticated: sessionStorage.getItem('agentUser') ? true : true,
   agentUser: null,
   redirectCount: 0, // Initialize redirect count
 };
@@ -25,7 +25,7 @@ const authReducer = (state, action) => {
     case 'INCREMENT_REDIRECT_COUNT':
       return {
         ...state,
-        redirectCount: state.redirectCount + 1, // Increment redirect count
+        redirectCount: state.redirectCount + 1, 
       };
     default:
       return state;
