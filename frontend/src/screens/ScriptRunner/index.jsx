@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 import { useState, useEffect } from "react";
 import {
   Box,
@@ -228,7 +220,7 @@ const isoDate = startDateTime ? new Date(startDateTime).toISOString() : null;
       scriptType: scriptType, 
       scriptText: scriptCategory === "TEXT" ? commandText : "",
 
-      scriptFileId: scriptCategory === "FILE" ? scriptFileId : 0,
+      scriptFileId: scriptCategory === "FILE" ? scriptFileId : null,
 
      isActive: isActive,
 

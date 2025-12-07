@@ -35,3 +35,15 @@ build/
 
 ### others
 /uploads
+
+
+### ignore all compressed files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+*.tgz

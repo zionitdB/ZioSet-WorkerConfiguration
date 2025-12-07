@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const BASE_URL = "http://localhost:8085/";
- export const BASE_URL = "http://20.219.1.165:8085/";
+const BASE_URL = "http://localhost:8085/";
+//  export const BASE_URL = "http://20.219.1.165:8085/";
 
 // const BASE_URL = "https://zensar-agent.zioset.com/";
 //const BASE_URL = "https://ador-agent.zionit.in/";
@@ -78,6 +78,39 @@ export const postFileUpload = async (file, uploadedBy = "system") => {
   } catch (error) {
     console.error("Script file upload failed:", error);
     return { error };
+  }
+};
+
+export const patchAgentRequest = async (endPoint, data) => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await instance.patch(endPoint, data);
+    return { data: response.data, status: response.status };
+
+  } catch (error) {
+    return { error: error.message || "An error occurred" };
+  }
+};
+
+export const deleteAgentRequest = async (endPoint) => {
+  try {
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      instance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+
+    const response = await instance.delete(endPoint);
+
+    return { data: response.data, status: response.status };
+
+  } catch (error) {
+    return { error: error.message || "An error occurred" };
   }
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Table from "../../components/Table";
 import GlobleBtn from "../../components/GlobleBtn";
-import { getAgentRequest, postAgentRequest } from "../../services/agentUIServiceApi";
+import { getAgentRequest, deleteAgentRequest, patchAgentRequest } from "../../services/agentUIServiceApi";
 import { useNavigate } from "react-router";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -31,7 +31,7 @@ const AgentListScreen = () => {
   // Enable agent
   const enableAgent = async (id) => {
     try {
-      await postAgentRequest(`/api/scripts/${id}/enable`);
+      await patchAgentRequest(`/api/scripts/${id}/enable`);
       getAgents();
     } catch (error) {
       console.error("Error enabling agent:", error);
@@ -41,7 +41,7 @@ const AgentListScreen = () => {
   // Disable agent
   const disableAgent = async (id) => {
     try {
-      await postAgentRequest(`/api/scripts/${id}/disable`);
+      await patchAgentRequest(`/api/scripts/${id}/disable`);
       getAgents();
     } catch (error) {
       console.error("Error disabling agent:", error);
@@ -51,7 +51,7 @@ const AgentListScreen = () => {
   // Delete agent
   const deleteAgent = async (id) => {
     try {
-      await postAgentRequest(`/api/scripts/${id}`);
+      await deleteAgentRequest(`/api/scripts/${id}`);
       getAgents();
     } catch (error) {
       console.error("Error deleting agent:", error);
