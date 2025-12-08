@@ -49,6 +49,9 @@ public class ScriptEntity {
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScriptExecutionResultEntity> executionResults = new HashSet<>();
 
+    @Column(name = "target_platforms")
+    private String targetPlatformsCsv;
+
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
