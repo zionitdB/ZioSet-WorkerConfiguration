@@ -20,6 +20,8 @@ import {
   useTheme,
   Radio,
   RadioGroup,
+  Tabs,
+  Tab,
 } from "@mui/material";
 
 import DataTable from "../../components/Table";
@@ -68,31 +70,62 @@ export default function ScriptRunnerStepper() {
   const [selectedWeekDays, setSelectedWeekDays] = useState([]);
   const [selectedMonthDay, setSelectedMonthDay] = useState(null); 
 
-  const [systemsList, setSystemsList] = useState([]);
-  const [selectedSystems, setSelectedSystems] = useState([]);
+  // const [systemsList, setSystemsList] = useState([]);
+//   const [selectedSystems, setSelectedSystems] = useState([]);
+// console.log("selectedSystems",selectedSystems);
+
+
+const [selectedWindowsSystems, setSelectedWindowsSystems] = useState([]);
+const [selectedMacSystems, setSelectedMacSystems] = useState([]);
+const [selectedLinuxSystems, setSelectedLinuxSystems] = useState([]);
 
   const [isActive, setIsActive] = useState(true); 
 
 const [repeatType, setRepeatType] = useState("seconds"); 
+const [selectedPlatforms, setSelectedPlatforms] = useState([]);
 
+  const [windowsSystems, setWindowsSystems] = useState([]);
+  const [macSystems, setMacSystems] = useState([]);
+  const [linuxSystems, setLinuxSystems] = useState([]);
+
+  const [activePlatformTab, setActivePlatformTab] = useState(0);
+  const [platformList, setPlatformList] = useState([]);
 
   const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const monthDays = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  const systemsColumns = [
-    {
-      field: "SrNo",
-      headerName: "SrNo",
-      hideable: false,
-      renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1,
-    },
+  // const systemsColumns = [
+  //   {
+  //     field: "SrNo",
+  //     headerName: "SrNo",
+  //     hideable: false,
+  //     renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1,
+  //   },
 
-    { field: "serialNo", headerName: "Serial Number", width: 200 },
-    { field: "installedAt", headerName: "Installed At", width: 200 },
-    { field: "employeeName", headerName: "Employee Name", width: 200 },
-    { field: "emailId", headerName: "Email ID", width: 200 },
-    { field: "workerAssingned", headerName: "Worker Assigned", width: 200 },
-  ];
+  //   { field: "serialNo", headerName: "Serial Number", width: 200 },
+  //   { field: "installedAt", headerName: "Installed At", width: 200 },
+  //   { field: "employeeName", headerName: "Employee Name", width: 200 },
+  //   { field: "emailId", headerName: "Email ID", width: 200 },
+  //   { field: "workerAssingned", headerName: "Worker Assigned", width: 200 },
+  // ];
+
+
+  const platformColumns = [
+  {
+    field: "SrNo",
+    headerName: "Sr No",
+    hideable: false,
+    renderCell: (params) => params.api.getAllRowIds().indexOf(params.id) + 1,
+  },
+
+  { field: "serialNo", headerName: "System Serial No", width: 200 },
+  { field: "installed", headerName: "Installed", width: 150,
+    renderCell: (params) => (params.value ? "Yes" : "No"),
+  },
+  { field: "installedAt", headerName: "Installed At", width: 220 },
+  { field: "installReqAt", headerName: "Installation Requested At", width: 250 },
+  // { field: "installationResponse", headerName: "Installation Response", width: 250 },
+];
 
 
   const loadScriptTypes = async () => {
@@ -102,23 +135,24 @@ const [repeatType, setRepeatType] = useState("seconds");
 
   useEffect(() => {
     loadScriptTypes();
-    fetchSystemsList();
+    // fetchSystemsList();
+     loadPlatforms();
   }, []);
 
   // ---------------------------
   // FETCH TARGET SYSTEMS
   // ---------------------------
-  const fetchSystemsList = async () => {
-    const { data } = await getAgentRequest("installed-systems/get-installed-systems-list");
+  // const fetchSystemsList = async () => {
+  //   const { data } = await getAgentRequest("installed-systems/get-installed-systems-list");
 
-    const formatted = data?.map((item) => ({
-      id: item.systemSerialNo,
-      serialNo: item.systemSerialNo,
-      installedAt: item.installedAt,
-    }));
+  //   const formatted = data?.map((item) => ({
+  //     id: item.systemSerialNo,
+  //     serialNo: item.systemSerialNo,
+  //     installedAt: item.installedAt,
+  //   }));
 
-    setSystemsList(formatted);
-  };
+  //   setSystemsList(formatted);
+  // };
 
   // ---------------------------
   // SCRIPT TYPE CHANGE HANDLER
@@ -207,6 +241,93 @@ console.log("idid",id);
 const isoDate = startDateTime ? new Date(startDateTime).toISOString() : null;
 
 
+  const loadPlatforms = async () => {
+    const { data } = await getAgentRequest("/api/scripts/platforms");
+    setPlatformList(data);
+  };
+
+  // -------- 3 TABLE SYSTEM LIST LOADERS -------- //
+
+  const loadWindowsSystems = async () => {
+    const { data } = await getAgentRequest("/installed-systems/get-all-list");
+        const formatted = data?.map((item) => ({
+      id: item.systemSerialNo,
+      serialNo: item.systemSerialNo,
+      installedAt: item.installedAt,
+      installReqAt:item.installReqAt,
+    }));
+
+    setWindowsSystems(formatted);
+  };
+
+  const loadMacSystems = async () => {
+    const { data } = await getAgentRequest("/mac-installed-systems/get-all-list");
+        const formatted = data?.map((item) => ({
+      id: item.systemSerialNo,
+      serialNo: item.systemSerialNo,
+      installedAt: item.installedAt,
+            installReqAt:item.installReqAt,
+    }));
+
+    setMacSystems(formatted);
+  };
+
+  const loadLinuxSystems = async () => {
+    const { data } = await getAgentRequest("/installed-systems/get-all-list");
+        const formatted = data?.map((item) => ({
+      id: item.systemSerialNo,
+      serialNo: item.systemSerialNo,
+      installedAt: item.installedAt,
+            installReqAt:item.installReqAt,
+    }));
+
+    setLinuxSystems(formatted);
+  };
+
+  // Run fetch when platform selection changes
+  useEffect(() => {
+    if (selectedPlatforms.includes("ANY")) {
+      loadWindowsSystems();
+      loadMacSystems();
+      loadLinuxSystems();
+      return;
+    }
+
+    if (selectedPlatforms.some(x => x.startsWith("WINDOWS"))) loadWindowsSystems();
+    if (selectedPlatforms.some(x => x.startsWith("MACOS"))) loadMacSystems();
+    if (selectedPlatforms.some(x => x.startsWith("LINUX"))) loadLinuxSystems();
+  }, [selectedPlatforms]);
+
+  const filteredSystems = () => {
+    if (selectedPlatforms.includes("ANY")) {
+      return {
+        windows: windowsSystems,
+        mac: macSystems,
+        linux: linuxSystems,
+      };
+    }
+
+    return {
+      windows: selectedPlatforms.some((p) => p.startsWith("WINDOWS"))
+        ? windowsSystems
+        : [],
+      mac: selectedPlatforms.some((p) => p.startsWith("MACOS"))
+        ? macSystems
+        : [],
+      linux: selectedPlatforms.some((p) => p.startsWith("LINUX"))
+        ? linuxSystems
+        : [],
+    };
+  };
+
+const allSelectedSystems = [
+  ...selectedWindowsSystems,
+  ...selectedMacSystems,
+  ...selectedLinuxSystems,
+];
+
+console.log("allSelectedSystems",allSelectedSystems);
+
   const handleSubmit = async () => {
     let repeatSeconds = 0;
 
@@ -225,8 +346,8 @@ const isoDate = startDateTime ? new Date(startDateTime).toISOString() : null;
      isActive: isActive,
 
       dependencyFileIds: dependencyFileIds,
-
-      targetSystemSerials: selectedSystems,
+   targetPlatforms: selectedPlatforms,
+      targetSystemSerials: allSelectedSystems,
 
       scheduleType: scheduleType.toUpperCase(),
 
@@ -255,47 +376,16 @@ const isoDate = startDateTime ? new Date(startDateTime).toISOString() : null;
     return formatted;
   };
 
+  const systems = filteredSystems();
 
 
+const platformTabs = [
+  { key: "windows", label: "Windows Systems", data: systems.windows,selectedSetter:selectedWindowsSystems, setter: setSelectedWindowsSystems },
+  { key: "mac", label: "macOS Systems", data: systems.mac,selectedSetter:selectedMacSystems, setter: setSelectedMacSystems },
+  { key: "linux", label: "Linux Systems", data: systems.linux, selectedSetter:selectedLinuxSystems,setter: setSelectedLinuxSystems },
+].filter((p) => p.data.length > 0); // Only include tabs with data
 
-  // File Uploader Component (reusable)
-const FileUploader = ({ files, handleChange, label }) => (
-  <Box sx={{ mb: 2 }}>
-    <Box
-      sx={{
-        border: `2px dashed ${theme.palette.primary.main}`,
-        borderRadius: 2,
-        p: 3,
-        textAlign: "center",
-        color: theme.palette.text.primary,
-        cursor: "pointer",
-        "&:hover": {
-          backgroundColor: theme.palette.action.hover,
-          borderColor: theme.palette.primary.dark,
-        },
-      }}
-    >
-      <Typography variant="body1">{label}</Typography>
-      <input
-        type="file"
-        multiple
-        hidden
-        onChange={handleChange}
-        style={{ display: "none" }}
-        id={`${label}-input`}
-      />
-      <label htmlFor={`${label}-input`} style={{ width: "100%", cursor: "pointer" }}></label>
-    </Box>
 
-    {files.length > 0 && (
-      <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-        {files.map((file, i) => (
-          <Chip key={i} label={file.name} color="primary" />
-        ))}
-      </Box>
-    )}
-  </Box>
-);
 
 // Updated Review Step
 const renderReviewStep = () => (
@@ -648,21 +738,81 @@ const renderReviewStep = () => (
           </Grid>
         );
 
-      case 3:
-        return (
-          <Box>
-            <Typography sx={{ mb: 2 }}>Select Target Systems</Typography>
+      // case 3:
+      //   return (
+      //     <Box>
+      //       <Typography sx={{ mb: 2 }}>Select Target Systems</Typography>
 
-             <DataTable
-                    columns={systemsColumns}
-                    data={systemsList ?? []}
-                    tableKey={"SystemsList"}
-                    checkboxSelection
-                    onRowSelectionModelChange={setSelectedSystems}
-                    rowsSelectionModel={selectedSystems}
-                  />
-          </Box>
-        );
+       
+
+                  
+      //     </Box>
+      //   );
+
+        case 3:
+  return (
+    <Box>
+      <Typography sx={{ mb: 2, fontWeight: 600 }}>Select Target Platforms</Typography>
+
+      {/* <DataTable
+        columns={systemsColumns}
+        data={systemsList ?? []}
+        tableKey={"SystemsList"}
+        checkboxSelection
+        onRowSelectionModelChange={setSelectedSystems}
+        rowsSelectionModel={selectedSystems}
+      /> */}
+
+     <FormControl fullWidth sx={{ mt: 4, mb: 3 }}>
+
+        <InputLabel>Select Platforms</InputLabel>
+        <Select
+          multiple
+          value={selectedPlatforms}
+          onChange={(e) => setSelectedPlatforms(e.target.value)}
+          renderValue={(selected) =>
+            selected
+              .map((v) => platformList.find((p) => p.enumName === v)?.displayName)
+              .join(", ")
+          }
+        >
+          {platformList.map((p) => (
+            <MenuItem key={p.enumName} value={p.enumName}>
+              <Checkbox checked={selectedPlatforms.includes(p.enumName)} />
+              {p.displayName}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+    
+    <Tabs
+  value={activePlatformTab}
+  onChange={(e, v) => setActivePlatformTab(v)}
+>
+  {platformTabs.map((p, idx) => (
+    <Tab key={p.key} label={p.label} />
+  ))}
+</Tabs>
+
+{platformTabs.map((p, idx) => (
+  activePlatformTab === idx && (
+    <DataTable
+      key={p.key}
+      columns={platformColumns}
+      data={p.data}
+      tableKey={p.key + "Table"}
+      checkboxSelection
+      onRowSelectionModelChange={p.setter}
+      rowsSelectionModel={p.selectedSetter}
+    />
+  )
+))}
+
+
+    </Box>
+  );
+
    case 4:
       return renderReviewStep();
 

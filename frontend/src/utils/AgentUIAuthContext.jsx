@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 const AuthContext = createContext();
 
 const initialState = {
-  isAuthenticated: sessionStorage.getItem('agentUser') ? true : true,
+  isAuthenticated: sessionStorage.getItem('agentUser') ? true : false,
   agentUser: null,
   redirectCount: 0, // Initialize redirect count
 };
