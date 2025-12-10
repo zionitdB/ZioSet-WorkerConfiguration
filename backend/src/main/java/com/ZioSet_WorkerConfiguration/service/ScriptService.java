@@ -1,6 +1,7 @@
 package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
+import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.repo.ScriptDependencyRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptFileRepository;
@@ -11,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,20 @@ public class ScriptService {
             ScriptFileEntity file = scriptFileRepository.findById(dto.getScriptFileId())
                     .orElseThrow(() -> new RuntimeException("Script file not found"));
             script.setScriptFile(file);
+        }
+
+        // Validate platform enums
+        if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
+            for (ScriptTargetPlatform p : dto.getTargetPlatforms()) {
+                if (p == null) throw new RuntimeException("Invalid platform");
+            }
+            script.setTargetPlatformsCsv(
+                    dto.getTargetPlatforms().stream()
+                            .map(Enum::name)
+                            .collect(Collectors.joining(","))
+            );
+        } else {
+            script.setTargetPlatformsCsv(null);
         }
 
         // Scheduling fields
@@ -102,6 +119,5 @@ public class ScriptService {
         script.setIsActive(active);
         return scriptRepository.save(script);
     }
-
 
 }

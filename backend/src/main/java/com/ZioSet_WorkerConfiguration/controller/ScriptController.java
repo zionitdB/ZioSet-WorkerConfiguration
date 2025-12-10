@@ -2,6 +2,7 @@ package com.ZioSet_WorkerConfiguration.controller;
 
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
+import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptType;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @RestController
@@ -55,6 +57,16 @@ public class ScriptController {
     public List<ScriptTypeResponseDTO> getScriptTypes() {
         return Stream.of(ScriptType.values())
                 .map(ScriptTypeMapper::map)
+                .toList();
+    }
+
+    @GetMapping("/platforms")
+    public List<Map<String, String>> getScriptPlatformsTypes() {
+        return Stream.of(ScriptTargetPlatform.values())
+                .map(p -> Map.of(
+                        "enumName", p.name(),
+                        "displayName", p.getDisplayName()
+                ))
                 .toList();
     }
 

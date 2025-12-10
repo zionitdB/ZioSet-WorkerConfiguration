@@ -49,7 +49,7 @@ public class ScriptEntity {
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScriptExecutionResultEntity> executionResults = new HashSet<>();
 
-    @Column(name = "target_platforms")
+    @Column(name = "target_platforms_csv")
     private String targetPlatformsCsv;
 
     @Column(nullable = false, updatable = false)

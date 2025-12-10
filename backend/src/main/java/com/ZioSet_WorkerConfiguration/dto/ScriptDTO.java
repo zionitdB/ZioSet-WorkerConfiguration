@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.dto;
 
+import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.ScheduleType;
 import com.ZioSet_WorkerConfiguration.model.ScriptType;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class ScriptDTO {
 
     private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;
+    private List<ScriptTargetPlatform> targetPlatforms;
 
     // Schedule fields
     private ScheduleType scheduleType;
