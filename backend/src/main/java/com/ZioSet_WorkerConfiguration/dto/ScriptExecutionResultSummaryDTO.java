@@ -14,4 +14,6 @@ public class ScriptExecutionResultSummaryDTO {
     private Instant startedAt;
     private Instant finishedAt;
     private Integer returnCode;
+    private String stdout;
+    private String stderr;
 }

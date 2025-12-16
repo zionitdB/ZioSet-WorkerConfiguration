@@ -38,6 +38,8 @@ public class ScriptExecutionResultService {
         dto.setStartedAt(e.getStartedAt());
         dto.setFinishedAt(e.getFinishedAt());
         dto.setReturnCode(e.getReturnCode());
+        dto.setStdout(e.getStdout());
+        dto.setStderr(e.getStderr());
         return dto;
     }
 }

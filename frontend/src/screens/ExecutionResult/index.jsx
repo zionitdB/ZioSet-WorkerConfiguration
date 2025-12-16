@@ -100,8 +100,8 @@ const columns = [
   { field: "executionStartDateTime", headerName: "Execution Start", width: 200 },
   { field: "executionFinishDateTime", headerName: "Finish Date & Time", width: 200 },
   { field: "resultCode", headerName: "Result Code", width: 150 },
-  { field: "successOutput", headerName: "Success Output", width: 250 },
-  { field: "errorOutput", headerName: "Error Output", width: 250 },
+  { field: "stdout", headerName: "Success Output", width: 250 },
+  { field: "stderr", headerName: "Error Output", width: 250 },
 ];
 
   const theme = useTheme();
