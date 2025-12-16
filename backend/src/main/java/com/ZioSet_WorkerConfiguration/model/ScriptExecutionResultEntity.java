@@ -33,11 +33,11 @@ public class ScriptExecutionResultEntity {
     private Integer returnCode;
 
     @Lob
-    @Column(name = "stdout")
+    @Column(name = "stdout", columnDefinition = "TEXT")
     private String stdout;
 
     @Lob
-    @Column(name = "stderr")
+    @Column(name = "stderr", columnDefinition = "TEXT")
     private String stderr;
 
     @Column(name = "received_at", nullable = false, updatable = false)

@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class ScriptEntity {
     // Many-to-one relationship with ScriptFile (nullable if inline)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "script_file_id")
+    @JsonIgnore
     private ScriptFileEntity scriptFile; // For file-based scripts
 
     // One-to-many relationship with dependencies

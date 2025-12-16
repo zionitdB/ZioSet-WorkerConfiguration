@@ -19,7 +19,7 @@ public class ScriptExecutionResultService {
             int page,
             int size
     ) {
-        ++page; // Adjust for 1-based indexing
+        --page;
         Pageable pageable = PageRequest.of(page, size, Sort.by("finishedAt").descending());
 
         Page<ScriptExecutionResultEntity> data =

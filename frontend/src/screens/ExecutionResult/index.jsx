@@ -19,17 +19,30 @@ const ExecutionResultScreen = () => {
 const dataCount = installedSystemList?.totalElements||0;
 const totalPages =  installedSystemList?.totalPages||1;
 
-  const getInstalledSystemsList = async () => {
-    setLoading(true);
-    try {
-      const { data } = await getAgentRequest(`api/execution-results?serialNumber=${srNumber}&finishedAfter=${startDate}:47.508Z&finishedBefore=${endDate}:47.508Z&page=${currentPage}&size=${pageSize}`);
-      setInstalledSystemList(data);
-    } catch (error) {
-      console.error("Error fetching installed systems:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const getInstalledSystemsList = async () => {
+  setLoading(true);
+
+  try {
+    const params = new URLSearchParams();
+
+    if (srNumber) params.append("serialNumber", srNumber);
+    if (startDate) params.append("finishedAfter", `${startDate}:47.508Z`);
+    if (endDate) params.append("finishedBefore", `${endDate}:47.508Z`);
+    params.append("page", currentPage);
+    params.append("size", pageSize);
+
+    const { data } = await getAgentRequest(
+      `api/execution-results?${params.toString()}`
+    );
+
+    setInstalledSystemList(data);
+  } catch (error) {
+    console.error("Error fetching installed systems:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
   
 
   const getInstalledSystemsByDateRange = async () => {

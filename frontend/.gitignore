@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ignore compressed files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.gz
