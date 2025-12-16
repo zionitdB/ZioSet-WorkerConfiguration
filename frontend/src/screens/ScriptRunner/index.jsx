@@ -328,42 +328,56 @@ const allSelectedSystems = [
 
 console.log("allSelectedSystems",allSelectedSystems);
 
-  const handleSubmit = async () => {
-    let repeatSeconds = 0;
 
-    if (scheduleType === "every-sec") repeatSeconds = Number(repeatIntervalSeconds);
-    if (scheduleType === "every-min") repeatSeconds = Number(repeatIntervalSeconds) * 60;
-    if (scheduleType === "every-hr") repeatSeconds = Number(repeatIntervalSeconds) * 3600;
 
-    const payload = {
-      name: scriptName,
-      description: scriptDescription,
-      scriptType: scriptType, 
-      scriptText: scriptCategory === "TEXT" ? commandText : "",
+const handleSubmit = async () => {
+  let repeatSeconds = 0;
 
-      scriptFileId: scriptCategory === "FILE" ? scriptFileId : null,
+  // FIXED repeat interval logic
+  if (scheduleType === "REPEAT_EVERY") {
+    if (repeatType === "seconds") {
+      repeatSeconds = Number(repeatIntervalSeconds);
+    }
+    if (repeatType === "minutes") {
+      repeatSeconds = Number(repeatIntervalSeconds) * 60;
+    }
+    if (repeatType === "hours") {
+      repeatSeconds = Number(repeatIntervalSeconds) * 3600;
+    }
+    if (repeatType === "daily") {
+      repeatSeconds = 24 * 3600; // 86400 seconds
+    }
+  }
 
-     isActive: isActive,
+  const payload = {
+    name: scriptName,
+    description: scriptDescription,
+    scriptType: scriptType,
+    scriptText: scriptCategory === "TEXT" ? commandText : "",
 
-      dependencyFileIds: dependencyFileIds,
-   targetPlatforms: selectedPlatforms,
-      targetSystemSerials: allSelectedSystems,
+    scriptFileId: scriptCategory === "FILE" ? scriptFileId : null,
 
-      scheduleType: scheduleType.toUpperCase(),
+    isActive: isActive,
 
-      startDateTime:isoDate,
-      repeatEverySeconds: repeatSeconds,
+    dependencyFileIds: dependencyFileIds,
+    targetPlatforms: selectedPlatforms,
+    targetSystemSerials: allSelectedSystems,
 
-      weekDays: selectedWeekDays,
-      monthDay: selectedMonthDay || 0,
-    };
+    scheduleType: scheduleType.toUpperCase(),
 
-    console.log("FINAL PAYLOAD:", payload);
+    startDateTime: isoDate,
+    repeatEverySeconds: repeatSeconds,
 
-    await postAgentRequest("/api/scripts", payload);
-
-    alert("Script created successfully!");
+    weekDays: selectedWeekDays,
+    monthDay: selectedMonthDay || 0,
   };
+
+  console.log("FINAL PAYLOAD:", payload);
+
+  await postAgentRequest("/api/scripts", payload);
+
+  alert("Script created successfully!");
+};
 
   const formatForDateTimeLocal = (isoString) => {
     if (!isoString) return "";
