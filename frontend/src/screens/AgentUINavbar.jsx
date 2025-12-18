@@ -8,6 +8,8 @@ import logo from "../img/logo.png";
 import Tooltip from "@mui/material/Tooltip";
 import LogoutIcon from "@mui/icons-material/Logout";
 
+import { postAgentRequest } from "../services/agentUIServiceApi";
+
 function AgentUINavbar() {
   const navigate = useNavigate();
   const { isDarkMode, toggleDarkMode } = useContext(DarkModeContext);
@@ -84,9 +86,14 @@ function AgentUINavbar() {
             <LogoutIcon
               color="warning"
               fontSize="24px"
-              onClick={() => {
+              onClick={async () => {
+                try {
+                  await postAgentRequest("/api/auth/signout", {});
+                } catch (error) {
+                  console.error("Logout failed", error);
+                }
                 localStorage.removeItem("agentUser");
-                sessionStorage.clear("agentUser");
+                sessionStorage.clear();
                 navigate("/app/login");
               }}
             />
