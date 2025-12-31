@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -118,6 +119,12 @@ public class ScriptService {
                 .orElseThrow(() -> new RuntimeException("Script not found"));
         script.setIsActive(active);
         return scriptRepository.save(script);
+    }
+
+    public Set<ScriptTargetSystemEntity> getScriptTargetSystems(Long id) {
+        return scriptRepository.findById(id)
+                .map(ScriptEntity::getTargets)
+                .orElseThrow(() -> new RuntimeException("Script not found"));
     }
 
 }
