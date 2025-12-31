@@ -63,7 +63,7 @@ public class MACInstalledSystemController {
         return status;
     }
 
-    @PostMapping("delete-multiple-using-excel")
+    @PostMapping("/delete-multiple-using-excel")
     public ResponceObj deleteMultipleUsingExcel(@RequestParam("file") MultipartFile file, @RequestParam("deletedById") String deletedById){
         ResponceObj status = new ResponceObj();
         try{
@@ -90,7 +90,7 @@ public class MACInstalledSystemController {
     }
 
 
-    @PostMapping("delete-multiple-serial_numbers")
+    @PostMapping("/delete-multiple-serial_numbers")
     public ResponceObj deleteMultipleSerialNumbers(@RequestBody MultipleSerialNumberDto serialNumbers){
         ResponceObj status = new ResponceObj();
         try{
