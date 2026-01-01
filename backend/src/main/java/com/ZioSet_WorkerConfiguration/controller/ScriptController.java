@@ -70,4 +70,9 @@ public class ScriptController {
                 .toList();
     }
 
+    @GetMapping("/{id}/targetSystems")
+    public ScriptEntity getTargetSystemsById(@PathVariable Long id) {
+        return scriptService.getScript(id).orElseThrow(() -> new RuntimeException("Script not found"));
+    }
+
 }

@@ -92,7 +92,7 @@ public class SecurityConfig {
                         .requestMatchers("/installed-systems/get-all-list").permitAll()
                         .requestMatchers("/mac-installed-systems/get-all-list").permitAll()
 
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         http.authenticationProvider(authenticationProvider());

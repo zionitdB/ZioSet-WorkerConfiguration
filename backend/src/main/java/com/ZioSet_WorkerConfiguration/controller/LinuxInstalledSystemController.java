@@ -1,12 +1,13 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.MultipleSerialNumberDto;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.LinuxInstalledSystemEntity;
+import com.ZioSet_WorkerConfiguration.model.MACInstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.repo.LinuxInstalledSystemRepository;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,4 +60,56 @@ public class LinuxInstalledSystemController {
 
         return status;
     }
+
+    @PostMapping("/delete-multiple-using-excel")
+    public ResponceObj deleteMultipleUsingExcel(@RequestParam("file") MultipartFile file, @RequestParam("deletedById") String deletedById){
+        ResponceObj status = new ResponceObj();
+        try{
+            SerialNumberExcelParser serialNumberExcelParser = new SerialNumberExcelParser(file);
+            List<String> serialNumbers = serialNumberExcelParser.getSystemSerialNumbersList();
+
+            List<LinuxInstalledSystemEntity> systemEntities = repository.findAllBySystemSerialNoIn(serialNumbers);
+            if (systemEntities.isEmpty()){
+                status.setCode(400);
+                status.setMessage("No linux systems found");
+            }else{
+                repository.deleteAll(systemEntities);
+                status.setCode(200);
+                status.setMessage("Deleted successfully");
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+            status.setCode(500);
+            status.setMessage("Error while deleting agent update");
+        }
+
+        return status;
+    }
+
+
+    @PostMapping("/delete-multiple-serial_numbers")
+    public ResponceObj deleteMultipleSerialNumbers(@RequestBody MultipleSerialNumberDto serialNumbers){
+        ResponceObj status = new ResponceObj();
+        try{
+            List<LinuxInstalledSystemEntity> systemEntities = repository.findAllBySystemSerialNoIn(serialNumbers.getSerialNumbers());
+            if (systemEntities.isEmpty()){
+                status.setCode(400);
+                status.setMessage("No linux systems found");
+            }else{
+                repository.deleteAll(systemEntities);
+                status.setCode(200);
+                status.setMessage("Deleted successfully");
+
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+            status.setCode(500);
+            status.setMessage("Error while deleting agent update");
+        }
+
+        return status;
+    }
+
 }
