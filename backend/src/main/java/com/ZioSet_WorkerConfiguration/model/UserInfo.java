@@ -3,6 +3,8 @@ package com.ZioSet_WorkerConfiguration.model;
 
 import java.util.Date;
 import java.util.List;
+
+import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,7 +46,12 @@ public class UserInfo {
   @Column(name = "upd_datetime")
   private Date updDatetime;
 
-public int getUserId() {
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+
+    public int getUserId() {
 	return userId;
 }
 
