@@ -47,3 +47,8 @@ build/
 *.tar
 *.zip
 *.tgz
+
+
+### ignore static resource files where react js build placed
+/src/main/resources/static
+
