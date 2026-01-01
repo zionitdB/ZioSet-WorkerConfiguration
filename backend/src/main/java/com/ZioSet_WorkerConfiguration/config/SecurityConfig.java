@@ -74,12 +74,6 @@ public class SecurityConfig {
                                 "/index.html",
                                 "/vite.svg",
                                 "/assets/**",
-                                "/**/*.js",
-                                "/**/*.css",
-                                "/**/*.png",
-                                "/**/*.jpg",
-                                "/**/*.svg",
-                                "/**/*.ico",
                                 "/manifest.json"
                         ).permitAll()
 
@@ -107,13 +101,7 @@ public class SecurityConfig {
         return web -> web.ignoring().requestMatchers(
                 "/assets/**",
                 "/index.html",
-                "/vite.svg",
-                "/**/*.js",
-                "/**/*.css",
-                "/**/*.png",
-                "/**/*.jpg",
-                "/**/*.svg",
-                "/**/*.ico"
+                "/vite.svg"
         );
     }
 
