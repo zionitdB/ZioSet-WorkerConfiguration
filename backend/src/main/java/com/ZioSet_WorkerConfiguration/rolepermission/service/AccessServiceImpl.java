@@ -5,10 +5,7 @@ import com.ZioSet_WorkerConfiguration.rolepermission.model.PermissionAction;
 import com.ZioSet_WorkerConfiguration.rolepermission.model.Permissions;
 import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import com.ZioSet_WorkerConfiguration.rolepermission.model.RolePermission;
-import com.ZioSet_WorkerConfiguration.rolepermission.repository.PermissionActionRepo;
-import com.ZioSet_WorkerConfiguration.rolepermission.repository.PermissionsRepo;
-import com.ZioSet_WorkerConfiguration.rolepermission.repository.RolePermissionRepo;
-import com.ZioSet_WorkerConfiguration.rolepermission.repository.RoleRepo;
+import com.ZioSet_WorkerConfiguration.rolepermission.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AccessServiceImpl implements AccessService {
@@ -33,12 +31,25 @@ public class AccessServiceImpl implements AccessService {
     @Autowired
     PermissionActionRepo permissionActionRepo;
 
+    @Autowired
+    RolePermissionActionRepo rolePermissionActionRepo;
+
     public Optional<Permissions> getPermissionsByName(String permissionsName) {
         return this.permissionsRepo.getPermissionsByName(permissionsName);
     }
 
     public void addPermission(Permissions permissions) {
         this.permissionsRepo.save(permissions);
+    }
+
+    @Override
+    public Optional<Permissions> getPermissionsByNameAndCategoryAndModuleId(String param1, String param2, Integer moduleId) {
+        return this.permissionsRepo.getPermissionsByNameAndCategoryAndModuleId(param1, param2, moduleId);
+    }
+
+    @Override
+    public List<Permissions> getPermissionsByModuleNameAndCategory(String paramString1, String paramString2) {
+        return this.permissionsRepo.getPermissionsByCategoryAndModuleName(paramString1, paramString2);
     }
 
     public List<Permissions> getPermissionsByLimit(int page_no, int item_per_page) {
@@ -143,6 +154,26 @@ public class AccessServiceImpl implements AccessService {
 
     public List<PermissionAction> getPermissionActionBYPermissionId(int permissionsId) {
         return this.permissionActionRepo.getPermissionActionBYPermissionId(permissionsId);
+    }
+
+    @Override
+    public List<Permissions> findAllActivePermissions() {
+        return this.permissionsRepo.findAllActivePermissions();
+    }
+
+    @Override
+    public List<PermissionAction> findByPermissionsId(int permissionsId) {
+        return this.permissionActionRepo.findByPermissions_PermissionsId(permissionsId);
+    }
+
+    @Override
+    public Set<Integer> findAssignedActionIdsByRole(int roleId) {
+        return this.rolePermissionActionRepo.findAssignedActionIdsByRole(roleId);
+    }
+
+    @Override
+    public Set<Integer> findPermissionIdsByRole(int roleId) {
+        return this.rolPermissionsRepo.findPermissionIdsByRole(roleId);
     }
 
     public List<Role> getAllRoles() {

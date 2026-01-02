@@ -1,18 +1,20 @@
 package com.ZioSet_WorkerConfiguration.rolepermission.service;
 
 
-import com.ZioSet_WorkerConfiguration.rolepermission.model.PermissionAction;
-import com.ZioSet_WorkerConfiguration.rolepermission.model.Permissions;
-import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
-import com.ZioSet_WorkerConfiguration.rolepermission.model.RolePermission;
+import com.ZioSet_WorkerConfiguration.rolepermission.model.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface AccessService {
         Optional<Permissions> getPermissionsByName(String paramString);
 
         void addPermission(Permissions paramPermissions);
+
+        Optional<Permissions> getPermissionsByNameAndCategoryAndModuleId(String paramString1, String paramString2, Integer moduleId);
+
+        List<Permissions> getPermissionsByModuleNameAndCategory(String paramString1, String paramString2);
 
         List<Permissions> getPermissionsByLimit(int paramInt1, int paramInt2);
 
@@ -55,6 +57,15 @@ public interface AccessService {
         List<Permissions> getPermissionsByCategory(String paramString);
 
         List<PermissionAction> getPermissionActionBYPermissionId(int paramInt);
+
+        List<Permissions> findAllActivePermissions();
+
+        List<PermissionAction> findByPermissionsId(int permissionsId);
+
+        Set<Integer> findAssignedActionIdsByRole(int roleId);
+
+        Set<Integer> findPermissionIdsByRole(int roleId);
+
 
         List<Role> getAllRoles();
 

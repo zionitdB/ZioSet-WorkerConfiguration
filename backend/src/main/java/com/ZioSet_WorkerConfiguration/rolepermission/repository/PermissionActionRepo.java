@@ -17,4 +17,6 @@ public interface PermissionActionRepo extends JpaRepository<PermissionAction, In
     @Query("from PermissionAction where permissions.permissionsId=?1 and actionName=?2")
     List<PermissionAction>  getPermissionActionBYPermissionIdAndActionName1(int paramInt, String paramString);
 
+    List<PermissionAction> findByPermissions_PermissionsId(int permissionsId);
+
 }

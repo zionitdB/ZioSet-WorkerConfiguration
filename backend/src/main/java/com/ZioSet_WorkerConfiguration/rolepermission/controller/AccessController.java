@@ -278,212 +278,265 @@ public class AccessController {
 		}
 	}
 
+//	@GetMapping({"/getPermissionsAndActionByRole1"})
+//	@ResponseBody
+//	public PermissionsDTO getPermissionsAndActionByRole1(@RequestParam int roleId) {
+//		PermissionsDTO permissionsDTO = new PermissionsDTO();
+//		try {
+//			List<Permissions> masterPermission = this.accessService.getPermissionsByModuleNameAndCategory("Agent Configuration","Master");
+//			List<Permissions> transactionPermission = this.accessService.getPermissionsByCategory("Transaction");
+//			List<Permissions> reportPermission = this.accessService.getPermissionsByCategory("Report");
+//			List<Permissions> dashboardPermission = this.accessService.getPermissionsByCategory("Dashboard");
+//			List<Permissions> configurationPermission = this.accessService.getPermissionsByCategory("Configuration");
+//			List<Permissions> hrPermission = this.accessService.getPermissionsByCategory("Hr");
+//
+//			System.out.println("MASTER " + masterPermission.size());
+//			System.out.println("TRANS  " + transactionPermission.size());
+//			System.out.println("REPORT " + reportPermission.size());
+//			System.out.println("Dashboard  " + dashboardPermission.size());
+//			System.out.println("Configuration " + configurationPermission.size());
+//			System.out.println("Hr " + hrPermission.size());
+//
+//
+//			for (Permissions permission : masterPermission) {
+//				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
+//				System.out.println("roleId " + roleId + " PERMo" + permission.getPermissionsId() + "  " + optional.isPresent());
+//				if (optional.isPresent()) {
+//					permission.setSelected(true);
+//				} else {
+//					permission.setSelected(false);
+//				}
+//				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+//
+//				Set<ActionDto> dtos = new HashSet<>();
+//				for (PermissionAction action :permissionActions) {
+//					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
+//					ActionDto actionDto = new ActionDto();
+//					actionDto.setActionName(action.getActionName());
+//					if(optionalAction.isPresent())
+//					{
+//						actionDto.setSelected(true);
+//					}
+//					else {
+//						actionDto.setSelected(false); } dtos.add(actionDto);
+//				}
+//
+//				permission.setActions(dtos);
+//			}
+//
+//			for (Permissions permission : transactionPermission) {
+//				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
+//				if (optional.isPresent()) {
+//					permission.setSelected(true);
+//					// continue;
+//				} else {
+//					permission.setSelected(false);
+//				}
+//
+//
+//				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+//
+//				Set<ActionDto> dtos = new HashSet<>();
+//				for (PermissionAction action :permissionActions) {
+//					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
+//					ActionDto actionDto = new ActionDto();
+//					actionDto.setActionName(action.getActionName());
+//					if(optionalAction.isPresent())
+//					{
+//						actionDto.setSelected(true);
+//					}
+//					else {
+//						actionDto.setSelected(false); } dtos.add(actionDto);
+//				}
+//
+//				permission.setActions(dtos);
+//			}
+//
+//			for (Permissions permission : reportPermission) {
+//				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
+//				if (optional.isPresent()) {
+//					permission.setSelected(true);
+//					// continue;
+//				} else {
+//					permission.setSelected(false);
+//				}
+//
+//				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+//
+//				Set<ActionDto> dtos = new HashSet<>();
+//				for (PermissionAction action :permissionActions) {
+//					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
+//					ActionDto actionDto = new ActionDto();
+//					actionDto.setActionName(action.getActionName());
+//					if(optionalAction.isPresent())
+//					{
+//						actionDto.setSelected(true);
+//					}
+//					else {
+//						actionDto.setSelected(false); } dtos.add(actionDto);
+//				}
+//
+//				permission.setActions(dtos);
+//
+//
+//
+//
+//
+//			}
+//
+//			for (Permissions permission : dashboardPermission) {
+//				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
+//				if (optional.isPresent()) {
+//					permission.setSelected(true);
+//					//  continue;
+//				} else {
+//					permission.setSelected(false);
+//				}
+//
+//				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+//
+//				Set<ActionDto> dtos = new HashSet<>();
+//				for (PermissionAction action :permissionActions) {
+//					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
+//					ActionDto actionDto = new ActionDto();
+//					actionDto.setActionName(action.getActionName());
+//					if(optionalAction.isPresent())
+//					{
+//						actionDto.setSelected(true);
+//					}
+//					else {
+//						actionDto.setSelected(false); } dtos.add(actionDto);
+//				}
+//
+//				permission.setActions(dtos);
+//			}
+//
+//			for (Permissions permission : configurationPermission) {
+//				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
+//				if (optional.isPresent()) {
+//					permission.setSelected(true);
+//					//continue;
+//				} else {
+//					permission.setSelected(false);
+//				}
+//
+//				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+//
+//				Set<ActionDto> dtos = new HashSet<>();
+//				for (PermissionAction action :permissionActions) {
+//					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
+//					ActionDto actionDto = new ActionDto();
+//					actionDto.setActionName(action.getActionName());
+//					if(optionalAction.isPresent())
+//					{
+//						actionDto.setSelected(true);
+//					}
+//					else {
+//						actionDto.setSelected(false); } dtos.add(actionDto);
+//				}
+//
+//				permission.setActions(dtos);
+//
+//			}
+//
+//			for (Permissions permission : hrPermission) {
+//				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
+//				if (optional.isPresent()) {
+//					permission.setSelected(true);
+//					//continue;
+//				} else {
+//					permission.setSelected(false);
+//				}
+//
+//				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+//
+//				Set<ActionDto> dtos = new HashSet<>();
+//				for (PermissionAction action :permissionActions) {
+//					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
+//					ActionDto actionDto = new ActionDto();
+//					actionDto.setActionName(action.getActionName());
+//					if(optionalAction.isPresent())
+//					{
+//						actionDto.setSelected(true);
+//					}
+//					else {
+//						actionDto.setSelected(false); } dtos.add(actionDto);
+//				}
+//
+//				permission.setActions(dtos);
+//
+//			}
+//
+//
+//			permissionsDTO.setDashboardPermission(dashboardPermission);
+//			permissionsDTO.setMasterPermission(masterPermission);
+//			permissionsDTO.setReportPermission(reportPermission);
+//			permissionsDTO.setTransactionPermission(transactionPermission);
+//			permissionsDTO.setConfigurationPermission(configurationPermission);
+//			permissionsDTO.setHrPermission(hrPermission);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return permissionsDTO;
+//	}
+
+
 	@GetMapping({"/getPermissionsAndActionByRole1"})
 	@ResponseBody
-	public PermissionsDTO getPermissionsAndActionByRole1(@RequestParam int roleId) {
-		PermissionsDTO permissionsDTO = new PermissionsDTO();
-		try {
-			List<Permissions> masterPermission = this.accessService.getPermissionsByCategory("Master");
-			List<Permissions> transactionPermission = this.accessService.getPermissionsByCategory("Transaction");
-			List<Permissions> reportPermission = this.accessService.getPermissionsByCategory("Report");
-			List<Permissions> dashboardPermission = this.accessService.getPermissionsByCategory("Dashboard");
-			List<Permissions> configurationPermission = this.accessService.getPermissionsByCategory("Configuration");
-			List<Permissions> hrPermission = this.accessService.getPermissionsByCategory("Hr");
+	public PermissionsDTO getPermissionsAndActionsByRole(@RequestParam int roleId) {
 
-			System.out.println("MASTER " + masterPermission.size());
-			System.out.println("TRANS  " + transactionPermission.size());
-			System.out.println("REPORT " + reportPermission.size());
-			System.out.println("Dashboard  " + dashboardPermission.size());
-			System.out.println("Configuration " + configurationPermission.size());
-			System.out.println("Hr " + hrPermission.size());
+		PermissionsDTO dto = new PermissionsDTO();
 
+		List<Permissions> permissions = accessService.findAllActivePermissions();
 
-			for (Permissions permission : masterPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				System.out.println("roleId " + roleId + " PERMo" + permission.getPermissionsId() + "  " + optional.isPresent());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-				} else {
-					permission.setSelected(false);
-				}
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+		Set<Integer> assignedPermissions = accessService.findPermissionIdsByRole(roleId);
 
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
+		Set<Integer> assignedActions = accessService.findAssignedActionIdsByRole(roleId);
 
-				permission.setActions(dtos);
+		// grouping structure
+		Map<String, Map<String, List<Permissions>>> moduleMap =
+				new LinkedHashMap<>();
+
+		for (Permissions permission : permissions) {
+
+			// Permission selected?
+			permission.setSelected(
+					assignedPermissions.contains(
+							permission.getPermissionsId())
+			);
+
+			// Actions
+			List<PermissionAction> actions =
+					permissionActionRepo.findByPermissions_PermissionsId(
+							permission.getPermissionsId());
+
+			Set<ActionDto> actionDtos = new HashSet<>();
+
+			for (PermissionAction action : actions) {
+				ActionDto actionDto = new ActionDto();
+				actionDto.setActionName(action.getActionName());
+				actionDto.setSelected(
+						assignedActions.contains(
+								action.getPermissionAsactionId())
+				);
+				actionDtos.add(actionDto);
 			}
 
-			for (Permissions permission : transactionPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					// continue;
-				} else {
-					permission.setSelected(false);
-				}
+			permission.setActions(actionDtos);
 
+			// Group by Module → Category
+			String moduleName = permission.getModule().getModuleName();
 
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
+			String category = permission.getCategory();
 
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-			}
-
-			for (Permissions permission : reportPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					// continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-
-
-
-
-
-			}
-
-			for (Permissions permission : dashboardPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//  continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-			}
-
-			for (Permissions permission : configurationPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-
-			}
-
-
-			for (Permissions permission : hrPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-
-			}
-
-
-
-
-
-
-
-			permissionsDTO.setDashboardPermission(dashboardPermission);
-			permissionsDTO.setMasterPermission(masterPermission);
-			permissionsDTO.setReportPermission(reportPermission);
-			permissionsDTO.setTransactionPermission(transactionPermission);
-			permissionsDTO.setConfigurationPermission(configurationPermission);
-			permissionsDTO.setHrPermission(hrPermission);
-		} catch (Exception e) {
-			e.printStackTrace();
+			moduleMap
+					.computeIfAbsent(moduleName, m -> new LinkedHashMap<>())
+					.computeIfAbsent(category, c -> new ArrayList<>())
+					.add(permission);
 		}
-		return permissionsDTO;
+
+		dto.setModules(moduleMap);
+		return dto;
 	}
 
 
@@ -494,862 +547,6 @@ public class AccessController {
 			}
 		}
 		return false;
-	}
-	@GetMapping({"/getPermissionsAndActionByRole"})
-	@ResponseBody
-	public PermissionsDTO getPermissionsAndActionByRole(@RequestParam int roleId,int userId) {
-		PermissionsDTO permissionsDTO = new PermissionsDTO();
-		try {
-			List<Permissions> masterPermission = new ArrayList<Permissions>();
-			List<Permissions> transactionPermission = new ArrayList<Permissions>();
-			List<Permissions> congigurationPermission = new ArrayList<Permissions>();
-			List<Permissions> reportPermission = new ArrayList<Permissions>();
-			List<Permissions> dashbaordPermission = new ArrayList<Permissions>();
-
-
-
-
-			for (Permissions permission : this.accessService.getPermissionsByCategory("Master")) {
-
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-					Set<ActionDto> dtos = new HashSet<>();
-
-					for (PermissionAction action :permissionActions) {
-
-						List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-
-
-						if(permissionRequests.size()!=0) {
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							PermissionRequest permissionRequest=permissionRequests.get(0);
-							if(permissionRequest.getApproved()==1) {
-								actionDto.setSelected(true);
-							}else {
-								Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-								if(optionalAction.isPresent())
-								{
-									actionDto.setSelected(true);
-								}
-								else {
-									actionDto.setSelected(false);
-								}
-							}
-
-
-							permission.setActions(dtos);
-							permission.setActions(dtos);
-							dtos.add(actionDto);
-						}
-						else {
-							Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							if(optionalAction.isPresent())
-							{
-								actionDto.setSelected(true);
-							}
-							else {
-								actionDto.setSelected(false); }
-							dtos.add(actionDto);
-						}
-						permission.setActions(dtos);
-					}
-
-					permission.setActions(dtos);
-					masterPermission.add(permission);
-
-				}
-
-			}
-
-			for (Permissions permission : this.accessService.getPermissionsByCategory("Transaction")) {
-
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-					Set<ActionDto> dtos = new HashSet<>();
-
-					for (PermissionAction action :permissionActions) {
-
-						List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-
-
-						if(permissionRequests.size()!=0) {
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							PermissionRequest permissionRequest=permissionRequests.get(0);
-							if(permissionRequest.getApproved()==1) {
-								actionDto.setSelected(true);
-							}else {
-								Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-								if(optionalAction.isPresent())
-								{
-									actionDto.setSelected(true);
-								}
-								else {
-									actionDto.setSelected(false);
-								}
-							}
-
-
-							permission.setActions(dtos);
-							permission.setActions(dtos);
-							dtos.add(actionDto);
-						}
-						else {
-							Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							if(optionalAction.isPresent())
-							{
-								actionDto.setSelected(true);
-							}
-							else {
-								actionDto.setSelected(false); }
-							dtos.add(actionDto);
-						}
-						permission.setActions(dtos);
-					}
-
-					permission.setActions(dtos);
-					transactionPermission.add(permission);
-
-				}
-
-			}
-
-
-
-			for (Permissions permission : this.accessService.getPermissionsByCategory("Configuration")) {
-
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-					Set<ActionDto> dtos = new HashSet<>();
-
-					for (PermissionAction action :permissionActions) {
-
-						List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-
-
-						if(permissionRequests.size()!=0) {
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							PermissionRequest permissionRequest=permissionRequests.get(0);
-							if(permissionRequest.getApproved()==1) {
-								actionDto.setSelected(true);
-							}else {
-								Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-								if(optionalAction.isPresent())
-								{
-									actionDto.setSelected(true);
-								}
-								else {
-									actionDto.setSelected(false);
-								}
-							}
-
-
-							permission.setActions(dtos);
-							permission.setActions(dtos);
-							dtos.add(actionDto);
-						}
-						else {
-							Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							if(optionalAction.isPresent())
-							{
-								actionDto.setSelected(true);
-							}
-							else {
-								actionDto.setSelected(false); }
-							dtos.add(actionDto);
-						}
-						permission.setActions(dtos);
-					}
-
-					permission.setActions(dtos);
-					congigurationPermission.add(permission);
-
-				}
-
-			}
-			for (Permissions permission : this.accessService.getPermissionsByCategory("Report")) {
-
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-					Set<ActionDto> dtos = new HashSet<>();
-
-					for (PermissionAction action :permissionActions) {
-
-						List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-
-
-						if(permissionRequests.size()!=0) {
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							PermissionRequest permissionRequest=permissionRequests.get(0);
-							if(permissionRequest.getApproved()==1) {
-								actionDto.setSelected(true);
-							}else {
-								Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-								if(optionalAction.isPresent())
-								{
-									actionDto.setSelected(true);
-								}
-								else {
-									actionDto.setSelected(false);
-								}
-							}
-
-
-							permission.setActions(dtos);
-							permission.setActions(dtos);
-							dtos.add(actionDto);
-						}
-						else {
-							Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							if(optionalAction.isPresent())
-							{
-								actionDto.setSelected(true);
-							}
-							else {
-								actionDto.setSelected(false); }
-							dtos.add(actionDto);
-						}
-						permission.setActions(dtos);
-					}
-
-					permission.setActions(dtos);
-					reportPermission.add(permission);
-
-				}
-
-			}
-			for (Permissions permission : this.accessService.getPermissionsByCategory("Dashboard")) {
-
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-					Set<ActionDto> dtos = new HashSet<>();
-
-					for (PermissionAction action :permissionActions) {
-
-						List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-
-
-						if(permissionRequests.size()!=0) {
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							PermissionRequest permissionRequest=permissionRequests.get(0);
-							if(permissionRequest.getApproved()==1) {
-								actionDto.setSelected(true);
-							}else {
-								Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-								if(optionalAction.isPresent())
-								{
-									actionDto.setSelected(true);
-								}
-								else {
-									actionDto.setSelected(false);
-								}
-							}
-
-
-							permission.setActions(dtos);
-							permission.setActions(dtos);
-							dtos.add(actionDto);
-						}
-						else {
-							Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-							ActionDto actionDto = new ActionDto();
-							actionDto.setActionName(action.getActionName());
-							if(optionalAction.isPresent())
-							{
-								actionDto.setSelected(true);
-							}
-							else {
-								actionDto.setSelected(false); }
-							dtos.add(actionDto);
-						}
-						permission.setActions(dtos);
-					}
-
-					permission.setActions(dtos);
-					dashbaordPermission.add(permission);
-
-				}
-
-			}
-			permissionsDTO.setMasterPermission(masterPermission);
-			permissionsDTO.setTransactionPermission(transactionPermission);
-			permissionsDTO.setConfigurationPermission(congigurationPermission);
-			permissionsDTO.setReportPermission(reportPermission);
-			permissionsDTO.setDashboardPermission(dashbaordPermission);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return permissionsDTO;
-	}
-	@GetMapping({"/getPermissionsAndActionByRoleOld"})
-	@ResponseBody
-	public PermissionsDTO getPermissionsAndActionByRoleOld(@RequestParam int roleId,int userId) {
-		PermissionsDTO permissionsDTO = new PermissionsDTO();
-		try {
-			System.out.println("ROLE "+roleId+" USER "+userId);
-			List<Permissions> masterPermission = this.accessService.getPermissionsByCategory("Master");
-			List<Permissions> transactionPermission = this.accessService.getPermissionsByCategory("Transaction");
-			List<Permissions> reportPermission = this.accessService.getPermissionsByCategory("Report");
-			List<Permissions> dashboardPermission = this.accessService.getPermissionsByCategory("Dashboard");
-			List<Permissions> configurationPermission = this.accessService.getPermissionsByCategory("Configuration");
-
-			System.out.println("MASTER " + masterPermission.size());
-			System.out.println("TRANS  " + transactionPermission.size());
-			System.out.println("REPORT " + reportPermission.size());
-			System.out.println("Dashboard  " + dashboardPermission.size());
-			System.out.println("Configuration " + configurationPermission.size());
-
-
-			for (Permissions permission : masterPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-				} else {
-					permission.setSelected(false);
-				}
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-				System.out.println("roleId " + roleId + " PERMo" + permission.getPermissionsName() + "  " + optional.isPresent()+" Action "+permissionActions.size());
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					System.out.println("Action  "+action.getActionName());
-					List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-
-					//  System.out.println("permissionRequests  uid  "+userId+"  Per "+permission.getPermissionsId()+" Acr "+action.getPermissionAsactionId()+"  "+permissionRequests.size());
-					if(permissionRequests.size()!=0) {
-						System.out.println("REQ AC "+action.getActionName());
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						actionDto.setSelected(true);
-						permission.setActions(dtos);
-
-						dtos.add(actionDto);
-					}else {
-						System.out.println("PER AC "+action.getActionName());
-						Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-						ActionDto actionDto = new ActionDto();
-
-
-						actionDto.setActionName(action.getActionName());
-						if(optionalAction.isPresent())
-						{
-							actionDto.setSelected(true);
-						}
-						else {
-							actionDto.setSelected(false); }
-						dtos.add(actionDto);
-					}
-					permission.setActions(dtos);
-				}
-
-				permission.setActions(dtos);
-			}
-
-
-
-			for (Permissions permission : transactionPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					// continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				/*
-				 * for (PermissionAction action :permissionActions) {
-				 * Optional<RolePermissionAction> optionalAction
-				 * =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(
-				 * action.getPermissionAsactionId(), roleId); ActionDto actionDto = new
-				 * ActionDto(); actionDto.setActionName(action.getActionName());
-				 * if(optionalAction.isPresent()) { actionDto.setSelected(true); } else {
-				 * actionDto.setSelected(false); } dtos.add(actionDto); }
-				 */
-				for (PermissionAction action :permissionActions) {
-
-					List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-					if(permissionRequests.size()!=0) {
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						actionDto.setSelected(true);
-						permission.setActions(dtos);
-						permission.setActions(dtos);
-					}else {
-						Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						if(optionalAction.isPresent())
-						{
-							actionDto.setSelected(true);
-						}
-						else {
-							actionDto.setSelected(false); } dtos.add(actionDto);
-					}
-					permission.setActions(dtos);
-				}
-
-				permission.setActions(dtos);
-			}
-			for (Permissions permission : reportPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					// continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				/*
-				 * for (PermissionAction action :permissionActions) {
-				 * Optional<RolePermissionAction> optionalAction
-				 * =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(
-				 * action.getPermissionAsactionId(), roleId); ActionDto actionDto = new
-				 * ActionDto(); actionDto.setActionName(action.getActionName());
-				 * if(optionalAction.isPresent()) { actionDto.setSelected(true); } else {
-				 * actionDto.setSelected(false); } dtos.add(actionDto); }
-				 */
-				for (PermissionAction action :permissionActions) {
-
-					List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-					if(permissionRequests.size()!=0) {
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						actionDto.setSelected(true);
-						permission.setActions(dtos);
-						permission.setActions(dtos);
-					}else {
-						Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						if(optionalAction.isPresent())
-						{
-							actionDto.setSelected(true);
-						}
-						else {
-							actionDto.setSelected(false); } dtos.add(actionDto);
-					}
-					permission.setActions(dtos);
-				}
-				permission.setActions(dtos);
-
-
-
-
-
-			}
-			for (Permissions permission : dashboardPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//  continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				/*
-				 * for (PermissionAction action :permissionActions) {
-				 * Optional<RolePermissionAction> optionalAction
-				 * =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(
-				 * action.getPermissionAsactionId(), roleId); ActionDto actionDto = new
-				 * ActionDto(); actionDto.setActionName(action.getActionName());
-				 * if(optionalAction.isPresent()) { actionDto.setSelected(true); } else {
-				 * actionDto.setSelected(false); } dtos.add(actionDto); }
-				 */
-				for (PermissionAction action :permissionActions) {
-
-					List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-					if(permissionRequests.size()!=0) {
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						actionDto.setSelected(true);
-						permission.setActions(dtos);
-						permission.setActions(dtos);
-					}else {
-						Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						if(optionalAction.isPresent())
-						{
-							actionDto.setSelected(true);
-						}
-						else {
-							actionDto.setSelected(false); } dtos.add(actionDto);
-					}
-					permission.setActions(dtos);
-				}
-				permission.setActions(dtos);
-			}
-			for (Permissions permission : configurationPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				/*
-				 * for (PermissionAction action :permissionActions) {
-				 * Optional<RolePermissionAction> optionalAction
-				 * =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(
-				 * action.getPermissionAsactionId(), roleId); ActionDto actionDto = new
-				 * ActionDto(); actionDto.setActionName(action.getActionName());
-				 * if(optionalAction.isPresent()) { actionDto.setSelected(true); } else {
-				 * actionDto.setSelected(false); } dtos.add(actionDto); }
-				 */
-				for (PermissionAction action :permissionActions) {
-
-					List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUserPermissionAndAction(userId,permission.getPermissionsId(),action.getActionName());
-					if(permissionRequests.size()!=0) {
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						actionDto.setSelected(true);
-						permission.setActions(dtos);
-						permission.setActions(dtos);
-					}else {
-						Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-						ActionDto actionDto = new ActionDto();
-						actionDto.setActionName(action.getActionName());
-						if(optionalAction.isPresent())
-						{
-							actionDto.setSelected(true);
-						}
-						else {
-							actionDto.setSelected(false); } dtos.add(actionDto);
-					}
-					permission.setActions(dtos);
-				}
-				permission.setActions(dtos);
-
-			}
-
-			/*
-			 * List<PermissionRequest> permissionRequests=
-			 * permissionRequestRepo.getApprovedPermissionRequestByUser(userId);
-			 *
-			 * List<Permissions> permissionsByUser= new ArrayList<Permissions>();
-			 * Set<Permissions> permissions= new HashSet<Permissions>();
-			 * for(PermissionRequest permissionRequest:permissionRequests) {
-			 * permissions.add(permissionRequest.getPermissions());
-			 *
-			 * } for(Permissions permissions2:permissionsByUser) {
-			 *
-			 * List<PermissionRequest> permissionRequestsByPermision=
-			 * permissionRequestRepo.getApprovedPermissionRequestByUserAndPermission(userId,
-			 * permissions2.getPermissionsId()); Set<ActionDto> dtos = new HashSet<>();
-			 *
-			 * for(PermissionRequest request:permissionRequestsByPermision) { ActionDto
-			 * actionDto = new ActionDto();
-			 * actionDto.setActionName(request.getPermissionAction().getActionName());
-			 * actionDto.setSelected(true); dtos.add(actionDto);
-			 *
-			 * } permissions2.setActions(dtos);
-			 *
-			 * if(permissions2.getCategory().equalsIgnoreCase("Master")) {
-			 * if(!isNamePresent(masterPermission,permissions2.getPermissionsName())) {
-			 * masterPermission.add(permissions2); }
-			 *
-			 *
-			 * } if(permissions2.getCategory().equalsIgnoreCase("Transaction")) { //
-			 * transactionPermission.add(permissions2);
-			 * if(!isNamePresent(transactionPermission,permissions2.getPermissionsName())) {
-			 * transactionPermission.add(permissions2); }
-			 * System.out.println("Transaction "+isNamePresent(masterPermission,permissions2
-			 * .getPermissionsName())+"     "+permissions2.getPermissionsName()); }
-			 * if(permissions2.getCategory().equalsIgnoreCase("Report")) {
-			 *
-			 * if(!isNamePresent(reportPermission,permissions2.getPermissionsName())) {
-			 * reportPermission.add(permissions2); } // reportPermission.add(permissions2);
-			 * // System.out.println("Report "+isNamePresent(masterPermission,permissions2.
-			 * getPermissionsName())+"     "+permissions2.getPermissionsName()); }
-			 * if(permissions2.getCategory().equalsIgnoreCase("Dashboard")) {
-			 * if(!isNamePresent(dashboardPermission,permissions2.getPermissionsName())) {
-			 * dashboardPermission.add(permissions2); }
-			 * dashboardPermission.add(permissions2);
-			 * System.out.println("Dashboard"+isNamePresent(masterPermission,permissions2.
-			 * getPermissionsName())+"     "+permissions2.getPermissionsName()); }
-			 * if(permissions2.getCategory().equalsIgnoreCase("Configuration")) {
-			 * configurationPermission.add(permissions2);
-			 * if(!isNamePresent(configurationPermission,permissions2.getPermissionsName()))
-			 * { configurationPermission.add(permissions2); }
-			 *
-			 * System.out.println("Configuration"+isNamePresent(masterPermission,
-			 * permissions2.getPermissionsName())+"     "+permissions2.getPermissionsName())
-			 * ; } //permissionsByUser.add(permissions2); }
-			 *
-			 *
-			 *
-			 */
-
-
-			permissionsDTO.setDashboardPermission(dashboardPermission);
-			permissionsDTO.setMasterPermission(masterPermission);
-			permissionsDTO.setReportPermission(reportPermission);
-			permissionsDTO.setTransactionPermission(transactionPermission);
-			permissionsDTO.setConfigurationPermission(configurationPermission);
-			//   permissionsDTO.setUserPermissions(permissionsByUser);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return permissionsDTO;
-	}
-	@GetMapping({"/getPermissionsAndActionByRole2"})
-	@ResponseBody
-	public PermissionsDTO getPermissionsAndActionByRole2(@RequestParam int roleId ,int userId) {
-		PermissionsDTO permissionsDTO = new PermissionsDTO();
-		try {
-			List<Permissions> masterPermission = this.accessService.getPermissionsByCategory("Master");
-			List<Permissions> transactionPermission = this.accessService.getPermissionsByCategory("Transaction");
-			List<Permissions> reportPermission = this.accessService.getPermissionsByCategory("Report");
-			List<Permissions> dashboardPermission = this.accessService.getPermissionsByCategory("Dashboard");
-			List<Permissions> configurationPermission = this.accessService.getPermissionsByCategory("Configuration");
-
-			System.out.println("MASTER " + masterPermission.size());
-			System.out.println("TRANS  " + transactionPermission.size());
-			System.out.println("REPORT " + reportPermission.size());
-			System.out.println("Dashboard  " + dashboardPermission.size());
-			System.out.println("Configuration " + configurationPermission.size());
-
-
-			for (Permissions permission : masterPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				System.out.println("roleId " + roleId + " PERMo" + permission.getPermissionsId() + "  " + optional.isPresent());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-				} else {
-					permission.setSelected(false);
-				}
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-			}
-
-
-
-			for (Permissions permission : transactionPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					// continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-			}
-			for (Permissions permission : reportPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					// continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-
-
-
-
-
-			}
-			for (Permissions permission : dashboardPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//  continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-			}
-			for (Permissions permission : configurationPermission) {
-				Optional<RolePermission> optional = this.accessService.getRolePermissionByRoleAndPermission(roleId, permission.getPermissionsId());
-				if (optional.isPresent()) {
-					permission.setSelected(true);
-					//continue;
-				} else {
-					permission.setSelected(false);
-				}
-
-				List<PermissionAction> permissionActions = this.accessService.getPermissionActionBYPermissionId(permission.getPermissionsId());
-
-				Set<ActionDto> dtos = new HashSet<>();
-				for (PermissionAction action :permissionActions) {
-					Optional<RolePermissionAction> optionalAction =this.rolePermissionActionRepo.getRolePermissionActionByRoleAndPermission(action.getPermissionAsactionId(), roleId);
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(action.getActionName());
-					if(optionalAction.isPresent())
-					{
-						actionDto.setSelected(true);
-					}
-					else {
-						actionDto.setSelected(false); } dtos.add(actionDto);
-				}
-
-				permission.setActions(dtos);
-
-			}
-			// int userId=1;
-			List<PermissionRequest> permissionRequests= permissionRequestRepo.getApprovedPermissionRequestByUser(userId);
-
-			List<Permissions> permissionsByUser= new ArrayList<Permissions>();
-			Set<Permissions> permissions= new HashSet<Permissions>();
-			for(PermissionRequest permissionRequest:permissionRequests) {
-				permissions.add(permissionRequest.getPermissions());
-
-			}
-			for(Permissions permissions2:permissions) {
-
-				List<PermissionRequest> permissionRequestsByPermision= permissionRequestRepo.getApprovedPermissionRequestByUserAndPermission(userId,permissions2.getPermissionsId());
-				Set<ActionDto> dtos = new HashSet<>();
-
-				for(PermissionRequest request:permissionRequestsByPermision) {
-					ActionDto actionDto = new ActionDto();
-					actionDto.setActionName(request.getPermissionAction().getActionName());
-					actionDto.setSelected(true);
-					dtos.add(actionDto);
-
-				}
-				permissions2.setActions(dtos);
-
-				if(permissions2.getCategory().equalsIgnoreCase("Master")) {
-					masterPermission.add(permissions2);
-				}
-				if(permissions2.getCategory().equalsIgnoreCase("Transaction")) {
-					transactionPermission.add(permissions2);
-				}
-				if(permissions2.getCategory().equalsIgnoreCase("Report")) {
-					reportPermission.add(permissions2);
-				}
-				if(permissions2.getCategory().equalsIgnoreCase("Dashboard")) {
-					dashboardPermission.add(permissions2);
-				}
-				if(permissions2.getCategory().equalsIgnoreCase("Configuration")) {
-					configurationPermission.add(permissions2);
-				}
-				//permissionsByUser.add(permissions2);
-			}
-
-
-
-
-
-
-
-
-
-
-			permissionsDTO.setDashboardPermission(dashboardPermission);
-			permissionsDTO.setMasterPermission(masterPermission);
-			permissionsDTO.setReportPermission(reportPermission);
-			permissionsDTO.setTransactionPermission(transactionPermission);
-			permissionsDTO.setConfigurationPermission(configurationPermission);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return permissionsDTO;
 	}
 
 	@GetMapping({"/getRoles"})
@@ -1398,7 +595,7 @@ public class AccessController {
 	public ResponseEntity<ResponceObj> addPermissionAction(@RequestBody PermissionAction permissionAction) {
 		ResponceObj responseDTO = new ResponceObj();
 		try {
-			List<PermissionAction> list=permissionActionRepo.getPermissionActionBYPermissionIdAndActionName1(permissionAction.getPermissions().getPermissionsId(), permissionAction.getActionName());
+			List<PermissionAction> list = permissionActionRepo.getPermissionActionBYPermissionIdAndActionName1(permissionAction.getPermissions().getPermissionsId(), permissionAction.getActionName());
 
 			if(list.size()!=0) {
 				responseDTO.setCode(500);
@@ -1548,44 +745,102 @@ public class AccessController {
 	}
 
 
-	@PostMapping({"/addPermission"})
+//	@PostMapping({"/addPermission"})
+//	public ResponseEntity<ResponceObj> addPermission(@RequestBody Permissions permissions) {
+//		ResponceObj responceDTO = new ResponceObj();
+//		permissions.setPermissionsName(permissions.getPermissionsName().trim());
+//		Optional<Permissions> optional = this.accessService.getPermissionsByName(permissions.getPermissionsName());
+//		try {
+//			//    Optional<Permissions> optional = this.accessService.getPermissionsByNameAndCategory(permissions.getCategory(), permissions.getPermissionsName());
+//			if(permissions.getPermissionsId()==0) {
+//				if(optional.isPresent()) {
+//					responceDTO.setCode(500);
+//					responceDTO.setMessage("Permission Name already Exits");
+//					System.out.println("permission EXITS.........................");
+//				}else {
+//					this.accessService.addPermission(permissions);
+//					responceDTO.setCode(200);
+//					responceDTO.setMessage("Permission  Added Successfully");
+//					System.out.println("permission Added.........................");
+//				}
+//			}else {
+//				if (optional.isPresent() && optional.get().getPermissionsId() != permissions.getPermissionsId()) {
+//					responceDTO.setCode(500);
+//					responceDTO.setMessage("Permission Name already Exits");
+//					System.out.println("permission EXITS.........................");
+//				} else {
+//					this.accessService.addPermission(permissions);
+//					responceDTO.setCode(200);
+//					responceDTO.setMessage("Permission  Updated Successfully");
+//					System.out.println("permission Updated.........................");
+//				}
+//			}
+//			return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			responceDTO.setCode(500);
+//			responceDTO.setMessage(e.getMessage());
+//			return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
+//		}
+//	}
+
+
+	@PostMapping("/addPermission")
 	public ResponseEntity<ResponceObj> addPermission(@RequestBody Permissions permissions) {
-		ResponceObj responceDTO = new ResponceObj();
-		permissions.setPermissionsName(permissions.getPermissionsName().trim());
-		Optional<Permissions> optional = this.accessService.getPermissionsByName(permissions.getPermissionsName());
+
+		ResponceObj response = new ResponceObj();
+
 		try {
-			//    Optional<Permissions> optional = this.accessService.getPermissionsByNameAndCategory(permissions.getCategory(), permissions.getPermissionsName());
-			if(permissions.getPermissionsId()==0) {
-				if(optional.isPresent()) {
-					responceDTO.setCode(500);
-					responceDTO.setMessage("Permission Name already Exits");
-					System.out.println("permission EXITS.........................");
-				}else {
-					this.accessService.addPermission(permissions);
-					responceDTO.setCode(200);
-					responceDTO.setMessage("Permission  Added Successfully");
-					System.out.println("permission Added.........................");
-				}
-			}else {
-				if (optional.isPresent() && optional.get().getPermissionsId() != permissions.getPermissionsId()) {
-					responceDTO.setCode(500);
-					responceDTO.setMessage("Permission Name already Exits");
-					System.out.println("permission EXITS.........................");
+			if (permissions.getModule() == null || permissions.getModule().getModuleId() == 0) {
+				response.setCode(400);
+				response.setMessage("Module is mandatory");
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			}
+
+			permissions.setPermissionsName(permissions.getPermissionsName().trim());
+
+			Optional<Permissions> existingPermission =
+					accessService.getPermissionsByNameAndCategoryAndModuleId(
+							permissions.getCategory(),
+							permissions.getPermissionsName(),
+							permissions.getModule().getModuleId()
+					);
+
+			if (permissions.getPermissionsId() == 0) {
+
+				if (existingPermission.isPresent()) {
+					response.setCode(500);
+					response.setMessage("Permission already exists for this module and category");
 				} else {
-					this.accessService.addPermission(permissions);
-					responceDTO.setCode(200);
-					responceDTO.setMessage("Permission  Updated Successfully");
-					System.out.println("permission Updated.........................");
+					accessService.addPermission(permissions);
+					response.setCode(200);
+					response.setMessage("Permission added successfully");
+				}
+
+			}
+			else {
+				if (existingPermission.isPresent()
+						&& existingPermission.get().getPermissionsId() != permissions.getPermissionsId()) {
+
+					response.setCode(500);
+					response.setMessage("Permission already exists for this module and category");
+				} else {
+					accessService.addPermission(permissions);
+					response.setCode(200);
+					response.setMessage("Permission updated successfully");
 				}
 			}
-			return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
+
+			return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			responceDTO.setCode(500);
-			responceDTO.setMessage(e.getMessage());
-			return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
+			response.setCode(500);
+			response.setMessage(e.getMessage());
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
 
 	@PostMapping({"/deletePermission"})
 	public ResponseEntity<ResponceObj> deletePermission(@RequestBody Permissions permissions) {

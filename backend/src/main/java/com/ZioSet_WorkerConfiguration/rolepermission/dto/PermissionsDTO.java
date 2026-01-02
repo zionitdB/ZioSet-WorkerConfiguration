@@ -4,19 +4,22 @@ import com.ZioSet_WorkerConfiguration.rolepermission.model.Permissions;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class PermissionsDTO {
 
-    private List<Permissions> masterPermission;
+//    private List<Permissions> masterPermission;
+//
+//    private List<Permissions> transactionPermission;
+//
+//    private List<Permissions> reportPermission;
+//
+//    private List<Permissions> dashboardPermission;
+//    private List<Permissions> configurationPermission;
+//
+//    private List<Permissions> hrPermission;
 
-    private List<Permissions> transactionPermission;
-
-    private List<Permissions> reportPermission;
-
-    private List<Permissions> dashboardPermission;
-    private List<Permissions> configurationPermission;
-
-    private List<Permissions> hrPermission;
+    private Map<String, Map<String, List<Permissions>>> modules;
 
 }

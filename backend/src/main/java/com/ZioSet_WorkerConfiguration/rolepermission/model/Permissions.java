@@ -5,13 +5,7 @@ import java.util.Set;
 
 
 import com.ZioSet_WorkerConfiguration.rolepermission.dto.ActionDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "permissions_mst")
@@ -27,6 +21,10 @@ public class Permissions {
     @Column(name = "permissions_name")
     private String permissionsName;
 
+    @ManyToOne()
+    @JoinColumn(name = "module_id", nullable = false)
+    private ModulePermission module;
+
     @Column(name = "navigation_url")
     private String navigationUrl;
 
@@ -38,6 +36,15 @@ public class Permissions {
 
     @Transient
     private Set<ActionDto> actions;
+
+
+    public ModulePermission getModule() {
+        return module;
+    }
+
+    public void setModule(ModulePermission module) {
+        this.module = module;
+    }
 
     public int getPermissionsId() {
         return this.permissionsId;
