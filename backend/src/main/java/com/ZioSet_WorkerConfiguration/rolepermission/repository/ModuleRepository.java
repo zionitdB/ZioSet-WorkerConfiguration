@@ -4,4 +4,5 @@ import com.ZioSet_WorkerConfiguration.rolepermission.model.ModulePermission;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ModuleRepository extends JpaRepository<ModulePermission,Integer> {
+    boolean existsByModuleName(String moduleName);
 }

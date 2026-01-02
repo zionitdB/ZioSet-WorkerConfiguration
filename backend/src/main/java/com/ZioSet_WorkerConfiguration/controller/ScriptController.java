@@ -5,6 +5,7 @@ import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
+import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptType;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @RestController
@@ -71,8 +73,8 @@ public class ScriptController {
     }
 
     @GetMapping("/{id}/targetSystems")
-    public ScriptEntity getTargetSystemsById(@PathVariable Long id) {
-        return scriptService.getScript(id).orElseThrow(() -> new RuntimeException("Script not found"));
+    public Set<ScriptTargetSystemEntity> getTargetSystemsById(@PathVariable Long id) {
+        return scriptService.getScriptTargetSystems(id);
     }
 
 }

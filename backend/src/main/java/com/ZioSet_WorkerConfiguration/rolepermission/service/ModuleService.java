@@ -14,7 +14,10 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
 
     public ModulePermission addModule(ModulePermission module){
-        return moduleRepository.save(module);
+        if (!moduleRepository.existsByModuleName(module.getModuleName())) {
+            return moduleRepository.save(module);
+        }
+        throw new RuntimeException("Module Name already present.");
     }
 
     public List<ModulePermission> getAll(){

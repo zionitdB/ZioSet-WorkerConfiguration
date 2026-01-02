@@ -7,6 +7,7 @@ import com.ZioSet_WorkerConfiguration.rolepermission.dto.*;
 import com.ZioSet_WorkerConfiguration.rolepermission.model.*;
 import com.ZioSet_WorkerConfiguration.rolepermission.repository.*;
 import com.ZioSet_WorkerConfiguration.rolepermission.service.AccessService;
+import com.ZioSet_WorkerConfiguration.rolepermission.service.ModuleService;
 import com.ZioSet_WorkerConfiguration.rolepermission.service.UserServicesZioSet;
 import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,15 +39,29 @@ public class AccessController {
 	@Autowired
 	PermissionActionRepo permissionActionRepo;
 
-
 	@Autowired
 	PermissionsRepo permissionRepo;
+
 	@Autowired
 	PermissionRequestRepo permissionRequestRepo;
-	@Autowired
-	RolePermissionRepo rolePermissionRepo;
 
-	@PostMapping({"/addPermissionRequest"})
+	@Autowired
+	ModuleService moduleService;
+
+	@PostMapping("/addModule")
+	public ResponceObj addPermissionRequest(@RequestBody ModulePermission modulePermission) {
+		ResponceObj responseDTO = new ResponceObj();
+		ModulePermission module = moduleService.addModule(modulePermission);
+		responseDTO.setCode(201);
+		responseDTO.setMessage("Module Created!");
+		responseDTO.setData(module);
+		return responseDTO;
+
+	}
+
+
+
+		@PostMapping({"/addPermissionRequest"})
 	public ResponceObj addPermissionRequest(@RequestBody PermissionRequestDTO permissionRequest) {
 		ResponceObj responceDTO = new ResponceObj();
 		try {
