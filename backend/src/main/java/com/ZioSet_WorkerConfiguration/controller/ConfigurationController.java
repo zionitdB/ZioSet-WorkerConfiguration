@@ -547,6 +547,7 @@ public class ConfigurationController {
 		}
 		return list;
 	}
+
 	@PostMapping({"/getCountAllCategoryByLimitAndGroupSearch"})
 	@ResponseBody
 	public int getCountAllCategoryByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {

@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
@@ -7,10 +8,13 @@ import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptType;
+import com.ZioSet_WorkerConfiguration.model.UnRegisteredAssets;
+import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +27,7 @@ import java.util.stream.Stream;
 public class ScriptController {
 
     private final ScriptService scriptService;
+    private final ScriptRepository scriptRepository;
 
     @PostMapping
     public ScriptEntity createOrUpdate(@RequestBody ScriptDTO dto) {
@@ -76,5 +81,43 @@ public class ScriptController {
     public Set<ScriptTargetSystemEntity> getTargetSystemsById(@PathVariable Long id) {
         return scriptService.getScriptTargetSystems(id);
     }
+
+    @PostMapping({"/getAllScriptEntityByLimitAndGroupSearch"})
+    @ResponseBody
+    public List<ScriptEntity> getAllScriptEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        List<ScriptEntity> list = new ArrayList<>();
+        try {
+            list = this.scriptRepository.getAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @PostMapping({"/getCountAllScriptEntityByLimitAndGroupSearch"})
+    @ResponseBody
+    public int getCountAllScriptEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        int count = 0;
+        try {
+            count = this.scriptRepository.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+            boolean bool = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @GetMapping({"/getScriptEntityByLimit"})
+    @ResponseBody
+    public List<ScriptEntity> getScriptEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<ScriptEntity> list = new ArrayList<ScriptEntity>();
+        try {
+            list = this.scriptRepository.getScriptEntityByLimit(pageNo, perPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 
 }

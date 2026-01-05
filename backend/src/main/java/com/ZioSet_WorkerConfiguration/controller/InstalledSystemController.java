@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.MultipleSerialNumberDto;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.DeletedSystems;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -156,4 +158,44 @@ public class InstalledSystemController {
             e.printStackTrace();
         }
     }
+
+//    @PostMapping({"/getAllInstalledSystemEntityByLimitAndGroupSearch"})
+//    @ResponseBody
+//    public List<InstalledSystemEntity> getAllInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+//        List<InstalledSystemEntity> list = new ArrayList<>();
+//        try {
+//            list = this.repository.getAllInstalledSystemEntityyByLimitAndGroupSearch(groupSearchDTO);
+//            boolean bool = false;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
+//
+//    @PostMapping({"/getCountAllInstalledSystemEntityByLimitAndGroupSearch"})
+//    @ResponseBody
+//    public int getCountAllInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+//        int count = 0;
+//        try {
+//            count = this.repository.getCountAllInstalledSystemEntityByLimitAndGroupSearch(groupSearchDTO);
+//            boolean bool = false;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return count;
+//    }
+//
+//    @GetMapping({"/getInstalledSystemEntityByLimit"})
+//    @ResponseBody
+//    public List<InstalledSystemEntity> getInstalledSystemEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+//        List<InstalledSystemEntity> list = new ArrayList<InstalledSystemEntity>();
+//        try {
+//            list = this.repository.getInstalledSystemEntityyByLimit(pageNo, perPage);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
+
+
 }

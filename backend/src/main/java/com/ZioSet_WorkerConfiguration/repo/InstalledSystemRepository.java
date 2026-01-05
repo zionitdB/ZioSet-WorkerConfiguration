@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface InstalledSystemRepository extends JpaRepository<InstalledSystemEntity, Long> {
+public interface InstalledSystemRepository extends JpaRepository<InstalledSystemEntity, Long>
+//        , InstalledSystemCustomeRepo
+{
     Optional<InstalledSystemEntity> findBySystemSerialNo(String serialNumber);
 
     List<InstalledSystemEntity> findAllBySystemSerialNoIn(List<String> serialNumbers);
