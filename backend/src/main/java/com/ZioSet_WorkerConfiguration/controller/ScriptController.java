@@ -5,10 +5,7 @@ import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
-import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
-import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
-import com.ZioSet_WorkerConfiguration.model.ScriptType;
-import com.ZioSet_WorkerConfiguration.model.UnRegisteredAssets;
+import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +24,6 @@ import java.util.stream.Stream;
 public class ScriptController {
 
     private final ScriptService scriptService;
-    private final ScriptRepository scriptRepository;
 
     @PostMapping
     public ScriptEntity createOrUpdate(@RequestBody ScriptDTO dto) {
@@ -83,11 +79,10 @@ public class ScriptController {
     }
 
     @PostMapping({"/getAllScriptEntityByLimitAndGroupSearch"})
-    @ResponseBody
     public List<ScriptEntity> getAllScriptEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
         List<ScriptEntity> list = new ArrayList<>();
         try {
-            list = this.scriptRepository.getAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+            list = this.scriptService.getAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -95,11 +90,10 @@ public class ScriptController {
     }
 
     @PostMapping({"/getCountAllScriptEntityByLimitAndGroupSearch"})
-    @ResponseBody
     public int getCountAllScriptEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
         int count = 0;
         try {
-            count = this.scriptRepository.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+            count = this.scriptService.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
             boolean bool = false;
         } catch (Exception e) {
             e.printStackTrace();
@@ -108,16 +102,49 @@ public class ScriptController {
     }
 
     @GetMapping({"/getScriptEntityByLimit"})
-    @ResponseBody
-    public List<ScriptEntity> getScriptEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
-        List<ScriptEntity> list = new ArrayList<ScriptEntity>();
+    public List<ScriptEntity> getScriptEntitySystemByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<ScriptEntity> list = new ArrayList<>();
         try {
-            list = this.scriptRepository.getScriptEntityByLimit(pageNo, perPage);
+            list = this.scriptService.getScriptEntityByLimit(pageNo, perPage);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
     }
+
+    @PostMapping({"/getAllScriptTargetSystemByLimitAndGroupSearch"})
+    public List<ScriptTargetSystemEntity> getAllScriptTargetSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        List<ScriptTargetSystemEntity> list = new ArrayList<>();
+        try {
+            list = scriptService.getAllScriptTargetSystemByLimitAndGroupSearch(groupSearchDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @PostMapping({"/getCountAllScriptTargetSystemByLimitAndGroupSearch"})
+    public int getCountAllScriptTargetSystemByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        int count = 0;
+        try {
+            count = scriptService.getCountAllScriptTargetSystemByLimitAndGroupSearch(groupSearchDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @GetMapping({"/getScriptTargetSystemByLimit"})
+    public List<ScriptTargetSystemEntity> getScriptEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<ScriptTargetSystemEntity> list = new ArrayList<>();
+        try {
+            list = scriptService.getScriptTargetSystemByLimit(pageNo, perPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 
 
 }

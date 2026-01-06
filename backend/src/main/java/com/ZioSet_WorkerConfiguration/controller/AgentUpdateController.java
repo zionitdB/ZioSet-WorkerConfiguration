@@ -1,12 +1,15 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
 import com.ZioSet_WorkerConfiguration.dto.AgentUpdateCreateDto;
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
+import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
 import com.ZioSet_WorkerConfiguration.service.AgentUpdateService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -73,6 +76,39 @@ public class AgentUpdateController {
             status.setMessage("Error while deleting target system");
         }
         return status;
+    }
+
+    @PostMapping({"/getAllAgentUpdateSystemsEntityByLimitAndGroupSearch"})
+    public List<AgentUpdateSystemsEntity> getAllScriptEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        List<AgentUpdateSystemsEntity> list = new ArrayList<>();
+        try {
+            list = agentUpdateService.getAllAgentUpdateSystemsByLimitAndGroupSearch(groupSearchDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @PostMapping({"/getCountAllAgentUpdateSystemsEntityByLimitAndGroupSearch"})
+    public int getCountAllScriptEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        int count = 0;
+        try {
+            count = agentUpdateService.getCountAllAgentUpdateSystemsByLimitAndGroupSearch(groupSearchDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @GetMapping({"/getAgentUpdateSystemsEntityByLimit"})
+    public List<AgentUpdateSystemsEntity> getScriptEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<AgentUpdateSystemsEntity> list = new ArrayList<>();
+        try {
+            list = this.agentUpdateService.getAgentUpdateSystemsByLimit(pageNo, perPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }

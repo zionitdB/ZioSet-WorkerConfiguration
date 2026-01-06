@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface AgentUpdateSystemsRepository extends JpaRepository<AgentUpdateSystemsEntity, Long> {
+public interface AgentUpdateSystemsRepository extends JpaRepository<AgentUpdateSystemsEntity, Long> ,AgentUpdateSystemsEntityCustomeRepo{
 
     @Query("FROM AgentUpdateSystemsEntity a WHERE a.agentUpdate.uuid = ?1")
     List<AgentUpdateSystemsEntity> getSystemsByUpdateUuid(String updateId);

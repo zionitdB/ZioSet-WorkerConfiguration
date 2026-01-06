@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.service;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.*;
@@ -110,6 +111,9 @@ public class ScriptService {
     }
 
     public void deleteScript(Long id) {
+        ScriptEntity entity = scriptRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ScriptEntity not found"));
+
         scriptRepository.deleteById(id);
     }
 
@@ -126,5 +130,30 @@ public class ScriptService {
                 .map(ScriptEntity::getTargets)
                 .orElseThrow(() -> new RuntimeException("Script not found"));
     }
+
+    public List<ScriptTargetSystemEntity> getScriptTargetSystemByLimit(int pageNo, int perPage) {
+        return targetSystemRepository.getScriptTargetSystemByLimit(pageNo, perPage);
+    }
+
+    public List<ScriptTargetSystemEntity> getAllScriptTargetSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+        return targetSystemRepository.getAllScriptTargetSystemByLimitAndGroupSearch(groupSearchDTO);
+    }
+
+    public int getCountAllScriptTargetSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+        return targetSystemRepository.getCountAllScriptTargetSystemByLimitAndGroupSearch(groupSearchDTO);
+    }
+
+    public List<ScriptEntity> getScriptEntityByLimit(int pageNo, int perPage){
+        return scriptRepository.getScriptEntityByLimit(pageNo, perPage);
+    }
+
+    public List<ScriptEntity> getAllScriptEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO){
+        return scriptRepository.getAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+    }
+
+    public int getCountAllScriptEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO){
+        return scriptRepository.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+    }
+
 
 }

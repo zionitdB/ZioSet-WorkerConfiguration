@@ -2,6 +2,7 @@ package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.components.AgentUpdateMapper;
 import com.ZioSet_WorkerConfiguration.dto.AgentUpdateCreateDto;
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
 import com.ZioSet_WorkerConfiguration.repo.AgentUpdateRepository;
@@ -57,6 +58,18 @@ public class AgentUpdateService {
 
     public void deleteTargetSystemById(long targetSystemId) {
         agentUpdateSystemsRepository.deleteById(targetSystemId);
+    }
+
+    public List<AgentUpdateSystemsEntity> getAgentUpdateSystemsByLimit(int pageNo, int perPage) {
+        return agentUpdateSystemsRepository.getAgentUpdateSystemsByLimit(pageNo, perPage);
+    }
+
+    public List<AgentUpdateSystemsEntity> getAllAgentUpdateSystemsByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+        return agentUpdateSystemsRepository.getAllAgentUpdateSystemsByLimitAndGroupSearch(groupSearchDTO);
+    }
+
+    public int getCountAllAgentUpdateSystemsByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+        return agentUpdateSystemsRepository.getCountAllAgentUpdateSystemsByLimitAndGroupSearch(groupSearchDTO);
     }
 
 }
