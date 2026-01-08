@@ -23,25 +23,29 @@ public class ScriptEntity {
     @Column(nullable = false)
     private String name;
 
-    @Lob
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "template_id")
+    private ScriptTemplateEntity template;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "script_type", nullable = false)
-    private ScriptType scriptType;
+//    @Lob
+//    private String description;
 
-    @Lob
-    private String scriptText; // For inline scripts
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "script_type", nullable = false)
+//    private ScriptType scriptType;
+
+//    @Lob
+//    private String scriptText; // For inline scripts
 
     // Many-to-one relationship with ScriptFile (nullable if inline)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "script_file_id")
-    @JsonIgnore
-    private ScriptFileEntity scriptFile; // For file-based scripts
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "script_file_id")
+//    @JsonIgnore
+//    private ScriptFileEntity scriptFile; // For file-based scripts
 
     // One-to-many relationship with dependencies
-    @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ScriptDependencyEntity> dependencies = new HashSet<>();
+//    @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<ScriptDependencyEntity> dependencies = new HashSet<>();
 
     // One-to-many relationship with target systems
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
