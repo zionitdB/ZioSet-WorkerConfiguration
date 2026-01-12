@@ -25,6 +25,6 @@ public class ModuleService {
     }
 
     public List<ModulePermission> getAllActive(){
-        return moduleRepository.findAll();
+        return moduleRepository.findByActiveTrue();
     }
 }
