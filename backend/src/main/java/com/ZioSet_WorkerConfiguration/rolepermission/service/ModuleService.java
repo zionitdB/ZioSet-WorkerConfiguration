@@ -23,4 +23,8 @@ public class ModuleService {
     public List<ModulePermission> getAll(){
         return moduleRepository.findAll();
     }
+
+    public List<ModulePermission> getAllActive(){
+        return moduleRepository.findAll();
+    }
 }

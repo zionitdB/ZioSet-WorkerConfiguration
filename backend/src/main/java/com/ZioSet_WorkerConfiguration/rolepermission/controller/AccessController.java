@@ -59,6 +59,30 @@ public class AccessController {
 
 	}
 
+	@GetMapping({"/getAllModule"})
+	public List<ModulePermission> getAllModules() {
+		List<ModulePermission> list = new ArrayList<>();
+		try {
+			list = this.moduleService.getAll();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@GetMapping({"/getAllActiveModules"})
+	public List<ModulePermission> getAllActiveModules() {
+		List<ModulePermission> list = new ArrayList<>();
+		try {
+			list = this.moduleService.getAllActive();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 
 
 		@PostMapping({"/addPermissionRequest"})
