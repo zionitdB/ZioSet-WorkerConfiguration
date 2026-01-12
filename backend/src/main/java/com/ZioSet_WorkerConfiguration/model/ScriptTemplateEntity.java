@@ -33,7 +33,7 @@ public class ScriptTemplateEntity {
     private ScriptFileEntity scriptFile; // For file-based scripts
 
     // One-to-many relationship with dependencies
-    @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScriptDependencyEntity> dependencies = new HashSet<>();
 
     @Column(name = "target_platforms_csv")

@@ -55,8 +55,8 @@ public class ScriptEntity {
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScriptExecutionResultEntity> executionResults = new HashSet<>();
 
-    @Column(name = "target_platforms_csv")
-    private String targetPlatformsCsv;
+//    @Column(name = "target_platforms_csv")
+//    private String targetPlatformsCsv;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -66,7 +66,6 @@ public class ScriptEntity {
 
     @Column(nullable = false)
     private Boolean isActive = true;
-
 
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;

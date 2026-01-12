@@ -4,5 +4,5 @@ import com.ZioSet_WorkerConfiguration.model.ScriptDependencyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScriptDependencyRepository extends JpaRepository<ScriptDependencyEntity, Long> {
-    void deleteByScriptId(Long id);
+    void deleteByTemplateId(Long id);
 }

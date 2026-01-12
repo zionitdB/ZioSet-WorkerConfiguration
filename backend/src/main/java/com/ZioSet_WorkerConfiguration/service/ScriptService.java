@@ -4,10 +4,7 @@ import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.*;
-import com.ZioSet_WorkerConfiguration.repo.ScriptDependencyRepository;
-import com.ZioSet_WorkerConfiguration.repo.ScriptFileRepository;
-import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
-import com.ZioSet_WorkerConfiguration.repo.ScriptTargetSystemRepository;
+import com.ZioSet_WorkerConfiguration.repo.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,82 +23,54 @@ public class ScriptService {
     private final ScriptFileRepository scriptFileRepository;
     private final ScriptDependencyRepository dependencyRepository;
     private final ScriptTargetSystemRepository targetSystemRepository;
+    private final ScriptTemplateRepository scriptTemplateRepository;
+
+    private ScriptTemplateEntity getTemplate(Long id){
+        return scriptTemplateRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Template not found."));
+    }
 
     @Transactional
-    public ScriptEntity createOrUpdateScript(ScriptDTO dto) {
-        ScriptEntity script = (dto.getId() != null)
-                ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
-                : new ScriptEntity();
+    public ScriptEntity createOrUpdateScriptExecution(ScriptDTO dto) {
 
-        script.setName(dto.getName());
-        script.setDescription(dto.getDescription());
-        script.setScriptType(dto.getScriptType());
-        script.setScriptText(dto.getScriptText());
-        script.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        ScriptEntity execution = (dto.getId() != null) ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
+                        : new ScriptEntity();
 
-        if (dto.getScriptFileId() != null) {
-            ScriptFileEntity file = scriptFileRepository.findById(dto.getScriptFileId())
-                    .orElseThrow(() -> new RuntimeException("Script file not found"));
-            script.setScriptFile(file);
-        }
+        ScriptTemplateEntity template =
+                scriptTemplateRepository.findById(dto.getTemplateId())
+                        .orElseThrow(() -> new RuntimeException("Template not found"));
 
-        // Validate platform enums
-        if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
-            for (ScriptTargetPlatform p : dto.getTargetPlatforms()) {
-                if (p == null) throw new RuntimeException("Invalid platform");
-            }
-            script.setTargetPlatformsCsv(
-                    dto.getTargetPlatforms().stream()
-                            .map(Enum::name)
-                            .collect(Collectors.joining(","))
-            );
-        } else {
-            script.setTargetPlatformsCsv(null);
-        }
+        execution.setTemplate(template);
+        execution.setName(dto.getName());
+        execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
 
-        // Scheduling fields
-        script.setScheduleType(dto.getScheduleType());
-        script.setStartDateTime(dto.getStartDateTime());
-        script.setRepeatEverySeconds(dto.getRepeatEverySeconds());
+        // Schedule
+        execution.setScheduleType(dto.getScheduleType());
+        execution.setStartDateTime(dto.getStartDateTime());
+        execution.setRepeatEverySeconds(dto.getRepeatEverySeconds());
+        execution.setMonthDay(dto.getMonthDay());
+        execution.setTimeOfDay(dto.getTimeOfDay());
 
         if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
-            script.setWeekDaysCsv(String.join(",", dto.getWeekDays()));
+            execution.setWeekDaysCsv(String.join(",", dto.getWeekDays()));
         } else {
-            script.setWeekDaysCsv(null);
+            execution.setWeekDaysCsv(null);
         }
 
-        script.setMonthDay(dto.getMonthDay());
-        script.setTimeOfDay(dto.getTimeOfDay());
+        execution = scriptRepository.save(execution);
 
-        script = scriptRepository.save(script);
-
-        // Save dependencies
-        dependencyRepository.deleteByScriptId(script.getId());
-        if (dto.getDependencyFileIds() != null) {
-            for (Long fileId : dto.getDependencyFileIds()) {
-                ScriptFileEntity file = scriptFileRepository.findById(fileId)
-                        .orElseThrow(() -> new RuntimeException("Dependency file not found"));
-                ScriptDependencyEntity dep = new ScriptDependencyEntity();
-                dep.setScript(script);
-                dep.setScriptFile(file);
-                dependencyRepository.save(dep);
-            }
-        }
-
-        // Save targets
-        targetSystemRepository.deleteByScriptId(script.getId());
+        targetSystemRepository.deleteByScriptId(execution.getId());
         if (dto.getTargetSystemSerials() != null) {
             for (String serial : dto.getTargetSystemSerials()) {
                 ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
-                target.setScript(script);
+                target.setScript(execution);
                 target.setSystemSerialNumber(serial);
                 targetSystemRepository.save(target);
             }
         }
 
-        return script;
+        return execution;
     }
-
     public List<ScriptEntity> getAllScripts() {
         return scriptRepository.findAll();
     }

@@ -27,7 +27,7 @@ public class ScriptController {
 
     @PostMapping
     public ScriptEntity createOrUpdate(@RequestBody ScriptDTO dto) {
-        return scriptService.createOrUpdateScript(dto);
+        return scriptService.createOrUpdateScriptExecution(dto);
     }
 
     @GetMapping

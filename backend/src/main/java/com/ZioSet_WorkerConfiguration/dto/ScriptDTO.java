@@ -13,15 +13,16 @@ import java.util.List;
 public class ScriptDTO {
     private Long id;
     private String name;
-    private String description;
-    private ScriptType scriptType;
-    private String scriptText;
-    private Long scriptFileId;
+//    private String description;
+//    private ScriptType scriptType;
+//    private String scriptText;
+//    private Long scriptFileId;
+    private Long templateId;
     private Boolean isActive;
 
-    private List<Long> dependencyFileIds;
+//    private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;
-    private List<ScriptTargetPlatform> targetPlatforms;
+//    private List<ScriptTargetPlatform> targetPlatforms;
 
     // Schedule fields
     private ScheduleType scheduleType;

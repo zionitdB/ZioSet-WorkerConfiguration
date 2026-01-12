@@ -2,11 +2,17 @@ package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.CreateScriptTemplateRequest;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
+import com.ZioSet_WorkerConfiguration.model.ScriptDependencyEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptFileEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTemplateEntity;
+import com.ZioSet_WorkerConfiguration.repo.ScriptDependencyRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptFileRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptTemplateRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -17,31 +23,69 @@ public class ScriptTemplateService {
 
     private final ScriptTemplateRepository templateRepository;
     private final ScriptFileRepository scriptFileRepository;
+    private final ScriptDependencyRepository dependencyRepository;
 
-    public ScriptTemplateEntity create(CreateScriptTemplateRequest req) {
+    public ScriptTemplateEntity createOrUpdateTemplate(CreateScriptTemplateRequest dto) {
 
-        ScriptFileEntity scriptFile = getFile(req.scriptFileId());
+        ScriptTemplateEntity template = (dto.id() != null) ? templateRepository.findById(dto.id())
+                        .orElse(new ScriptTemplateEntity()) : new ScriptTemplateEntity();
 
-        ScriptTemplateEntity template = new ScriptTemplateEntity();
-        template.setName(req.name());
-        template.setDescription(req.description());
-        template.setScriptType(req.scriptType());
-        template.setScriptFile(scriptFile);
+        template.setName(dto.name());
+        template.setDescription(dto.description());
+        template.setScriptType(dto.scriptType());
+        template.setIsActive(dto.active() != null ? dto.active() : true);
 
-        for (ScriptTargetPlatform p : req.targetPlatforms()) {
-            if (p == null) throw new RuntimeException("Invalid platform");
+        if (dto.scriptFileId() != null) {
+            ScriptFileEntity file = scriptFileRepository.findById(dto.scriptFileId())
+                    .orElseThrow(() -> new RuntimeException("Script file not found"));
+            template.setScriptFile(file);
         }
-        template.setTargetPlatformsCsv(
-                req.targetPlatforms().stream()
-                        .map(Enum::name)
-                        .collect(Collectors.joining(","))
-        );
-        return templateRepository.save(template);
+
+        if (dto.targetPlatforms() != null && !dto.targetPlatforms().isEmpty()) {
+            template.setTargetPlatformsCsv(
+                    dto.targetPlatforms().stream()
+                            .map(Enum::name)
+                            .collect(Collectors.joining(","))
+            );
+        } else {
+            template.setTargetPlatformsCsv(null);
+        }
+
+        template = templateRepository.save(template);
+
+        dependencyRepository.deleteByTemplateId(template.getId());
+        if (dto.dependencyFileIds() != null) {
+            for (Long fileId : dto.dependencyFileIds()) {
+                ScriptFileEntity file = scriptFileRepository.findById(fileId)
+                        .orElseThrow(() -> new RuntimeException("Dependency file not found"));
+
+                ScriptDependencyEntity dep = new ScriptDependencyEntity();
+                dep.setTemplate(template);
+                dep.setScriptFile(file);
+                dependencyRepository.save(dep);
+            }
+        }
+
+        return template;
     }
 
     private ScriptFileEntity getFile(Long fileId){
-        ScriptFileEntity file = scriptFileRepository.findById(fileId)
+        return scriptFileRepository.findById(fileId)
                 .orElseThrow(() -> new RuntimeException("Script file not found"));
-        return file;
     }
+
+    public void deactivate(Long id) {
+        ScriptTemplateEntity template = templateRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Template not found"));
+
+        template.setIsActive(false);
+        templateRepository.save(template);
+    }
+
+    public Page<ScriptTemplateEntity> list(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return templateRepository.findByIsActiveTrue(pageable);
+    }
+
+
 }
