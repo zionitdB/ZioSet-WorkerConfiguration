@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -38,14 +40,24 @@ public class ScriptEntity {
 //    private String scriptText; // For inline scripts
 
     // Many-to-one relationship with ScriptFile (nullable if inline)
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "script_file_id")
-//    @JsonIgnore
-//    private ScriptFileEntity scriptFile; // For file-based scripts
+
+    @ElementCollection
+    @CollectionTable(
+            name = "script_param_values",
+            joinColumns = @JoinColumn(name = "script_execution_id")
+    )
+    @MapKeyColumn(name = "param_key")
+    @Column(name = "param_value")
+    private Map<String, String> parameterValues = new HashMap<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "script_file_id")
+    @JsonIgnore
+    private ScriptFileEntity scriptFile; // For file-based scripts
 
     // One-to-many relationship with dependencies
-//    @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private Set<ScriptDependencyEntity> dependencies = new HashSet<>();
+    @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ScriptDependencyEntity> dependencies = new HashSet<>();
 
     // One-to-many relationship with target systems
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -1,10 +1,10 @@
 package com.ZioSet_WorkerConfiguration.dto;
 
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
-import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptType;
 
 import java.util.List;
+import java.util.Map;
 
 public record CreateScriptTemplateRequest (
         Long id,
@@ -14,5 +14,6 @@ public record CreateScriptTemplateRequest (
         Long scriptFileId,
         List<Long> dependencyFileIds,
         List<ScriptTargetPlatform> targetPlatforms,
+        Map<String, String> requiredParameters,
         Boolean active){
 }

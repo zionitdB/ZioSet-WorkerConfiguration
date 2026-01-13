@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScriptDependencyRepository extends JpaRepository<ScriptDependencyEntity, Long> {
     void deleteByTemplateId(Long id);
+    void deleteByScriptId(Long id);
 }

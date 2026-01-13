@@ -43,6 +43,7 @@ public class ScriptService {
         execution.setTemplate(template);
         execution.setName(dto.getName());
         execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        execution.setParameterValues(dto.getRequiredParameters());
 
         // Schedule
         execution.setScheduleType(dto.getScheduleType());
@@ -50,6 +51,12 @@ public class ScriptService {
         execution.setRepeatEverySeconds(dto.getRepeatEverySeconds());
         execution.setMonthDay(dto.getMonthDay());
         execution.setTimeOfDay(dto.getTimeOfDay());
+
+        if (dto.getScriptFileId() != null) {
+            ScriptFileEntity file = getFile(dto.getScriptFileId());
+            execution.setScriptFile(file);
+        }
+
 
         if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
             execution.setWeekDaysCsv(String.join(",", dto.getWeekDays()));
@@ -69,8 +76,27 @@ public class ScriptService {
             }
         }
 
+        dependencyRepository.deleteByScriptId(execution.getId());
+        if (dto.getDependencyFileIds() != null) {
+            for (Long fileId : dto.getDependencyFileIds()) {
+                ScriptFileEntity file = scriptFileRepository.findById(fileId)
+                        .orElseThrow(() -> new RuntimeException("Dependency file not found"));
+
+                ScriptDependencyEntity dep = new ScriptDependencyEntity();
+                dep.setScript(execution);
+                dep.setScriptFile(file);
+                dependencyRepository.save(dep);
+            }
+        }
+
         return execution;
     }
+
+    private ScriptFileEntity getFile(Long fileId){
+        return scriptFileRepository.findById(fileId)
+                .orElseThrow(() -> new RuntimeException("Script file not found"));
+    }
+
     public List<ScriptEntity> getAllScripts() {
         return scriptRepository.findAll();
     }

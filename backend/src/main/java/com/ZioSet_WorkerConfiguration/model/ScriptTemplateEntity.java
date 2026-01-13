@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -31,6 +32,15 @@ public class ScriptTemplateEntity {
     @JoinColumn(name = "script_file_id")
     @JsonIgnore
     private ScriptFileEntity scriptFile; // For file-based scripts
+
+    @ElementCollection
+    @CollectionTable(name = "template_required_params")
+    @MapKeyColumn(name = "param_key")
+    @Column(name = "description")
+    private Map<String, String> requiredParameters;
+
+    @Enumerated(EnumType.STRING)
+    private ScheduleType scheduleType;
 
     // One-to-many relationship with dependencies
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)

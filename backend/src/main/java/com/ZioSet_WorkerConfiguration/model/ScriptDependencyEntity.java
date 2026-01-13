@@ -14,8 +14,12 @@ public class ScriptDependencyEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "script_id", nullable = false)
+    @JoinColumn(name = "script_template_id", nullable = false)
     private ScriptTemplateEntity template;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "script_id", nullable = false)
+    private ScriptEntity script;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "script_file_id", nullable = false)

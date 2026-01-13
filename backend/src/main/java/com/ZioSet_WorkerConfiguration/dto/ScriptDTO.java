@@ -8,6 +8,7 @@ import lombok.Data;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ScriptDTO {
@@ -16,12 +17,13 @@ public class ScriptDTO {
 //    private String description;
 //    private ScriptType scriptType;
 //    private String scriptText;
-//    private Long scriptFileId;
+    private Long scriptFileId;
     private Long templateId;
     private Boolean isActive;
 
-//    private List<Long> dependencyFileIds;
+    private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;
+    private Map<String, String> requiredParameters;
 //    private List<ScriptTargetPlatform> targetPlatforms;
 
     // Schedule fields

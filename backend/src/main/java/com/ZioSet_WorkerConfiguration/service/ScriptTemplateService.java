@@ -34,10 +34,10 @@ public class ScriptTemplateService {
         template.setDescription(dto.description());
         template.setScriptType(dto.scriptType());
         template.setIsActive(dto.active() != null ? dto.active() : true);
+        template.setRequiredParameters(dto.requiredParameters());
 
         if (dto.scriptFileId() != null) {
-            ScriptFileEntity file = scriptFileRepository.findById(dto.scriptFileId())
-                    .orElseThrow(() -> new RuntimeException("Script file not found"));
+            ScriptFileEntity file = getFile(dto.scriptFileId());
             template.setScriptFile(file);
         }
 
