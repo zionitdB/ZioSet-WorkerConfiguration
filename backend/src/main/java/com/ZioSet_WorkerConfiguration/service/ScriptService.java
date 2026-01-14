@@ -4,6 +4,7 @@ import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.*;
+import com.ZioSet_WorkerConfiguration.placholder.service.ScriptParserService;
 import com.ZioSet_WorkerConfiguration.repo.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ScriptService {
     private final ScriptDependencyRepository dependencyRepository;
     private final ScriptTargetSystemRepository targetSystemRepository;
     private final ScriptTemplateRepository scriptTemplateRepository;
+    private final ScriptParserService parserService;
 
     private ScriptTemplateEntity getTemplate(Long id){
         return scriptTemplateRepository.findById(id)
@@ -43,7 +45,7 @@ public class ScriptService {
         execution.setTemplate(template);
         execution.setName(dto.getName());
         execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
-        execution.setParameterValues(dto.getRequiredParameters());
+
 
         // Schedule
         execution.setScheduleType(dto.getScheduleType());
@@ -64,6 +66,8 @@ public class ScriptService {
             execution.setWeekDaysCsv(null);
         }
 
+        String script = parserService.parseScript(template.getParameters(),dto.getParams());
+        execution.setScriptText(script);
         execution = scriptRepository.save(execution);
 
         targetSystemRepository.deleteByScriptId(execution.getId());

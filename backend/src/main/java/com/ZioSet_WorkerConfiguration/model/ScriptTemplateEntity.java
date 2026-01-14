@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,10 +35,11 @@ public class ScriptTemplateEntity {
     private ScriptFileEntity scriptFile; // For file-based scripts
 
     @ElementCollection
-    @CollectionTable(name = "template_required_params")
-    @MapKeyColumn(name = "param_key")
-    @Column(name = "description")
-    private Map<String, String> requiredParameters;
+    @CollectionTable(name = "template_parameter_definitions")
+    private List<TemplateParameter> parameters;
+
+    @Lob
+    private String scriptText; //wmic product where name like ${applicationName} call uninstall /nointeractive
 
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;

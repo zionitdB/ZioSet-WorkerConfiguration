@@ -36,19 +36,9 @@ public class ScriptEntity {
 //    @Column(name = "script_type", nullable = false)
 //    private ScriptType scriptType;
 
-//    @Lob
-//    private String scriptText; // For inline scripts
+    @Lob
+    private String scriptText; // For inline scripts
 
-    // Many-to-one relationship with ScriptFile (nullable if inline)
-
-    @ElementCollection
-    @CollectionTable(
-            name = "script_param_values",
-            joinColumns = @JoinColumn(name = "script_execution_id")
-    )
-    @MapKeyColumn(name = "param_key")
-    @Column(name = "param_value")
-    private Map<String, String> parameterValues = new HashMap<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "script_file_id")

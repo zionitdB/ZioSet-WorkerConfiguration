@@ -23,8 +23,8 @@ public class ScriptDTO {
 
     private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;
-    private Map<String, String> requiredParameters;
-//    private List<ScriptTargetPlatform> targetPlatforms;
+    private List<ScriptTargetPlatform> targetPlatforms;
+    private Map<String,String> params;
 
     // Schedule fields
     private ScheduleType scheduleType;
