@@ -15,7 +15,7 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
     EntityManager entityManager;
 
     @Override
-    public List<MACInstalledSystemEntity> getMACInstalledSystemEntityByLimit(int pageNo, int perPage) {
+    public List<MACInstalledSystemEntity> getMACInstalledSystemByLimit(int pageNo, int perPage) {
         try {
             long result = 0L;
             Query q = null;
@@ -36,7 +36,7 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
     }
 
     @Override
-    public List<MACInstalledSystemEntity> getAllMACInstalledSystemEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public List<MACInstalledSystemEntity> getAllMACInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
@@ -94,7 +94,7 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
     }
 
     @Override
-    public int getCountAllMACInstalledSystemEntityyByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public int getCountAllMACInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
