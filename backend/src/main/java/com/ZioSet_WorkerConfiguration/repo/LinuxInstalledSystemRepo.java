@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface LinuxInstalledSystemRepository extends JpaRepository<LinuxInstalledSystemEntity, Long> {
+public interface LinuxInstalledSystemRepo extends JpaRepository<LinuxInstalledSystemEntity, Long> , LinuxInstalledSystemCustomeRepo {
     Optional<LinuxInstalledSystemEntity> findBySystemSerialNo(String serialNumber);
     List<LinuxInstalledSystemEntity> findAllBySystemSerialNoIn(List<String> serialNumbers);
 }

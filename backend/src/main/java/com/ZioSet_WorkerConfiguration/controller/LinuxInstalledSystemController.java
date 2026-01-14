@@ -1,14 +1,15 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.MultipleSerialNumberDto;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.LinuxInstalledSystemEntity;
-import com.ZioSet_WorkerConfiguration.model.MACInstalledSystemEntity;
-import com.ZioSet_WorkerConfiguration.repo.LinuxInstalledSystemRepository;
+import com.ZioSet_WorkerConfiguration.repo.LinuxInstalledSystemRepo;
 import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,9 +18,9 @@ import java.util.stream.Collectors;
 @CrossOrigin("*")
 @RequestMapping("/linux-installed-systems")
 public class LinuxInstalledSystemController {
-    private final LinuxInstalledSystemRepository repository;
+    private final LinuxInstalledSystemRepo repository;
 
-    public LinuxInstalledSystemController(LinuxInstalledSystemRepository repository) {
+    public LinuxInstalledSystemController(LinuxInstalledSystemRepo repository) {
         this.repository = repository;
     }
 
@@ -110,6 +111,40 @@ public class LinuxInstalledSystemController {
         }
 
         return status;
+    }
+
+    @PostMapping({"/getAllLinuxInstalledSystemEntityByLimitAndGroupSearch"})
+    public List<LinuxInstalledSystemEntity> getAllLinuxInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        List<LinuxInstalledSystemEntity> list = new ArrayList<>();
+        try {
+            list = this.repository.getAllLinuxInstalledSystemByLimitAndGroupSearch(groupSearchDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @PostMapping({"/getCountAllLinuxInstalledSystemEntityByLimitAndGroupSearch"})
+    public int getCountAllLinuxInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        int count = 0;
+        try {
+            count = this.repository.getCountAllLinuxInstalledSystemByLimitAndGroupSearch(groupSearchDTO);
+            boolean bool = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @GetMapping({"/getLinuxInstalledSystemEntityByLimit"})
+    public List<LinuxInstalledSystemEntity> getInstalledSystemEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<LinuxInstalledSystemEntity> list = new ArrayList<>();
+        try {
+            list = this.repository.getLinuxInstalledSystemByLimit(pageNo, perPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }
