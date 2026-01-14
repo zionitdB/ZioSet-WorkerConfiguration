@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface LinuxStandaloneApplicationRepo extends JpaRepository<LinuxStandalonApplication, Integer>{
+public interface LinuxStandaloneApplicationRepo extends JpaRepository<LinuxStandalonApplication, Integer>,LinuxStandaloneAplicationCustomeRepo{
 	@Query("select m from LinuxStandalonApplication m where m.active = 1")
 	List<LinuxStandalonApplication> getActiveStandalonApplicationList();
 }

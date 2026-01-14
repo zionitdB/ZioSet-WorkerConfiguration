@@ -1,7 +1,9 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.MacStandalonApplication;
+import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.repo.MacStandaloneApplicationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -118,5 +120,40 @@ public class MacStandaloneAplicationController {
 	    } 
 	    return count;
 	  }
+
+
+	@PostMapping({"/getAllMacStandalonApplicationByLimitAndGroupSearch"})
+	public List<MacStandalonApplication> getAllMacStandalonApplicationEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+		List<MacStandalonApplication> list = new ArrayList<>();
+		try {
+			list = standalonApplicationRepo.getAllMacStandaloneApplicationByLimitAndGroupSearch(groupSearchDTO);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@PostMapping({"/getCountAllMacStandalonApplicationByLimitAndGroupSearch"})
+	public int getCountAllMacStandalonApplicationByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+		int count = 0;
+		try {
+			count = standalonApplicationRepo.getCountAllMacStandaloneApplicationByLimitAndGroupSearch(groupSearchDTO);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	@GetMapping({"/getMacStandalonApplicationByLimit"})
+	public List<MacStandalonApplication> getMacStandalonApplicationByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+		List<MacStandalonApplication> list = new ArrayList<>();
+		try {
+			list = standalonApplicationRepo.getMacStandaloneApplicationByLimit(pageNo, perPage);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 
 }
