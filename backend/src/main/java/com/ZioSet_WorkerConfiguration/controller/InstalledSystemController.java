@@ -7,7 +7,7 @@ import com.ZioSet_WorkerConfiguration.model.DeletedSystems;
 import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.SystemOs;
 import com.ZioSet_WorkerConfiguration.repo.DeletedSystemsRepo;
-import com.ZioSet_WorkerConfiguration.repo.InstalledSystemRepository;
+import com.ZioSet_WorkerConfiguration.repo.InstalledSystemRepo;
 import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,10 +24,10 @@ import java.util.stream.Collectors;
 @CrossOrigin("*")
 @RequestMapping("/installed-systems")
 public class InstalledSystemController {
-    private final InstalledSystemRepository repository;
+    private final InstalledSystemRepo repository;
     private final DeletedSystemsRepo deletedSystemsRepo;
 
-    public InstalledSystemController(InstalledSystemRepository repository, DeletedSystemsRepo deletedSystemsRepo) {
+    public InstalledSystemController(InstalledSystemRepo repository, DeletedSystemsRepo deletedSystemsRepo) {
         this.repository = repository;
         this.deletedSystemsRepo = deletedSystemsRepo;
     }
@@ -159,43 +159,43 @@ public class InstalledSystemController {
         }
     }
 
-//    @PostMapping({"/getAllInstalledSystemEntityByLimitAndGroupSearch"})
-//    @ResponseBody
-//    public List<InstalledSystemEntity> getAllInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
-//        List<InstalledSystemEntity> list = new ArrayList<>();
-//        try {
-//            list = this.repository.getAllInstalledSystemEntityyByLimitAndGroupSearch(groupSearchDTO);
-//            boolean bool = false;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return list;
-//    }
-//
-//    @PostMapping({"/getCountAllInstalledSystemEntityByLimitAndGroupSearch"})
-//    @ResponseBody
-//    public int getCountAllInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
-//        int count = 0;
-//        try {
-//            count = this.repository.getCountAllInstalledSystemEntityByLimitAndGroupSearch(groupSearchDTO);
-//            boolean bool = false;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return count;
-//    }
-//
-//    @GetMapping({"/getInstalledSystemEntityByLimit"})
-//    @ResponseBody
-//    public List<InstalledSystemEntity> getInstalledSystemEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
-//        List<InstalledSystemEntity> list = new ArrayList<InstalledSystemEntity>();
-//        try {
-//            list = this.repository.getInstalledSystemEntityyByLimit(pageNo, perPage);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return list;
-//    }
+    @PostMapping({"/getAllInstalledSystemEntityByLimitAndGroupSearch"})
+    @ResponseBody
+    public List<InstalledSystemEntity> getAllInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        List<InstalledSystemEntity> list = new ArrayList<>();
+        try {
+            list = this.repository.getAllInstalledSystemByLimitAndGroupSearch(groupSearchDTO);
+            boolean bool = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @PostMapping({"/getCountAllInstalledSystemEntityByLimitAndGroupSearch"})
+    @ResponseBody
+    public int getCountAllInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        int count = 0;
+        try {
+            count = this.repository.getCountAllInstalledSystemByLimitAndGroupSearch(groupSearchDTO);
+            boolean bool = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @GetMapping({"/getInstalledSystemEntityByLimit"})
+    @ResponseBody
+    public List<InstalledSystemEntity> getInstalledSystemEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<InstalledSystemEntity> list = new ArrayList<InstalledSystemEntity>();
+        try {
+            list = this.repository.getInstalledSystemByLimit(pageNo, perPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 
 
 }

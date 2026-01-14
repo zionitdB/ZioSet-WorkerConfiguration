@@ -12,12 +12,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCustomeRepo {
+public class InstalledSystemCustomeRepoImpl implements InstalledSystemCustomeRepo {
     @PersistenceContext
     EntityManager entityManager;
 
     @Override
-    public List<InstalledSystemEntity> getInstalledSystemEntityyByLimit(int pageNo, int perPage) {
+    public List<InstalledSystemEntity> getInstalledSystemByLimit(int pageNo, int perPage) {
         try {
             long result = 0L;
             Query q = null;
@@ -38,7 +38,7 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
     }
 
     @Override
-    public List<InstalledSystemEntity> getAllInstalledSystemEntityyByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public List<InstalledSystemEntity> getAllInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
@@ -96,7 +96,7 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
     }
 
     @Override
-    public int getCountAllInstalledSystemEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public int getCountAllInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
