@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -126,6 +129,15 @@ public class ConfigurationController {
 	@ResponseBody
 	public List<CommandConfiguration> getCommnadsByCommandId(@RequestParam("commandId") String commandId) {
 		return this.commandConfigurationRepo.getCommandsByCommandId(commandId);
+	}
+
+	@GetMapping("/getCommandsByCommandIdPage")
+	@ResponseBody
+	public Page<CommandConfiguration> getCommnadsByCommandId(@RequestParam int pageNo,
+															 @RequestParam int perPage,
+															 @RequestParam("commandId") String commandId) {
+		Pageable pageable = PageRequest.of(pageNo,perPage);
+		return this.commandConfigurationRepo.getCommandsByCommandId(commandId,pageable);
 	}
 
 	@GetMapping("/getCommandIdListByAction")
