@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface MacStandaloneApplicationRepo extends JpaRepository<MacStandalonApplication, Integer>{
+public interface MacStandaloneApplicationRepo extends JpaRepository<MacStandalonApplication, Integer>,MacStandaloneApplicationCustomRepo{
 	@Query("select m from MacStandalonApplication m where m.active = 1")
 	List<MacStandalonApplication> getActiveStandalonApplicationList();
 }

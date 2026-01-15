@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.MultipleSerialNumberDto;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.DeletedSystems;
@@ -11,6 +12,7 @@ import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -113,6 +115,43 @@ public class MACInstalledSystemController {
 
         return status;
     }
+
+    @PostMapping({"/getAllMACInstalledSystemEntityByLimitAndGroupSearch"})
+    public List<MACInstalledSystemEntity> getAllMACInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        List<MACInstalledSystemEntity> list = new ArrayList<>();
+        try {
+            list = this.repository.getAllMACInstalledSystemByLimitAndGroupSearch(groupSearchDTO);
+            boolean bool = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @PostMapping({"/getCountAllMACInstalledSystemEntityByLimitAndGroupSearch"})
+    public int getCountAllMacInstalledSystemEntityByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+        int count = 0;
+        try {
+            count = this.repository.getCountAllMACInstalledSystemByLimitAndGroupSearch(groupSearchDTO);
+            boolean bool = false;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @GetMapping({"/getMACInstalledSystemEntityByLimit"})
+    public List<MACInstalledSystemEntity> getInstalledSystemEntityByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+        List<MACInstalledSystemEntity> list = new ArrayList<>();
+        try {
+            list = this.repository.getMACInstalledSystemByLimit(pageNo, perPage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 
 
 

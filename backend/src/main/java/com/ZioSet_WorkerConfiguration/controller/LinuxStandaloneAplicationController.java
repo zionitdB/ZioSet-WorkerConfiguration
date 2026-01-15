@@ -1,7 +1,9 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.LinuxStandalonApplication;
+import com.ZioSet_WorkerConfiguration.model.MacStandalonApplication;
 import com.ZioSet_WorkerConfiguration.repo.LinuxStandaloneApplicationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +16,6 @@ import java.util.List;
 @CrossOrigin({"*"})
 @RequestMapping({"/linux/standaloneApplicationController"})
 public class LinuxStandaloneAplicationController {
-	
-	
-	
-	
 	
 	@Autowired
 	LinuxStandaloneApplicationRepo standalonApplicationRepo;
@@ -118,5 +116,40 @@ public class LinuxStandaloneAplicationController {
 	    } 
 	    return count;
 	  }
+
+
+	@PostMapping({"/getAllLinuxStandalonApplicationByLimitAndGroupSearch"})
+	public List<LinuxStandalonApplication> getAllLinuxStandalonApplicationByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+		List<LinuxStandalonApplication> list = new ArrayList<>();
+		try {
+			list = standalonApplicationRepo.getAllLinuxStandalonApplicationByLimitAndGroupSearch(groupSearchDTO);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@PostMapping({"/getCountAllLinuxStandalonApplicationByLimitAndGroupSearch"})
+	public int getCountAllLinuxStandalonApplicationByLimitAndGroupSearch(@RequestBody GroupSearchDTO groupSearchDTO) {
+		int count = 0;
+		try {
+			count = standalonApplicationRepo.getCountAllLinuxStandalonApplicationByLimitAndGroupSearch(groupSearchDTO);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return count;
+	}
+
+	@GetMapping({"/getLinuxStandalonApplicationByLimit"})
+	public List<LinuxStandalonApplication> getLinuxStandalonApplicationApplicationByLimit(@RequestParam int pageNo, @RequestParam int perPage) {
+		List<LinuxStandalonApplication> list = new ArrayList<>();
+		try {
+			list = standalonApplicationRepo.getLinuxStandalonApplicationByLimit(pageNo, perPage);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 
 }

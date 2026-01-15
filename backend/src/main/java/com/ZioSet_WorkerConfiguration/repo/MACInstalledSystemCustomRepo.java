@@ -6,10 +6,10 @@ import com.ZioSet_WorkerConfiguration.model.MACInstalledSystemEntity;
 import java.util.List;
 
 public interface MACInstalledSystemCustomRepo {
-    List<MACInstalledSystemEntity> getMACInstalledSystemEntityByLimit(int pageNo, int perPage);
+    List<MACInstalledSystemEntity> getMACInstalledSystemByLimit(int pageNo, int perPage);
 
-    List<MACInstalledSystemEntity> getAllMACInstalledSystemEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO);
+    List<MACInstalledSystemEntity> getAllMACInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO);
 
-    int getCountAllMACInstalledSystemEntityyByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO);
+    int getCountAllMACInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO);
 
 }

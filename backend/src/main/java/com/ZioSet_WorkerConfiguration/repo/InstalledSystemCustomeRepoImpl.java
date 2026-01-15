@@ -2,33 +2,35 @@ package com.ZioSet_WorkerConfiguration.repo;
 
 import com.ZioSet_WorkerConfiguration.dto.ColumnSearch;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.model.MACInstalledSystemEntity;
+import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCustomRepo{
+@Repository
+public class InstalledSystemCustomeRepoImpl implements InstalledSystemCustomeRepo {
     @PersistenceContext
     EntityManager entityManager;
 
     @Override
-    public List<MACInstalledSystemEntity> getMACInstalledSystemByLimit(int pageNo, int perPage) {
+    public List<InstalledSystemEntity> getInstalledSystemByLimit(int pageNo, int perPage) {
         try {
             long result = 0L;
             Query q = null;
             result = ((Long)this.entityManager
-                    .createQuery("SELECT count(*) FROM MACInstalledSystemEntity a ")
+                    .createQuery("SELECT count(*) FROM InstalledSystemEntity a ")
 
                     .getSingleResult()).longValue();
-            TypedQuery typedQuery = this.entityManager.createQuery("select a from  MACInstalledSystemEntity a ", MACInstalledSystemEntity.class);
+            TypedQuery typedQuery = this.entityManager.createQuery("select a from  InstalledSystemEntity a ", InstalledSystemEntity.class);
             System.out.println("Count  " + result);
             int first = (pageNo - 1) * perPage;
             typedQuery.setFirstResult(first);
             typedQuery.setMaxResults(perPage);
-            List<MACInstalledSystemEntity> list = typedQuery.getResultList();
+            List<InstalledSystemEntity> list = typedQuery.getResultList();
             return list;
         } finally {
             this.entityManager.close();
@@ -36,11 +38,11 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
     }
 
     @Override
-    public List<MACInstalledSystemEntity> getAllMACInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public List<InstalledSystemEntity> getAllInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
-        String queryStr = "from MACInstalledSystemEntity a where  ";
+        String queryStr = "from InstalledSystemEntity a where  ";
         int i = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase(""))
@@ -52,7 +54,7 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
             i++;
         }
         System.out.println("QUERY STRING " + queryStr);
-        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, MACInstalledSystemEntity.class);
+        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, InstalledSystemEntity.class);
         int j = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase("")) {
@@ -88,17 +90,17 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
             typedQuery.setMaxResults(perPage);
         }
 
-        List<MACInstalledSystemEntity> list = typedQuery.getResultList();
+        List<InstalledSystemEntity> list = typedQuery.getResultList();
         System.out.println("Value  " + list.size());
         return list;
     }
 
     @Override
-    public int getCountAllMACInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public int getCountAllInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
-        String queryStr = "from MACInstalledSystemEntity a where  ";
+        String queryStr = "from InstalledSystemEntity a where  ";
         int i = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase(""))
@@ -110,7 +112,7 @@ public class MACInstalledSystemCustomRepoImpl implements MACInstalledSystemCusto
             i++;
         }
         System.out.println("QUERY STRING " + queryStr);
-        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, MACInstalledSystemEntity.class);
+        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, InstalledSystemEntity.class);
         int j = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase("")) {

@@ -2,35 +2,34 @@ package com.ZioSet_WorkerConfiguration.repo;
 
 import com.ZioSet_WorkerConfiguration.dto.ColumnSearch;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
+import com.ZioSet_WorkerConfiguration.model.LinuxInstalledSystemEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCustomeRepo {
+public class LinuxInstalledSystemCustomeRepoImpl implements LinuxInstalledSystemCustomeRepo {
+
     @PersistenceContext
     EntityManager entityManager;
 
     @Override
-    public List<InstalledSystemEntity> getInstalledSystemEntityyByLimit(int pageNo, int perPage) {
+    public List<LinuxInstalledSystemEntity> getLinuxInstalledSystemByLimit(int pageNo, int perPage) {
         try {
             long result = 0L;
             Query q = null;
             result = ((Long)this.entityManager
-                    .createQuery("SELECT count(*) FROM InstalledSystemEntity a ")
+                    .createQuery("SELECT count(*) FROM LinuxInstalledSystemEntity a ")
 
                     .getSingleResult()).longValue();
-            TypedQuery typedQuery = this.entityManager.createQuery("select a from  InstalledSystemEntity a ", InstalledSystemEntity.class);
+            TypedQuery typedQuery = this.entityManager.createQuery("select a from  LinuxInstalledSystemEntity a ", LinuxInstalledSystemEntity.class);
             System.out.println("Count  " + result);
             int first = (pageNo - 1) * perPage;
             typedQuery.setFirstResult(first);
             typedQuery.setMaxResults(perPage);
-            List<InstalledSystemEntity> list = typedQuery.getResultList();
+            List<LinuxInstalledSystemEntity> list = typedQuery.getResultList();
             return list;
         } finally {
             this.entityManager.close();
@@ -38,11 +37,11 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
     }
 
     @Override
-    public List<InstalledSystemEntity> getAllInstalledSystemEntityyByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public List<LinuxInstalledSystemEntity> getAllLinuxInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
-        String queryStr = "from InstalledSystemEntity a where  ";
+        String queryStr = "from LinuxInstalledSystemEntity a where  ";
         int i = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase(""))
@@ -54,7 +53,7 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
             i++;
         }
         System.out.println("QUERY STRING " + queryStr);
-        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, InstalledSystemEntity.class);
+        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, LinuxInstalledSystemEntity.class);
         int j = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase("")) {
@@ -90,17 +89,17 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
             typedQuery.setMaxResults(perPage);
         }
 
-        List<InstalledSystemEntity> list = typedQuery.getResultList();
+        List<LinuxInstalledSystemEntity> list = typedQuery.getResultList();
         System.out.println("Value  " + list.size());
         return list;
     }
 
     @Override
-    public int getCountAllInstalledSystemEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
+    public int getCountAllLinuxInstalledSystemByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO) {
         int pageNo = groupSearchDTO.getPageNo();
         int perPage = groupSearchDTO.getPerPage();
         Query q = null;
-        String queryStr = "from InstalledSystemEntity a where  ";
+        String queryStr = "from LinuxInstalledSystemEntity a where  ";
         int i = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase(""))
@@ -112,7 +111,7 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
             i++;
         }
         System.out.println("QUERY STRING " + queryStr);
-        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, InstalledSystemEntity.class);
+        TypedQuery typedQuery = this.entityManager.createQuery(queryStr, LinuxInstalledSystemEntity.class);
         int j = 0;
         for (ColumnSearch columnSearch : groupSearchDTO.getColumns()) {
             if (columnSearch.getValue() != "" || !columnSearch.getValue().equalsIgnoreCase("")) {
@@ -122,7 +121,6 @@ public class InstalledSystemEntityCustomeRepoImpl implements InstalledSystemCust
             }
             j++;
         }
-        int total_count = typedQuery.getResultList().size();
-        return total_count;
+        return typedQuery.getResultList().size();
     }
 }
