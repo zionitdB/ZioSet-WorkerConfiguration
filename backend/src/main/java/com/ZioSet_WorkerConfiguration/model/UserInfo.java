@@ -37,19 +37,24 @@ public class UserInfo {
   
   @Column(name = "email")
   private String email;
-  
- 
-  
+
   @Column(name = "active")
   private int active;
   
   @Column(name = "upd_datetime")
   private Date updDatetime;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+  @ManyToOne
+  @JoinColumn(name = "role_id")
+  private Role role;
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public int getUserId() {
 	return userId;

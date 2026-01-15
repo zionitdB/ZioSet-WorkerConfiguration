@@ -20,7 +20,7 @@ public interface UserServicesZioSet {
 
     List<Role> getAllRoles();
 
-    void deleteUser(UserInfo paramUserInfo);
+    void deleteUser(Integer id);
 
     List<UserInfo> getUserByLimit(int paramInt1, int paramInt2);
 
