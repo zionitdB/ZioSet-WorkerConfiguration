@@ -58,7 +58,8 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
     }
 
     @Override
-    public void deleteUser(UserInfo userInfo) {
+    public void deleteUser(Integer id) {
+        UserInfo userInfo = userRepo.findById(id).orElseThrow(()-> new RuntimeException("User not found."));
         this.userRepo.delete(userInfo);
     }
 
