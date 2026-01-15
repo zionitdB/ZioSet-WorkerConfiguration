@@ -45,6 +45,7 @@ public class ScriptService {
         execution.setTemplate(template);
         execution.setName(dto.getName());
         execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        execution.setAddedBy(dto.getAddedBy());
 
 
         // Schedule
@@ -68,6 +69,10 @@ public class ScriptService {
 
         String script = parserService.parseScript(template.getParameters(),dto.getParams());
         execution.setScriptText(script);
+
+        Map<String, String> scriptArgs = parserService.extractScriptArguments(template.getParameters(), dto.getParams());
+        execution.setScriptArgument(scriptArgs);
+
         execution = scriptRepository.save(execution);
 
         targetSystemRepository.deleteByScriptId(execution.getId());

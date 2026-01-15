@@ -3,6 +3,6 @@ package com.ZioSet_WorkerConfiguration.enums;
 public enum ParamType {
     TEXT,
     DEPENDENCY_FILE,
-    NUMBER,
-    BOOLEAN
+    SCRIPT_FILE,
+    SCRIPT_ARGUMENT
 }

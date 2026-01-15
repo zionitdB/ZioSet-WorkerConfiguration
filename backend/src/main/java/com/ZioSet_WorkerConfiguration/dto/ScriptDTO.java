@@ -24,7 +24,11 @@ public class ScriptDTO {
     private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;
     private List<ScriptTargetPlatform> targetPlatforms;
+
+    //for req_parameter_value and for script_argument_value
     private Map<String,String> params;
+
+    private Long addedBy;
 
     // Schedule fields
     private ScheduleType scheduleType;

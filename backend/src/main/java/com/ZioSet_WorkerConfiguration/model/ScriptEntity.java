@@ -39,11 +39,19 @@ public class ScriptEntity {
     @Lob
     private String scriptText; // For inline scripts
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "script_file_id")
     @JsonIgnore
     private ScriptFileEntity scriptFile; // For file-based scripts
+
+    @ElementCollection
+    @CollectionTable(
+            name = "script_arguments",
+            joinColumns = @JoinColumn(name = "script_id")
+    )
+    @MapKeyColumn(name = "arg_key")
+    @Column(name = "arg_value")
+    private Map<String, String> scriptArgument;
 
     // One-to-many relationship with dependencies
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -82,6 +90,8 @@ public class ScriptEntity {
     private Integer monthDay;          // e.g., 2, 15, 31
 
     private LocalTime timeOfDay;
+
+    private Long addedBy;
 
     @PreUpdate
     public void setUpdatedAt() {

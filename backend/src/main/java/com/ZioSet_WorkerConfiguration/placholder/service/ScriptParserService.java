@@ -5,6 +5,7 @@ import com.ZioSet_WorkerConfiguration.model.TemplateParameter;
 import com.ZioSet_WorkerConfiguration.placholder.parser.TextParameterParser;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,30 @@ public class ScriptParserService {
 
                 break;
             }
+
         }
         return finalScript;
     }
+
+    public Map<String, String> extractScriptArguments(
+            List<TemplateParameter> parameters,
+            Map<String, String> parameterValuesFromDto) {
+
+        Map<String, String> scriptArgs = new HashMap<>();
+
+        for (TemplateParameter param : parameters) {
+
+            if (param.getParamType() == ParamType.SCRIPT_ARGUMENT) {
+
+                String value = parameterValuesFromDto.get(param.getParamName());
+
+                if (value != null) {
+                    scriptArgs.put(param.getParamName(), value);
+                }
+            }
+        }
+
+        return scriptArgs;
+    }
+
 }
