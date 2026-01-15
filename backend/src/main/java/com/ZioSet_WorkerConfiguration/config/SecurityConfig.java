@@ -1,6 +1,5 @@
 package com.ZioSet_WorkerConfiguration.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,8 +19,8 @@ import com.ZioSet_WorkerConfiguration.service.UserDetailsServiceImpl;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    private UserDetailsServiceImpl userDetailsService;
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     public SecurityConfig(UserDetailsServiceImpl userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
         this.userDetailsService = userDetailsService;
@@ -59,7 +58,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:5173", "http://localhost:5174", "https://zensar-agent.zioset.com", "https://zensar.zioset.com", "http://localhost:8085", "http://20.219.1.165:8085", "http://20.219.1.165:8084", "http://localhost:3000"));
+                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:5173", "https://zensar-agent.zioset.com", "https://zensar.zioset.com", "http://localhost:8085", "http://4.213.97.72:8085", "http://4.213.97.72:8084", "http://localhost:3000"));
                     corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
                     corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
@@ -70,6 +69,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // React static files
                         .requestMatchers(
+                                "/app/**",
+                                "/app",
                                 "/",
                                 "/index.html",
                                 "/vite.svg",
@@ -84,9 +85,11 @@ public class SecurityConfig {
                         .requestMatchers("/standaloneApplicationController/getStandalonApplicationList").permitAll()
                         .requestMatchers("/mac/standaloneApplicationController/getActiveList").permitAll()
                         .requestMatchers("/installed-systems/get-all-list").permitAll()
+                        .requestMatchers("/installed-systems/delete-by-system-serial-number").permitAll()
                         .requestMatchers("/mac-installed-systems/get-all-list").permitAll()
+                        .requestMatchers("/mac-installed-systems/delete-by-system-serial-number").permitAll()
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());
@@ -99,6 +102,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(
+                "/app/**",
+                "/app",
                 "/assets/**",
                 "/index.html",
                 "/vite.svg"
