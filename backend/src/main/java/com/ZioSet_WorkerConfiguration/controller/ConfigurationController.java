@@ -136,7 +136,7 @@ public class ConfigurationController {
 	public Page<CommandConfiguration> getCommnadsByCommandId(@RequestParam int pageNo,
 															 @RequestParam int perPage,
 															 @RequestParam("commandId") String commandId) {
-		Pageable pageable = PageRequest.of(pageNo,perPage);
+		Pageable pageable = PageRequest.of(--pageNo,perPage);
 		return this.commandConfigurationRepo.getCommandsByCommandId(commandId,pageable);
 	}
 

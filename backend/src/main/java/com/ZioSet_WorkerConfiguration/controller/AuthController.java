@@ -30,8 +30,6 @@ public class AuthController {
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-    System.out.println("doing login");
-    System.out.println(loginRequest.toString());
     Authentication authentication = authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -42,7 +40,7 @@ public class AuthController {
     ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-        .body(new UserInfo()); // You might want to return a DTO with user info instead of the entity
+        .body(userDetails); // You might want to return a DTO with user info instead of the entity
   }
 
   @PostMapping("/signout")

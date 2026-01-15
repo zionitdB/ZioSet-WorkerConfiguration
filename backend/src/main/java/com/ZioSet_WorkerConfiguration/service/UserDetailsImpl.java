@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,17 +20,29 @@ public class UserDetailsImpl implements UserDetails {
 
 	private String email;
 
+	private Role role;
+
+	private String firstName;
+
+	private String lastName;
+
+	private int active;
+
 	@JsonIgnore
 	private String password;
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(int id, String username, String email, String password,
+	public UserDetailsImpl(int id, String username, String email, String password, String firstName, String lastName, int active, Role role,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.active = active;
+		this.role = role;
 		this.authorities = authorities;
 	}
 
@@ -39,7 +52,11 @@ public class UserDetailsImpl implements UserDetails {
 				user.getUserId(), 
 				user.getUsername(), 
 				user.getEmail(),
-				user.getPassword(), 
+				user.getPassword(),
+				user.getFirstName(),
+				user.getLastName(),
+				user.getActive(),
+				user.getRole(),
 				Collections.emptyList());
 	}
 
@@ -68,22 +85,22 @@ public class UserDetailsImpl implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return true;
+		return active == 1;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return active == 1;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return true;
+		return active == 1;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return active == 1;
 	}
 
 	@Override
@@ -95,4 +112,17 @@ public class UserDetailsImpl implements UserDetails {
 		UserDetailsImpl user = (UserDetailsImpl) o;
 		return Objects.equals(id, user.id);
 	}
+
+    public Role getRole() {
+        return role;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
 }

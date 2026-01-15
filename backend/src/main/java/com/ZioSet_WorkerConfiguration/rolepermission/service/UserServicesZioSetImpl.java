@@ -1,6 +1,8 @@
 package com.ZioSet_WorkerConfiguration.rolepermission.service;
 
 
+import com.ZioSet_WorkerConfiguration.dto.AddUserDTO;
+import com.ZioSet_WorkerConfiguration.dto.AdminChangePasswordDTO;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.model.UserInfo;
 import com.ZioSet_WorkerConfiguration.repo.UserRepo;
@@ -9,6 +11,7 @@ import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import com.ZioSet_WorkerConfiguration.rolepermission.repository.RoleRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +26,9 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
 
     @Autowired
     RoleRepo roleRepo;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     public String generateRandomCode() {
         int digits = 4;
@@ -43,9 +49,84 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
     }
 
     @Override
-    public void saveUser(UserInfo userInfo) {
-        this.userRepo.save(userInfo);
+    public UserInfo saveUser(AddUserDTO dto) {
+
+        if (dto.getUsername() == null || dto.getUsername().isBlank()) {
+            throw new RuntimeException("Username is required");
+        }
+
+        if (dto.getEmail() == null || dto.getEmail().isBlank()) {
+            throw new RuntimeException("Email is required");
+        }
+
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new RuntimeException("Password is required");
+        }
+
+        if (userRepo.existsByUsername(dto.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (userRepo.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        Role role = roleRepo.findById(dto.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Invalid role"));
+
+        UserInfo user = new UserInfo();
+        user.setUsername(dto.getUsername());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setActive(dto.getActive());
+        user.setRole(role);
+
+        // Encrypt password
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        return userRepo.save(user);
     }
+
+    @Override
+    public UserInfo updateUser(UserInfo userInfo) {
+
+        UserInfo dbUser = userRepo.findById(userInfo.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!dbUser.getUsername().equals(userInfo.getUsername()) &&
+                userRepo.existsByUsername(userInfo.getUsername())) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (!dbUser.getEmail().equals(userInfo.getEmail()) &&
+                userRepo.existsByEmail(userInfo.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        // update allowed fields
+        dbUser.setUsername(userInfo.getUsername());
+        dbUser.setFirstName(userInfo.getFirstName());
+        dbUser.setLastName(userInfo.getLastName());
+        dbUser.setEmail(userInfo.getEmail());
+        dbUser.setActive(userInfo.getActive());
+        dbUser.setRole(userInfo.getRole());
+        return userRepo.save(dbUser);
+    }
+
+    public void adminChangePassword(AdminChangePasswordDTO dto) {
+
+        if (dto.getNewPassword() == null || dto.getNewPassword().isBlank()) {
+            throw new RuntimeException("New password is required");
+        }
+
+        UserInfo user = userRepo.findById(dto.getUserId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepo.save(user);
+    }
+
 
     @Override
     public List<UserInfo> getAllUsers() {
@@ -146,11 +227,5 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
     @Override
     public Optional<UserInfo> getUserById1(int userId) {
         return userRepo.findById(userId);
-    }
-
-
-    @Override
-    public UserDto loginUser(UserInfo paramUserInfo) {
-        return null;
     }
 }
