@@ -89,6 +89,8 @@ public class SecurityConfig {
                         .requestMatchers("/mac-installed-systems/get-all-list").permitAll()
                         .requestMatchers("/mac-installed-systems/delete-by-system-serial-number").permitAll()
 
+                        //swagger
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
