@@ -1,6 +1,8 @@
 package com.ZioSet_WorkerConfiguration.rolepermission.service;
 
 
+import com.ZioSet_WorkerConfiguration.dto.AddUserDTO;
+import com.ZioSet_WorkerConfiguration.dto.AdminChangePasswordDTO;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.model.UserInfo;
 import com.ZioSet_WorkerConfiguration.rolepermission.dto.UserDto;
@@ -10,11 +12,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserServicesZioSet {
-    UserDto loginUser(UserInfo paramUserInfo);
-
     UserInfo getUserById(int paramInt);
 
-    void saveUser(UserInfo paramUserInfo);
+    UserInfo saveUser(AddUserDTO paramUserInfo);
+
+    UserInfo updateUser(UserInfo paramUserInfo);
+
+    void adminChangePassword(AdminChangePasswordDTO dto);
 
     List<UserInfo> getAllUsers();
 

@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 
+import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseCookie;
@@ -29,7 +30,7 @@ public class JwtUtilsTest {
 
     @Test
     public void testGenerateJwtCookie() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(1, "testuser", "test@example.com", "password", Collections.emptyList());
+        UserDetailsImpl userDetails = new UserDetailsImpl(1, "testuser", "test@example.com", "password",  "firstName", "lastName", 1, new Role(), Collections.emptyList());
         ResponseCookie cookie = jwtUtils.generateJwtCookie(userDetails);
         assertNotNull(cookie);
         assertEquals("zioset-jwt", cookie.getName());

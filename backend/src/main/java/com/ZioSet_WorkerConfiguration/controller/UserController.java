@@ -1,5 +1,7 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.AddUserDTO;
+import com.ZioSet_WorkerConfiguration.dto.AdminChangePasswordDTO;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.UserInfo;
@@ -44,11 +46,11 @@ public class UserController {
     }
 
     @GetMapping({"/getAllByPagination"})
-    public List<UserInfo> getUserByPagination(@RequestParam(defaultValue = "1") int page,
-                                              @RequestParam(defaultValue = "10") int pageNo) {
+    public List<UserInfo> getUserByPagination(@RequestParam(defaultValue = "1") int pageNo,
+                                              @RequestParam(defaultValue = "10") int perPage) {
         List<UserInfo> userInfoList = new ArrayList<>();
         try {
-            userInfoList= this.userService.getUserByLimit(page, pageNo);
+            userInfoList= this.userService.getUserByLimit(pageNo, perPage);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,33 +79,53 @@ public class UserController {
         return count;
     }
 
-    @PostMapping({"/addUser"})
-    public ResponseEntity addUser(@RequestBody UserInfo userInfo) {
-        ResponceObj responceDTO = new ResponceObj();
+    @PostMapping("/addUser")
+    public ResponseEntity<?> addUser(@RequestBody AddUserDTO dto) {
+        ResponceObj response = new ResponceObj();
         try {
-            userService.saveUser(userInfo);
+            UserInfo user = userService.saveUser(dto);
+            response.setData(user);
+            response.setCode(200);
+            response.setMessage("User created successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
-            responceDTO.setCode(500);
-            responceDTO.setMessage(e.getMessage());
-            return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
+            response.setCode(400);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
-        return null;
     }
 
-    @PutMapping({"/updateUser"})
-    public ResponseEntity updateUser(@RequestBody UserInfo userInfo) {
-        ResponceObj responceDTO = new ResponceObj();
+    @PutMapping("/updateUser")
+    public ResponseEntity<?> updateUser(@RequestBody UserInfo userInfo) {
+        ResponceObj response = new ResponceObj();
         try {
-            userService.saveUser(userInfo);
+            UserInfo user = userService.updateUser(userInfo);
+            response.setData(user);
+            response.setCode(200);
+            response.setMessage("User updated successfully");
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            e.printStackTrace();
-            responceDTO.setCode(500);
-            responceDTO.setMessage(e.getMessage());
-            return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
+            response.setCode(400);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         }
-        return null;
     }
+
+    @PutMapping("/admin/changePassword")
+    public ResponseEntity<?> adminChangePassword(@RequestBody AdminChangePasswordDTO dto) {
+        ResponceObj response = new ResponceObj();
+        try {
+            userService.adminChangePassword(dto);
+            response.setCode(200);
+            response.setMessage("Password updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.setCode(400);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
 
     @DeleteMapping({"/{id}"})
     public ResponseEntity deleteUser(@PathVariable Integer id) {

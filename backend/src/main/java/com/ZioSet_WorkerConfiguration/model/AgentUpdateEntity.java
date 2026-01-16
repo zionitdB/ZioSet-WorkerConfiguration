@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "agent_updates")
 public class AgentUpdateEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "uuid", nullable = false, unique = true)

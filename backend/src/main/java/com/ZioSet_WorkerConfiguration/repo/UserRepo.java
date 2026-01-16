@@ -12,4 +12,8 @@ public interface UserRepo extends JpaRepository<UserInfo, Integer> , UserCustomR
 	@Query("from UserInfo u where u.username=?1")
 	Optional<UserInfo> getUsersByUsername(String username);
 
+	boolean existsByUsername(String username);
+
+	boolean existsByEmail(String email);
+
 }

@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 @Table(name = "agent_update_files")
 public class AgentUpdateFileEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne

@@ -924,35 +924,6 @@ public class AccessController {
 		}
 	}
 
-	@PostMapping({"/changePassword"})
-	public ResponseEntity<ResponceObj> changePassword(@RequestBody ChangePasswordDTO changePassword) {
-		ResponceObj responceDTO = new ResponceObj();
-		try {
-			Optional<UserInfo> optional=userService.getUserById1(changePassword.getUserId());
-			if(optional.isPresent()) {
-				UserInfo userInfo= optional.get();
-				if(userInfo.getPassword().equalsIgnoreCase(changePassword.getCurrentPassword())) {
-					userInfo.setPassword(changePassword.getNewPassword());
-					userService.saveUser(userInfo);
-					responceDTO.setCode(200);
-					responceDTO.setMessage("Password Change Successfully");
-				}else {
-					responceDTO.setCode(500);
-					responceDTO.setMessage("Current Password Is Invalid");
-				}
-
-			}
-
-
-			return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
-		} catch (Exception e) {
-			responceDTO.setCode(500);
-			responceDTO.setMessage(e.getMessage());
-			return new ResponseEntity(responceDTO, HttpStatus.ACCEPTED);
-		}
-	}
-
-
 	@GetMapping({"/getPermissionsByPagination/{page_no}/{item_per_page}"})
 	@ResponseBody
 	public List<Permissions> getPermissionsByPagination(@PathVariable int page_no, @PathVariable int item_per_page) {
