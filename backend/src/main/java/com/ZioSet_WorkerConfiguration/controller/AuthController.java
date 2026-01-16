@@ -19,6 +19,8 @@ import com.ZioSet_WorkerConfiguration.model.UserInfo;
 import com.ZioSet_WorkerConfiguration.service.UserDetailsImpl;
 import com.ZioSet_WorkerConfiguration.utils.JwtUtils;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -47,6 +49,6 @@ public class AuthController {
   public ResponseEntity<?> logoutUser() {
     ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
     return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body("You've been signed out!");
+        .body(Map.of("message", "You've been signed out!"));
   }
 }
