@@ -32,6 +32,13 @@ public class JwtUtils {
   @Value("${app.jwt.cookie-name}")
   private String jwtCookie;
 
+  @Value("${app.cookie.secure}")
+  private boolean cookieSecure;
+
+  @Value("${app.cookie.samesite}")
+  private String sameSite;
+
+
   public String getJwtFromCookies(HttpServletRequest request) {
     Cookie cookie = WebUtils.getCookie(request, jwtCookie);
     if (cookie != null) {
@@ -47,8 +54,8 @@ public class JwtUtils {
     return ResponseCookie.from(jwtCookie, jwt)
             .path("/")
             .httpOnly(true)
-            .secure(true)              // REQUIRED for SameSite=None
-            .sameSite("Lax")          // REQUIRED for cross-site
+            .secure(cookieSecure)
+            .sameSite(sameSite)
             .maxAge(jwtExpirationMs / 1000)
             .build();
   }
@@ -58,11 +65,12 @@ public class JwtUtils {
     return ResponseCookie.from(jwtCookie, "")
             .path("/")
             .httpOnly(true)
-            .secure(true)
-            .sameSite("Lax")
+            .secure(cookieSecure)
+            .sameSite(sameSite)
             .maxAge(0)
             .build();
   }
+
 
   public String getUserNameFromJwtToken(String token) {
     return Jwts.parserBuilder()
