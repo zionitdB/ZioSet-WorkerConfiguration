@@ -26,7 +26,9 @@ import {
   useGetUsersByGroupSearch, 
   useGetUserCountByGroupSearch, 
   useAddAgentUpdate,
-  useGetInstalledSystems
+  useGetInstalledSystems,
+  useGetLocalDirectory,
+  useGetServerDirectory
 } from "./hooks";
 
 import {
@@ -39,6 +41,7 @@ import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
 import CustomModal from "@/components/common/Modal/DialogModal";
 import Breadcrumb from "@/components/common/breadcrumb";
+import { Combobox } from "@/components/common/ComboBox";
 
 const formatDate = (date: string) => {
   if (!date) return "-";
@@ -58,7 +61,24 @@ const AgentUpdateForm = () => {
   const getUserCountByGroupSearch = useGetUserCountByGroupSearch();
   const { data: installSystem } = useGetInstalledSystems();
 
-  // --- Modal State ---
+   const { data: localDirectory } = useGetLocalDirectory();
+
+    const { data: serverDirectory } = useGetServerDirectory();
+
+const serverDirectories = serverDirectory?.map((dir: any) => ({
+  value: dir.folderName, // or dir.path if the API returns full path
+  label: dir.folderName,
+  description: dir.description,
+})) || [];
+
+const localDirectories = localDirectory?.map((dir: any) => ({
+  value: dir.folderName,
+  label: dir.folderName,
+  description: dir.description,
+})) || [];
+
+
+
   const [showModal, setShowModal] = useState(false);
   const [progress, setProgress] = useState(0);
   const [saveStatus, setSaveStatus] = useState<'saving' | 'success' | 'error'>('saving');
@@ -142,18 +162,24 @@ const initialFormState = {
     XLSX.writeFile(wb, "serial_numbers_template.xlsx");
   };
 
-  const updateFile = (index: number, field: string, value: string) => {
-    const updatedFiles = [...formData.files];
-    let newFile = { ...updatedFiles[index], [field]: value };
+const updateFile = (index: number, field: string, value: string) => {
+  const updatedFiles = [...formData.files];
+  let newFile = { ...updatedFiles[index], [field]: value };
 
-    if (field === "updateType" && value === "WORKS") {
+  if (field === "updateType") {
+    if (value === "WORKS") {
       newFile.serverDirectory = "/";
       newFile.localDirectory = "/";
+    } else if (value === "STORE") {
+      newFile.serverDirectory = "";
+      newFile.localDirectory = "";
     }
+  }
 
-    updatedFiles[index] = newFile;
-    setFormData({ ...formData, files: updatedFiles });
-  };
+  updatedFiles[index] = newFile;
+  setFormData({ ...formData, files: updatedFiles });
+};
+
 
   const handleGroupSearch = (filters: Record<string, any>) => {
     const activeFilters = Object.entries(filters)
@@ -327,22 +353,14 @@ const modalRowData = useMemo(() => {
   }));
 }, [uploadedSerialNumbers]);
 
+
+
+
+
   return (
     <>
       <div className="container mx-auto p-6 max-w-7xl space-y-6">
-        {/* <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <a href="/agentManagement/agentUpdate">Agent Updates</a>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Add Agent Form</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb> */}
+    
 
 
      <div className="mb-6">
@@ -531,7 +549,7 @@ const modalRowData = useMemo(() => {
                             />
                           </div>
 
-                          <div className="space-y-1">
+                          {/* <div className="space-y-1">
                             <Label className="text-xs font-medium">Server Directory *</Label>
                             <Input
                               disabled={file.updateType === "WORKS"}
@@ -547,7 +565,37 @@ const modalRowData = useMemo(() => {
                               value={file.localDirectory}
                               onChange={(e) => updateFile(index, "localDirectory", e.target.value)}
                             />
-                          </div>
+                          </div> */}
+
+
+                          <div className="space-y-1">
+  <Label className="text-xs font-medium">Server Directory *</Label>
+  {file.updateType === "STORE" ? (
+    <Combobox
+      options={serverDirectories}
+      value={file.serverDirectory}
+      onChange={(val) => updateFile(index, "serverDirectory", val)}
+      placeholder="Select server directory..."
+    />
+  ) : (
+    <Input disabled value={file.serverDirectory} />
+  )}
+</div>
+
+<div className="space-y-1">
+  <Label className="text-xs font-medium">Local Directory *</Label>
+  {file.updateType === "STORE" ? (
+    <Combobox
+      options={localDirectories}
+      value={file.localDirectory}
+      onChange={(val) => updateFile(index, "localDirectory", val)}
+      placeholder="Select local directory..."
+    />
+  ) : (
+    <Input disabled value={file.localDirectory} />
+  )}
+</div>
+
                         </div>
                       </AccordionContent>
                     </AccordionItem>

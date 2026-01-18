@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Smartphone, CheckCircle, XCircle, Trash2 } from "lucide-react";
+import { Smartphone, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 import DataTable from "@/components/common/DataTable";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,26 +43,26 @@ const ScriptTargetSystemsRoute = () => {
         headerName: "Serial Number",
         flex: 1.5,
       },
+      // {
+      //   field: "isUpdated",
+      //   headerName: "Updated",
+      //   flex: 1,
+      //   cellRenderer: (p: any) =>
+      //     p.value ? (
+      //       <Badge className="gap-1" variant="default">
+      //         <CheckCircle className="h-3 w-3" />
+      //         Yes
+      //       </Badge>
+      //     ) : (
+      //       <Badge className="gap-1" variant="secondary">
+      //         <XCircle className="h-3 w-3" />
+      //         No
+      //       </Badge>
+      //     ),
+      // },
       {
-        field: "isUpdated",
-        headerName: "Updated",
-        flex: 1,
-        cellRenderer: (p: any) =>
-          p.value ? (
-            <Badge className="gap-1" variant="default">
-              <CheckCircle className="h-3 w-3" />
-              Yes
-            </Badge>
-          ) : (
-            <Badge className="gap-1" variant="secondary">
-              <XCircle className="h-3 w-3" />
-              No
-            </Badge>
-          ),
-      },
-      {
-        field: "updatedAt",
-        headerName: "Updated At",
+        field: "lastRunAt",
+        headerName: "Last Run At",
         flex: 1.2,
         cellRenderer: (p: any) =>
           p.value ? format(new Date(p.value), "dd-MM-yyyy HH:mm") : "-",

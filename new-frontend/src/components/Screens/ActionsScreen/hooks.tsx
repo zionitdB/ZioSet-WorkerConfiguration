@@ -26,7 +26,6 @@ export const useGetActions = (
   });
 };
 
-/* ---------------- ACTION COUNT ---------------- */
 
 export const useGetActionCount = (keyword: string = "") => {
   return useQuery({
@@ -35,7 +34,6 @@ export const useGetActionCount = (keyword: string = "") => {
   });
 };
 
-/* ---------------- ADD ACTION ---------------- */
 
 export const useAddAction = () => {
   const queryClient = useQueryClient();
@@ -54,14 +52,13 @@ export const useAddAction = () => {
   });
 };
 
-/* ---------------- UPDATE ACTION ---------------- */
 
 export const useUpdateAction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: any) =>
-      fetchData(`/configuration/updateAction`, {
+      fetchData(`/configuration/addNewAction`, {
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -73,15 +70,15 @@ export const useUpdateAction = () => {
   });
 };
 
-/* ---------------- DELETE ACTION ---------------- */
 
 export const useDeleteAction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (actionId: any) =>
-      fetchData(`/configuration/deleteAction/${actionId}`, {
-        method: "DELETE",
+      fetchData(`/configuration/deleteAction`, {
+        method: "POST",
+              body: JSON.stringify({id:actionId}),
       }),
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["useGetActions"] });

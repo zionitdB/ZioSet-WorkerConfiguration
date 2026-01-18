@@ -12,6 +12,21 @@ export const useGetAgentUpdates = (page: number, size: number) => {
   });
 };
 
+
+export const useGetLocalDirectory = () => {
+  return useQuery({
+    queryKey: ["useGetLocalDirectory"],
+    queryFn: () => fetchData("/agent-update/getLocalFolderStructure"),
+  });
+};
+
+export const useGetServerDirectory = () => {
+  return useQuery({
+    queryKey: ["useGetServerDirectory"],
+    queryFn: () => fetchData("/agent-update/getServerFolderStructure"),
+  });
+};
+
 export const useAddAgentUpdate = () => {
   const queryClient = useQueryClient();
   return useMutation({

@@ -145,13 +145,13 @@ const CustomModal = ({
   formId,
   isLoading = false,
   side = "right",
-  width = "!w-[420px]",
+  width = "w-130!",
   showCloseButton = true,
   showSaveButton = true,
 }: CustomSheetProps) => {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side={side} className={`${width} !max-w-none !w-[520px] flex flex-col`}>
+      <SheetContent side={side} className={`${width} max-w-none! w-130! flex flex-col`}>
         {/* Header */}
    <SheetHeader className="border-b border-border pb-2 space-y-3">
   <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ const CustomModal = ({
 
 
         {/* Scrollable Body */}
-        <ScrollArea className="flex-1 pr-2">
+        <ScrollArea className="flex-1 max-h-120  pr-2">
           <div className="py-4 px-4">{children}</div>
         </ScrollArea>
 
@@ -193,7 +193,7 @@ const CustomModal = ({
               type="submit"
               form={formId}
               disabled={isLoading}
-              className="min-w-[90px]"
+              className="min-w-22.5"
             >
               {isLoading ? (
                 <>

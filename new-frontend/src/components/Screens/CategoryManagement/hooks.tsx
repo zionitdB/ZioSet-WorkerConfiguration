@@ -61,7 +61,7 @@ export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: any) =>
-      fetchData("/configuration/updateCategory", {
+      fetchData("/configuration/addNewCategory", {
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -78,7 +78,7 @@ export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (categoryId: number) =>
-      fetchData(`/configuration/deleteCategory/${categoryId}`, { method: "DELETE" }),
+      fetchData(`/configuration/deleteCategory`, { method: "POST" ,  body: JSON.stringify({id:categoryId}),}),
     onSuccess: (data) => {
       onSuccess(data);
       queryClient.invalidateQueries({ queryKey: ["useGetCategories"] });

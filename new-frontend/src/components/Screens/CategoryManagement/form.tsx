@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectTrigger,
@@ -20,81 +19,114 @@ interface CategoryFormProps {
 const CategoryForm: React.FC<CategoryFormProps> = ({
   onSubmit,
   formId,
-  defaultValues = {},
+  defaultValues = null,
 }) => {
-const [formData, setFormData] = useState({
-  id: defaultValues?.id ?? 0,
-  categoryname: defaultValues?.categoryname || "",
-  parrentCategory: defaultValues?.parrentCategory?.id || null,
-  active: defaultValues?.active ?? 1,
-});
-
-
-  const [errors, setErrors] = useState<any>({});
   const { data: categoriesDropdown = [] } = useGetCategoriesDropdown();
 
+  /* ---------------- STATE ---------------- */
+  const [category, setCategory] = useState<string>("none");
+  const [categoryName, setCategoryName] = useState<string>("");
+  const [isSubCategory, setIsSubCategory] = useState<boolean>(false);
+  const [errors, setErrors] = useState<any>({});
+
+  /* ---------------- PREFILL (EDIT MODE) ---------------- */
+  useEffect(() => {
+    if (defaultValues) {
+      setCategory(
+        defaultValues?.parrentCategory?.id
+          ? String(defaultValues.parrentCategory.id)
+          : "none"
+      );
+      setCategoryName(defaultValues.categoryname || "");
+    } else {
+      setCategory("none");
+      setCategoryName("");
+    }
+  }, [defaultValues]);
+
+  /* ---------------- SUB CATEGORY FLAG ---------------- */
+  useEffect(() => {
+    setIsSubCategory(category !== "none");
+  }, [category]);
+
+  /* ---------------- VALIDATION ---------------- */
   const validate = () => {
     const newErrors: any = {};
-    if (!formData.categoryname.trim()) newErrors.categoryname = "Category Name is required";
+
+    if (!categoryName.trim()) {
+      newErrors.categoryname = isSubCategory
+        ? "Enter Sub Category Name"
+        : "Enter New Category Name";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (field: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev: any) => ({ ...prev, [field]: "" }));
-  };
-
+  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
-      const payload: any = { ...formData };
-      if (!formData.id) delete payload.id; // Remove ID for new categories
-      onSubmit(payload);
+
+    if (!validate()) return;
+
+    const payload: any = {
+      ...(defaultValues?.id ? { id: defaultValues.id } : {}),
+      categoryname: categoryName,
+    };
+
+    if (category !== "none") {
+      payload.parrentCategory = { id: Number(category) };
     }
+
+    onSubmit(payload);
   };
 
   return (
-    <form id={formId} onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 p-2">
-      {/* Category Name */}
+    <form
+      id={formId}
+      onSubmit={handleSubmit}
+      className="grid grid-cols-2 gap-4 p-2"
+    >
+      {/* CATEGORY NAME */}
       <div className="space-y-2">
-        <Label>Category Name *</Label>
+        <Label>
+          {isSubCategory ? "Sub Category Name *" : "Category Name *"}
+        </Label>
         <Input
-          placeholder="Enter Category Name"
-          value={formData.categoryname}
-          onChange={(e) => handleChange("categoryname", e.target.value)}
+          placeholder={
+            isSubCategory ? "Enter Sub Category Name" : "Enter Category Name"
+          }
+          value={categoryName}
+          onChange={(e) => {
+            setCategoryName(e.target.value);
+            setErrors({});
+          }}
         />
-        {errors.categoryname && <p className="text-sm text-red-500">{errors.categoryname}</p>}
+        {errors.categoryname && (
+          <p className="text-sm text-red-500">{errors.categoryname}</p>
+        )}
       </div>
 
-      {/* Parent Category */}
+      {/* PARENT CATEGORY */}
       <div className="space-y-2">
         <Label>Parent Category</Label>
         <Select
-          value={formData.parrentCategory || ""}
-          onValueChange={(val) => handleChange("parrentCategory", Number(val))}
+          value={category}
+          onValueChange={(val) => setCategory(val)}
+          disabled={!!defaultValues}
         >
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select Parent Category" />
+            <SelectValue placeholder="Select Category" />
           </SelectTrigger>
           <SelectContent>
-            {/* <SelectItem value={""}>None</SelectItem> */}
+            <SelectItem value="none">Select Category</SelectItem>
             {categoriesDropdown.map((cat: any) => (
-              <SelectItem key={cat.id} value={cat.id}>
+              <SelectItem key={cat.id} value={String(cat.id)}>
                 {cat.categoryname}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      {/* Active */}
-      <div className="flex items-center gap-2 mt-2">
-        <Label>Active</Label>
-        <Switch
-          checked={!!formData.active}
-          onCheckedChange={(val) => handleChange("active", val ? 1 : 0)}
-        />
       </div>
     </form>
   );

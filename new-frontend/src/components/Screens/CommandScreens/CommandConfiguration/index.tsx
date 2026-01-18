@@ -7,6 +7,7 @@ import {
   RefreshCw,
   Pencil,
   Trash,
+  CombineIcon,
 } from "lucide-react";
 
 import DataTable from "@/components/common/DataTable";
@@ -35,16 +36,27 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 const CommandRoute = () => {
-  /* ---------------- STATE ---------------- */
+
+
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
-
-  const [editData, setEditData] = useState<any>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+    const [editData, setEditData] = useState<any>("");
 
   const [filterActionId, setFilterActionId] = useState<number | null>(null);
 
@@ -64,15 +76,22 @@ const CommandRoute = () => {
 
   const groupSearch = useGetCommandByGroupSearch();
   const groupSearchCount = useGetCommandCountByGroupSearch();
-  const actionFilter = useGetCommandsByActionFilter();
+  const  { data: actionFilterData }  = useGetCommandsByActionFilter(filterActionId,page,rowsPerPage);
 
 
-  const tableData = useMemo(
-    () => (filteredData.length ? filteredData : data || []),
-    [filteredData, data]
-  );
+const tableData = useMemo(() => {
+  if (filteredData.length) return filteredData; 
+  if (filterActionId && actionFilterData) return actionFilterData?.content; 
+  return data || []; 
+}, [filteredData, actionFilterData, data, filterActionId]);
 
-  const totalItems = isSearchActive ? searchDataCount : count || 0;
+const totalItems = useMemo(() => {
+  if (isSearchActive) return searchDataCount; 
+  if (filterActionId) return actionFilterData?.totalElements || 0; 
+  return count || 0; 
+}, [isSearchActive, searchDataCount, filterActionId, actionFilterData, count]);
+
+
   const totalPages = Math.ceil(totalItems / rowsPerPage);
 
 
@@ -168,27 +187,31 @@ const CommandRoute = () => {
     });
   }, [page, rowsPerPage]);
 
-  /* ---------------- ACTION FILTER (DROPDOWN) ---------------- */
+
+  
   const handleActionFilterChange = (actionId: number | null) => {
     setFilterActionId(actionId);
 
-    if (actionId) {
-      actionFilter.mutate(
-        { actionId },
-        {
-          onSuccess: (d: any) => {
-            setFilteredData(d || []);
-            setIsSearchActive(false);
-            setFilterColumns([]);
-          },
-        }
-      );
-    } else {
-      setFilteredData([]);
+  };
+
+
+    const handleDelete = (data: any) => {
+    setDeleteTarget(data);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      deleteMutation.mutate(deleteTarget.id, {
+        onSuccess: () => {
+          refetch();
+          setDeleteDialogOpen(false);
+          setDeleteTarget(null);
+        },
+      });
     }
   };
 
-  /* ---------------- TABLE COLUMNS ---------------- */
   const columnDefs = useMemo(
     () => [
       {
@@ -240,11 +263,7 @@ const CommandRoute = () => {
             <Button
               size="sm"
               variant="destructive"
-              onClick={() =>
-                deleteMutation.mutate(p.data.id, {
-                  onSuccess: () => refetch(),
-                })
-              }
+              onClick={()=>handleDelete(p.data) }
             >
               <Trash />
             </Button>
@@ -277,7 +296,46 @@ const CommandRoute = () => {
     </Button>
   );
 
-  /* ---------------- UI ---------------- */
+
+ const handleSubmit = (data: any) => {
+  console.log("FORM SUBMITTED");
+
+  if (editData) {
+    updateMutation.mutate(
+      {
+        id: editData.id,     
+        ...data,
+      },
+      {
+        onSuccess: () => {
+          refetch();
+          setIsModalOpen(false);
+        },
+      }
+    );
+  } else {
+    addMutation.mutate(data, {
+      onSuccess: () => {
+        refetch();
+        setIsModalOpen(false);
+      },
+    });
+  }
+};
+
+
+
+    const handleAddClick = () => {
+    setEditData("");
+    setIsModalOpen(true);
+  };
+
+const resetFilters = () => {
+  setFilterActionId(null);  
+  setPage(1);               
+  refetch();              
+};
+
   return (
     <div className="container mx-auto py-6 space-y-6">
   
@@ -316,6 +374,17 @@ const CommandRoute = () => {
             </SelectContent>
           </Select>
 
+
+  { ( filterActionId) && (
+    <Button
+      variant="outline"
+      className="h-10"
+      onClick={resetFilters}
+    >
+      Reset Filters
+    </Button>
+  )}
+
           <div className="flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-lg">
             <Command className="h-4 w-4 text-primary" />
             <div>
@@ -331,15 +400,13 @@ const CommandRoute = () => {
         colDefs={columnDefs}
         isLoading={isLoading}
         addComponent={addComponent}
-        onAddClick={() => {
-          setEditData(null);
-          setIsModalOpen(true);
-        }}
+        onAddClick={ handleAddClick}
         showActions={false}
         showExportButton
         allData={allDataForExport}
         fileName="command-configuration"
         showPagination
+        showFilter={!filterActionId}
         page={page}
         totalPages={totalPages}
         setPage={setPage}
@@ -353,18 +420,12 @@ const CommandRoute = () => {
         onClose={() => setIsModalOpen(false)}
         dialogTitle={editData ? "Edit Command" : "Add Command"}
         width="max-w-2xl"
+        formId="command"
       >
         <CommandForm
           defaultValues={editData}
-          onSubmit={(payload: any) => {
-            const action = editData ? updateMutation : addMutation;
-            action.mutate(payload, {
-              onSuccess: () => {
-                refetch();
-                setIsModalOpen(false);
-              },
-            });
-          }}
+          onSubmit={handleSubmit}
+               formId="command"
         />
       </CustomModal>
 
@@ -379,6 +440,37 @@ const CommandRoute = () => {
           onClose={() => setUploadModalOpen(false)}
         />
       </CustomModal>
+
+
+
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <AlertDialogContent className="rounded-xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-destructive/10 rounded-lg">
+                      <CombineIcon className="h-6 w-6 text-destructive" />
+                    </div>
+                    Confirm Delete
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-base pt-2">
+                    Are you sure you want to delete Command{" "}
+                    <span className="font-semibold text-foreground">
+                       {deleteTarget?.commandId}
+                    </span>
+                    ? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="gap-2">
+                  <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={confirmDelete}
+                    className="bg-destructive hover:bg-destructive/90 rounded-lg"
+                  >
+                    Delete Command
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
     </div>
   );
 };
