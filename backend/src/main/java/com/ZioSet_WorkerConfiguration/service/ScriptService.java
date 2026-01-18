@@ -2,6 +2,7 @@ package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
+import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.repo.ScriptDependencyRepository;
@@ -10,12 +11,13 @@ import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptTargetSystemRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -111,7 +113,7 @@ public class ScriptService {
     }
 
     public void deleteScript(Long id) {
-        ScriptEntity entity = scriptRepository.findById(id)
+        scriptRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ScriptEntity not found"));
 
         scriptRepository.deleteById(id);
@@ -125,10 +127,32 @@ public class ScriptService {
         return scriptRepository.save(script);
     }
 
-    public Set<ScriptTargetSystemEntity> getScriptTargetSystems(Long id) {
-        return scriptRepository.findById(id)
-                .map(ScriptEntity::getTargets)
-                .orElseThrow(() -> new RuntimeException("Script not found"));
+    public List<ScriptTargetSystemResponseDTO> getScriptTargetSystems(Long id) {
+        return targetSystemRepository.findAllByScriptId(id).stream().map(
+                t -> new ScriptTargetSystemResponseDTO(
+                        t.getId(),
+                        t.getSystemSerialNumber(),
+                        t.getAssignedBy(),
+                        t.getAssignedAt(),
+                        t.getLastRunAt(),
+                        t.getScript().getId()
+                )
+        ).toList();
+    }
+
+
+    public Page<ScriptTargetSystemResponseDTO> getScriptTargetSystemsPagination(Long id, int pageNo, int perPage) {
+        Pageable pageable = PageRequest.of(pageNo - 1, perPage);
+
+        return targetSystemRepository.findAllByScriptId(id, pageable)
+                .map(t -> new ScriptTargetSystemResponseDTO(
+                        t.getId(),
+                        t.getSystemSerialNumber(),
+                        t.getAssignedBy(),
+                        t.getAssignedAt(),
+                        t.getLastRunAt(),
+                        t.getScript().getId()
+                ));
     }
 
     public List<ScriptTargetSystemEntity> getScriptTargetSystemByLimit(int pageNo, int perPage) {
@@ -154,6 +178,5 @@ public class ScriptService {
     public int getCountAllScriptEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO){
         return scriptRepository.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
     }
-
 
 }

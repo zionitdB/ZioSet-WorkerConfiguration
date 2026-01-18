@@ -16,6 +16,9 @@ public interface CommandConfigurationRepo extends JpaRepository<CommandConfigura
 	@Query("from CommandConfiguration c where c.action.id=?1")
 	List<CommandConfiguration> getAllCommandConfigurationByActionId(int actionId);
 
+	@Query("from CommandConfiguration c where c.action.id=?1")
+	Page<CommandConfiguration> getAllCommandConfigurationByActionId(int actionId, Pageable pageable);
+
 	@Query("from CommandConfiguration c where c.commandId=?1")
 	List<CommandConfiguration> getCommandsByCommandId(String commandId);
 

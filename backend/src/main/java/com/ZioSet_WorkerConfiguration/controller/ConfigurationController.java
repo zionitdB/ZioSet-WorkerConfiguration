@@ -294,11 +294,17 @@ public class ConfigurationController {
 		List<CommandConfiguration> list = new ArrayList<CommandConfiguration>();
 		try {
 			list = this.commandConfigurationRepo.getAllCommandConfigurationByActionId(actionId);
-			boolean bool = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	@GetMapping({"/getAllCommandConfigurationByActionIdPagination"})
+	@ResponseBody
+	public Page<CommandConfiguration> getAllCommandConfigurationByActionIdPagination(@RequestParam("actionId") int actionId, @RequestParam(value = "pageNo", defaultValue = "1") int pageNo, @RequestParam(value = "perPage", defaultValue = "10") int perPage) {
+		Pageable pageable = PageRequest.of(--pageNo,perPage);
+		return this.commandConfigurationRepo.getAllCommandConfigurationByActionId(actionId, pageable);
 	}
 
 	@PostMapping({"/getAllCommandConfigurationByLimitAndGroupSearch"})
@@ -307,7 +313,6 @@ public class ConfigurationController {
 		List<CommandConfiguration> list = new ArrayList<CommandConfiguration>();
 		try {
 			list = this.commandConfigurationRepo.getAllCommandConfigurationByLimitAndGroupSearch(groupSearchDTO);
-			boolean bool = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -319,7 +324,6 @@ public class ConfigurationController {
 		int count = 0;
 		try {
 			count = this.commandConfigurationRepo.getCountAllCommandConfigurationByLimitAndGroupSearch(groupSearchDTO);
-			boolean bool = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
