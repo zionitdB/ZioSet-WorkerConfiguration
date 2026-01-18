@@ -190,8 +190,8 @@ const totalItems = useMemo(() => {
 
   
   const handleActionFilterChange = (actionId: number | null) => {
+    setPage(1);
     setFilterActionId(actionId);
-
   };
 
 
