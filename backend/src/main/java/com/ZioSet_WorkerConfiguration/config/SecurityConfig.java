@@ -89,7 +89,8 @@ public class SecurityConfig {
                                 "/index.html",
                                 "/vite.svg",
                                 "/assets/**",
-                                "/manifest.json"
+                                "/manifest.json",
+                                "/logo.png"
                         ).permitAll()
 
                         // API auth
@@ -122,7 +123,8 @@ public class SecurityConfig {
                 "/app",
                 "/assets/**",
                 "/index.html",
-                "/vite.svg"
+                "/vite.svg",
+                "/logo.png"
         );
     }
 

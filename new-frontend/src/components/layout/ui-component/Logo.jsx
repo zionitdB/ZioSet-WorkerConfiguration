@@ -18,8 +18,8 @@ export default function Logo() {
 
   return (
       <img
-  src={theme.palette.mode === 'dark' ? '/mydschool_logo.png' : '/mydschool_logo.png'}
-  alt="My D School Logo"
+  src={theme.palette.mode === 'dark' ? '/logo.png' : '/logo.png'}
+  alt="Zionit Logo"
   width="120"
 />
 

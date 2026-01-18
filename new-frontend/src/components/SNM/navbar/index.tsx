@@ -39,7 +39,7 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
             </motion.div>
             <div className="hidden sm:block">
               <img 
-                src="/logo-02.png" 
+                src="/logo.png" 
                 alt="Zioset Agent" 
                 className="h-7 w-auto dark:invert dark:brightness-200 transition-all" 
               />
