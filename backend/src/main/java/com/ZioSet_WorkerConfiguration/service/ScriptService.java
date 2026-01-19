@@ -3,7 +3,6 @@ package com.ZioSet_WorkerConfiguration.service;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
-import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.placholder.service.ScriptParserService;
 import com.ZioSet_WorkerConfiguration.repo.*;
@@ -15,8 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
