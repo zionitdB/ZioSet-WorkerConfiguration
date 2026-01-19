@@ -106,7 +106,7 @@ public class SecurityConfig {
 
                         //swagger
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         http.authenticationProvider(authenticationProvider());
