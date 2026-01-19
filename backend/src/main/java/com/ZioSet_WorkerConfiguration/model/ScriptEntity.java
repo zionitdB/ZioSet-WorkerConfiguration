@@ -29,12 +29,12 @@ public class ScriptEntity {
     @JoinColumn(name = "template_id")
     private ScriptTemplateEntity template;
 
-//    @Lob
-//    private String description;
+    @Lob
+    private String description;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "script_type", nullable = false)
-//    private ScriptType scriptType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "script_type", nullable = false)
+    private ScriptType scriptType;
 
     @Lob
     private String scriptText; // For inline scripts
@@ -65,8 +65,8 @@ public class ScriptEntity {
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScriptExecutionResultEntity> executionResults = new HashSet<>();
 
-//    @Column(name = "target_platforms_csv")
-//    private String targetPlatformsCsv;
+    @Column(name = "target_platforms_csv")
+    private String targetPlatformsCsv;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();

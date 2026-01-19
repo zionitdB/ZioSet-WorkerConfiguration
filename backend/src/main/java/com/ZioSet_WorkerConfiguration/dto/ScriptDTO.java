@@ -20,6 +20,7 @@ public class ScriptDTO {
     private Long scriptFileId;
     private Long templateId;
     private Boolean isActive;
+    private String description;
 
     private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;

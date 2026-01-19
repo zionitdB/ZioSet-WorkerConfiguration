@@ -29,11 +29,14 @@ public class InstalledSystemEntity {
     @Column(name = "installtion_response", columnDefinition = "LONGTEXT")
     private String installationResponse;
 
+    @Column(name = "host_name")
+    private String hostName;
+
 
     public InstalledSystemEntity() {
     }
 
-    public InstalledSystemEntity(long id, String uuid, String systemSerialNo, boolean installed, LocalDateTime installedAt, LocalDateTime installReqAt, String installationResponse) {
+    public InstalledSystemEntity(long id, String uuid, String systemSerialNo, boolean installed, LocalDateTime installedAt, LocalDateTime installReqAt, String installationResponse,String hostName) {
         this.id = id;
         this.uuid = uuid;
         this.systemSerialNo = systemSerialNo;
@@ -41,6 +44,15 @@ public class InstalledSystemEntity {
         this.installedAt = installedAt;
         this.installReqAt = installReqAt;
         this.installationResponse = installationResponse;
+        this.hostName = hostName;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public long getId() {

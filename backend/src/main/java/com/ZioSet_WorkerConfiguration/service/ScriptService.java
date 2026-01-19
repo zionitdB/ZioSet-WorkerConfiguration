@@ -38,14 +38,24 @@ public class ScriptService {
         ScriptEntity execution = (dto.getId() != null) ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
                         : new ScriptEntity();
 
-        ScriptTemplateEntity template =
-                scriptTemplateRepository.findById(dto.getTemplateId())
-                        .orElseThrow(() -> new RuntimeException("Template not found"));
+        ScriptTemplateEntity template = getTemplate(dto.getTemplateId());
 
         execution.setTemplate(template);
         execution.setName(dto.getName());
         execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
         execution.setAddedBy(dto.getAddedBy());
+        execution.setDescription(dto.getDescription());
+
+        //target-platforms ,in case to run simple script for systems without needing template
+        if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
+            execution.setTargetPlatformsCsv(
+                    dto.getTargetPlatforms().stream()
+                            .map(Enum::name)
+                            .collect(Collectors.joining(","))
+            );
+        } else {
+            execution.setTargetPlatformsCsv(null);
+        }
 
 
         // Schedule
