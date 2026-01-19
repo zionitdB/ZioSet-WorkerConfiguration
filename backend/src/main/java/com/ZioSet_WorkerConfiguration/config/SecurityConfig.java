@@ -16,6 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.ZioSet_WorkerConfiguration.service.UserDetailsServiceImpl;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -57,11 +60,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(java.util.List.of("http://localhost:5173", "https://zensar-agent.zioset.com", "https://zensar.zioset.com", "http://localhost:8085", "http://4.213.97.72:8085", "http://4.213.97.72:8084", "http://localhost:3000"));
-                    corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-                    corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
+                    var corsConfiguration = new CorsConfiguration();
+
+                    corsConfiguration.setAllowedOriginPatterns(List.of(
+                            "http://localhost:*",
+                            "http://127.0.0.1:*",
+                            "https://zensar-agent.zioset.com",
+                            "https://zensar.zioset.com"
+                    ));
+
+                    corsConfiguration.setAllowedMethods(List.of(
+                            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+                    ));
+
+                    corsConfiguration.setAllowedHeaders(List.of("*"));
                     corsConfiguration.setAllowCredentials(true);
+
                     return corsConfiguration;
                 }))
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
@@ -75,7 +89,8 @@ public class SecurityConfig {
                                 "/index.html",
                                 "/vite.svg",
                                 "/assets/**",
-                                "/manifest.json"
+                                "/manifest.json",
+                                "/logo.png"
                         ).permitAll()
 
                         // API auth
@@ -108,7 +123,8 @@ public class SecurityConfig {
                 "/app",
                 "/assets/**",
                 "/index.html",
-                "/vite.svg"
+                "/vite.svg",
+                "/logo.png"
         );
     }
 

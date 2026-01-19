@@ -2,18 +2,19 @@ package com.ZioSet_WorkerConfiguration.controller;
 
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
+import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 @RestController
@@ -73,8 +74,13 @@ public class ScriptController {
     }
 
     @GetMapping("/{id}/targetSystems")
-    public Set<ScriptTargetSystemEntity> getTargetSystemsById(@PathVariable Long id) {
+    public List<ScriptTargetSystemResponseDTO> getTargetSystemsById(@PathVariable Long id) {
         return scriptService.getScriptTargetSystems(id);
+    }
+
+    @GetMapping("/{id}/targetSystemsPagination")
+    public Page<ScriptTargetSystemResponseDTO> getTargetSystemsByIdPagination(@PathVariable Long id,  @RequestParam(value = "pageNo", defaultValue = "1") int pageNo, @RequestParam(value = "perPage", defaultValue = "10") int perPage) {
+        return scriptService.getScriptTargetSystemsPagination(id, pageNo, perPage);
     }
 
     @PostMapping({"/getAllScriptEntityByLimitAndGroupSearch"})
@@ -93,7 +99,6 @@ public class ScriptController {
         int count = 0;
         try {
             count = this.scriptService.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
-            boolean bool = false;
         } catch (Exception e) {
             e.printStackTrace();
         }
