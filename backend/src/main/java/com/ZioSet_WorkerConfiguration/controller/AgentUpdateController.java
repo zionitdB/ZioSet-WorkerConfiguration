@@ -5,8 +5,8 @@ import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
-import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
 import com.ZioSet_WorkerConfiguration.service.AgentUpdateService;
+import com.ZioSet_WorkerConfiguration.utils.AgentFolderStructure;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -109,6 +109,16 @@ public class AgentUpdateController {
             e.printStackTrace();
         }
         return list;
+    }
+
+    @GetMapping("/getLocalFolderStructure")
+    public List<AgentFolderStructure.FolderResponse> getLocalFolderStructure(){
+        return AgentFolderStructure.getLocalFolders();
+    }
+
+    @GetMapping("/getServerFolderStructure")
+    public List<AgentFolderStructure.FolderResponse> getServerFolderStructure(){
+        return AgentFolderStructure.getServerFolders();
     }
 
 }
