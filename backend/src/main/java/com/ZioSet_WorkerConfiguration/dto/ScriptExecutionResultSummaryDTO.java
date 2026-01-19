@@ -16,4 +16,5 @@ public class ScriptExecutionResultSummaryDTO {
     private Integer returnCode;
     private String stdout;
     private String stderr;
+    private String hostName;
 }

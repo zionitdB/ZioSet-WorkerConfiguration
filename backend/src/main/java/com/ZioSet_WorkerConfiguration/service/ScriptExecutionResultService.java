@@ -40,6 +40,7 @@ public class ScriptExecutionResultService {
         dto.setReturnCode(e.getReturnCode());
         dto.setStdout(e.getStdout());
         dto.setStderr(e.getStderr());
+        dto.setHostName(e.getHostName());
         return dto;
     }
 }
