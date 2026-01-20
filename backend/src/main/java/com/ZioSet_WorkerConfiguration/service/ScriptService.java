@@ -47,6 +47,7 @@ public class ScriptService {
         execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
         execution.setAddedBy(dto.getAddedBy());
         execution.setDescription(dto.getDescription());
+        execution.setScriptType(dto.getScriptType());
 
         //target-platforms ,in case to run simple script for systems without needing template
         if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {

@@ -84,7 +84,7 @@ public class ScriptTemplateService {
     }
 
     public Page<ScriptTemplateEntity> list(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("createdAt").descending());
         return templateRepository.findByIsActiveTrue(pageable);
     }
 

@@ -33,7 +33,7 @@ public class ScriptEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "script_type", nullable = false)
+    @Column(name = "script_type")
     private ScriptType scriptType;
 
     @Lob

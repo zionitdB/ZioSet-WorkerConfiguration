@@ -15,7 +15,7 @@ public class ScriptDTO {
     private Long id;
     private String name;
 //    private String description;
-//    private ScriptType scriptType;
+    private ScriptType scriptType;
 //    private String scriptText;
     private Long scriptFileId;
     private Long templateId;
