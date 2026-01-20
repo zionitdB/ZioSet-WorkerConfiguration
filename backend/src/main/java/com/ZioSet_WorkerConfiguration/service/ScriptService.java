@@ -40,7 +40,7 @@ public class ScriptService {
         ScriptEntity execution = (dto.getId() != null) ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
                         : new ScriptEntity();
 
-        ScriptTemplateEntity template = getTemplate(dto.getTemplateId());
+        ScriptTemplateEntity template = (dto.getTemplateId() != null) ? getTemplate(dto.getTemplateId()) : null;
 
         execution.setTemplate(template);
         execution.setName(dto.getName());
