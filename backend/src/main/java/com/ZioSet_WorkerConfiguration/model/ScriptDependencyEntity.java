@@ -13,12 +13,12 @@ public class ScriptDependencyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "script_template_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "script_template_id")
     private ScriptTemplateEntity template;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "script_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "script_id")
     private ScriptEntity script;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
