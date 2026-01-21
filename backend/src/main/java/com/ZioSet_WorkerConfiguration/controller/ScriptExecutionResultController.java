@@ -41,4 +41,9 @@ public class ScriptExecutionResultController {
         obj.setMessage("data");
         return obj;
     }
+
+    @GetMapping("/getSummaryBySerialNo")
+    public List<ScriptExecutionResultSummaryDTO> getSummaryBySerialNo(@RequestParam String serialNo) {
+        return service.getExecutionHistoryBySerial(serialNo);
+    }
 }

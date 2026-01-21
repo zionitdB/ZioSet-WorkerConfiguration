@@ -13,4 +13,7 @@ public interface ScriptExecutionResultRepository
     long countByScriptId(Long scriptId);
 
     List<ScriptExecutionResultEntity> findAllByScriptId(Long scriptId);
+
+    List<ScriptExecutionResultEntity>
+    findBySystemSerialNumberOrderByReceivedAtDesc(String serial);
 }

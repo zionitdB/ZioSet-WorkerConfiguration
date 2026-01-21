@@ -58,4 +58,12 @@ public class ScriptExecutionResultService {
         return repo.countByScriptId(scriptId);
     }
 
+    public List<ScriptExecutionResultSummaryDTO> getExecutionHistoryBySerial(String serial) {
+        return repo.findBySystemSerialNumberOrderByReceivedAtDesc(serial)
+                .stream()
+                .map(this::toSummary)
+                .toList();
+    }
+
+
 }
