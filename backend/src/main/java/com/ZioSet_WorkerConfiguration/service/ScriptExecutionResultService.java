@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ScriptExecutionResultService {
@@ -43,4 +46,16 @@ public class ScriptExecutionResultService {
         dto.setHostName(e.getHostName());
         return dto;
     }
+
+
+    public List<ScriptExecutionResultSummaryDTO> findAllByScriptId(Long scriptId){
+        return repo.findAllByScriptId(scriptId).
+                stream().map(this::toSummary).
+                collect(Collectors.toList());
+    }
+
+    public long findByScriptId(Long scriptId){
+        return repo.countByScriptId(scriptId);
+    }
+
 }
