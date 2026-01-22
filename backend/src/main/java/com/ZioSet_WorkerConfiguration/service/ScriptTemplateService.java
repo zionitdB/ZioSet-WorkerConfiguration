@@ -34,8 +34,8 @@ public class ScriptTemplateService {
         template.setDescription(dto.description());
         template.setScriptType(dto.scriptType());
         template.setIsActive(dto.active() != null ? dto.active() : true);
-//        template.setRequiredParameters(dto.requiredParameters());
         template.setParameters(dto.parameters());
+        template.setCommand(dto.command());
 
         if (dto.scriptFileId() != null) {
             ScriptFileEntity file = getFile(dto.scriptFileId());

@@ -44,6 +44,7 @@ public class ScriptTemplateEntity {
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
 
+    private String command;
     // One-to-many relationship with dependencies
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ScriptDependencyEntity> dependencies = new HashSet<>();

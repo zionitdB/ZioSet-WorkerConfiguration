@@ -1,9 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
-import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
+import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.*;
@@ -28,6 +25,11 @@ public class ScriptController {
     @PostMapping
     public ScriptEntity createOrUpdate(@RequestBody ScriptDTO dto) {
         return scriptService.createOrUpdateScriptExecution(dto);
+    }
+
+    @PostMapping("/create")
+    public ScriptEntity create(@RequestBody CreateScriptArgDto dto) {
+        return scriptService.createScriptArgDto(dto);
     }
 
     @GetMapping

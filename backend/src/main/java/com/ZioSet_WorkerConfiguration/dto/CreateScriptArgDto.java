@@ -11,15 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class ScriptDTO {
-    private Long id;
+public class CreateScriptArgDto {
     private String name;
-    private ScriptType scriptType;
-//    private String scriptText;
-    private Long scriptFileId;
+    private String description;
     private Long templateId;
     private Boolean isActive;
-    private String description;
 
     private List<Long> dependencyFileIds;
     private List<String> targetSystemSerials;
@@ -36,6 +32,5 @@ public class ScriptDTO {
     private Long repeatEverySeconds;
     private List<String> weekDays;   // ["MON","FRI"]
     private Integer monthDay;        // 2, 10, 31
-    private LocalTime timeOfDay;        // "09:00"
+    private LocalTime timeOfDay;
 }
-

@@ -12,6 +12,7 @@ public record CreateScriptTemplateRequest (
         String name,
         String description,
         ScriptType scriptType,
+        String command,
         Long scriptFileId,
         List<Long> dependencyFileIds,
         List<ScriptTargetPlatform> targetPlatforms,

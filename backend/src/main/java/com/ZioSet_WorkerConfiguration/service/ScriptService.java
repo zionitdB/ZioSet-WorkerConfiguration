@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.service;
 
+import com.ZioSet_WorkerConfiguration.dto.CreateScriptArgDto;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
@@ -38,7 +39,7 @@ public class ScriptService {
     public ScriptEntity createOrUpdateScriptExecution(ScriptDTO dto) {
 
         ScriptEntity execution = (dto.getId() != null) ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
-                        : new ScriptEntity();
+                : new ScriptEntity();
 
         ScriptTemplateEntity template = (dto.getTemplateId() != null) ? getTemplate(dto.getTemplateId()) : null;
 
@@ -72,6 +73,77 @@ public class ScriptService {
             ScriptFileEntity file = getFile(dto.getScriptFileId());
             execution.setScriptFile(file);
         }
+
+
+        if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
+            execution.setWeekDaysCsv(String.join(",", dto.getWeekDays()));
+        } else {
+            execution.setWeekDaysCsv(null);
+        }
+
+        String script = parserService.parseScript(template.getParameters(),dto.getParams());
+        execution.setScriptText(script);
+
+        Map<String, String> scriptArgs = parserService.extractScriptArguments(template.getParameters(), dto.getParams());
+        execution.setScriptArgument(scriptArgs);
+
+        execution = scriptRepository.save(execution);
+
+        targetSystemRepository.deleteByScriptId(execution.getId());
+        if (dto.getTargetSystemSerials() != null) {
+            for (String serial : dto.getTargetSystemSerials()) {
+                ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
+                target.setScript(execution);
+                target.setSystemSerialNumber(serial);
+                targetSystemRepository.save(target);
+            }
+        }
+
+        dependencyRepository.deleteByScriptId(execution.getId());
+        if (dto.getDependencyFileIds() != null) {
+            for (Long fileId : dto.getDependencyFileIds()) {
+                ScriptFileEntity file = scriptFileRepository.findById(fileId)
+                        .orElseThrow(() -> new RuntimeException("Dependency file not found"));
+
+                ScriptDependencyEntity dep = new ScriptDependencyEntity();
+                dep.setScript(execution);
+                dep.setScriptFile(file);
+                dependencyRepository.save(dep);
+            }
+        }
+
+        return execution;
+    }
+
+
+    @Transactional
+    public ScriptEntity createScriptArgDto(CreateScriptArgDto dto) {
+
+        ScriptEntity execution =  new ScriptEntity();
+
+        execution.setName(dto.getName());
+        execution.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+        execution.setAddedBy(dto.getAddedBy());
+        execution.setDescription(dto.getDescription());
+
+        if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
+            execution.setTargetPlatformsCsv(
+                    dto.getTargetPlatforms().stream()
+                            .map(Enum::name)
+                            .collect(Collectors.joining(","))
+            );
+        } else {
+            execution.setTargetPlatformsCsv(null);
+        }
+        ScriptTemplateEntity template = (dto.getTemplateId() != null) ? getTemplate(dto.getTemplateId()) : null;
+
+
+        // Schedule
+        execution.setScheduleType(dto.getScheduleType());
+        execution.setStartDateTime(dto.getStartDateTime());
+        execution.setRepeatEverySeconds(dto.getRepeatEverySeconds());
+        execution.setMonthDay(dto.getMonthDay());
+        execution.setTimeOfDay(dto.getTimeOfDay());
 
 
         if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
