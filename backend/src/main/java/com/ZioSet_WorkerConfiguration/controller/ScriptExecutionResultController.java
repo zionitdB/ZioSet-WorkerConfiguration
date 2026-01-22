@@ -20,10 +20,14 @@ public class ScriptExecutionResultController {
 
     @GetMapping
     public Page<ScriptExecutionResultSummaryDTO> getResults(
-            ExecutionResultFilterDTO filter,
+            @ModelAttribute ExecutionResultFilterDTO filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
+        System.out.println("scriptId=" + filter.getScriptId()
+                + ", serial=" + filter.getSerialNumber()
+                + ", after=" + filter.getFinishedAfter()
+                + ", before=" + filter.getFinishedBefore());
         return service.getPaginatedResults(filter, page, size);
     }
 

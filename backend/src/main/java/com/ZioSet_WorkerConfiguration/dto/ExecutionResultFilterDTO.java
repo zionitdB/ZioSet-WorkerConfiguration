@@ -9,6 +9,7 @@ import java.time.Instant;
 public class ExecutionResultFilterDTO {
     private String serialNumber;
     private Long scriptId;
+    private String hostName;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant finishedAfter;
