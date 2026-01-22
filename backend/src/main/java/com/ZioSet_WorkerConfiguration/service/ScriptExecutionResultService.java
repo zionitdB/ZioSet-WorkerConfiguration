@@ -1,5 +1,7 @@
 package com.ZioSet_WorkerConfiguration.service;
 
+import com.ZioSet_WorkerConfiguration.dto.DashboardCountsDto;
+import com.ZioSet_WorkerConfiguration.dto.DashboardCountsView;
 import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
@@ -63,6 +65,24 @@ public class ScriptExecutionResultService {
                 .stream()
                 .map(this::toSummary)
                 .toList();
+    }
+
+    public DashboardCountsDto dashboardCounts(ExecutionResultFilterDTO f) {
+        DashboardCountsView v = repo.dashboardCounts(f.getScriptId(), f.getSerialNumber(),
+                f.getHostName(), f.getFinishedAfter(),
+                f.getFinishedBefore());
+
+        long success = v.getSuccess() == null ? 0 : v.getSuccess();
+        long failed  = v.getFailed()  == null ? 0 : v.getFailed();
+        long pending = v.getPending() == null ? 0 : v.getPending();
+        long total   = v.getTotal()   == null ? 0 : v.getTotal();
+
+        return new DashboardCountsDto(success, failed, pending, total);
+    }
+
+    private static long toLong(Object v) {
+        if (v == null) return 0L;
+        return (long)v;
     }
 
 

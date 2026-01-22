@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
+import com.ZioSet_WorkerConfiguration.dto.DashboardCountsDto;
 import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
@@ -49,5 +50,10 @@ public class ScriptExecutionResultController {
     @GetMapping("/getSummaryBySerialNo")
     public List<ScriptExecutionResultSummaryDTO> getSummaryBySerialNo(@RequestParam String serialNo) {
         return service.getExecutionHistoryBySerial(serialNo);
+    }
+
+    @GetMapping("/dashboard-counts")
+    public DashboardCountsDto dashboardCounts(@ModelAttribute ExecutionResultFilterDTO filter) {
+        return service.dashboardCounts(filter);
     }
 }
