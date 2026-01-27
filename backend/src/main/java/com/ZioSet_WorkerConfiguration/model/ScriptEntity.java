@@ -25,7 +25,7 @@ public class ScriptEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "template_id")
     private ScriptTemplateEntity template;
 

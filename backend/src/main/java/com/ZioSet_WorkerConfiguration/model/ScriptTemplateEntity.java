@@ -61,6 +61,9 @@ public class ScriptTemplateEntity {
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    @Lob
+    @Column(name = "parsing_template")
+    private String parsingTemplate;
 
 
 }
