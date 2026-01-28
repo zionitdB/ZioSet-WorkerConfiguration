@@ -37,5 +37,6 @@ public class ScriptDTO {
     private List<String> weekDays;   // ["MON","FRI"]
     private Integer monthDay;        // 2, 10, 31
     private LocalTime timeOfDay;        // "09:00"
+    private String hostName;
 }
 

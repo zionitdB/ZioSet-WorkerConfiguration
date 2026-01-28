@@ -17,6 +17,7 @@ public class AgentUpdateMapper {
         AgentUpdateEntity agentUpdateEntity = new AgentUpdateEntity();
         agentUpdateEntity.setUuid(uuid);
         agentUpdateEntity.setTargetDateTime(dto.getTargetDateTime());
+        agentUpdateEntity.setHostName(dto.getHostName());
 
         if (dto.getFiles() != null) {
             agentUpdateEntity.setFiles(dto.getFiles().stream()

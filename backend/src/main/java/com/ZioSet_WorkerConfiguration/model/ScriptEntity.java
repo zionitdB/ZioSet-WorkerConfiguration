@@ -93,6 +93,8 @@ public class ScriptEntity {
 
     private Long addedBy;
 
+    private String hostName;
+
     @PreUpdate
     public void setUpdatedAt() {
         this.updatedAt = Instant.now();

@@ -10,6 +10,15 @@ public class AgentUpdateCreateDto {
     private LocalDateTime targetDateTime;
     private List<AgentUpdateFileCreateDto> files;
     private List<String> systemSerialNumbers;
+    private String hostName;
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
+    }
 
     public LocalDateTime getTargetDateTime() {
         return targetDateTime;
