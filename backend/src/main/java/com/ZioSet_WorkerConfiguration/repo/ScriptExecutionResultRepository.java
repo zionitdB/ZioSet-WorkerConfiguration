@@ -42,6 +42,25 @@ public interface ScriptExecutionResultRepository
                 @Param("to") Instant to
         );
 
+    @Query("""
+    select r
+    from ScriptExecutionResultEntity r
+    where (:scriptId is null or r.script.id = :scriptId)
+      and (:serial is null or :serial = '' or r.systemSerialNumber = :serial)
+      and (:host is null or :host = '' or r.hostName = :host)
+      and (:from is null or r.startedAt >= :from)
+      and (:to is null or r.startedAt <= :to)
+      and (:returnCode is null or r.returnCode = :returnCode)
+    """)
+    List<ScriptExecutionResultEntity> filterResultList(
+            @Param("scriptId") Long scriptId,
+            @Param("serial") String serial,
+            @Param("host") String host,
+            @Param("from") Instant from,
+            @Param("to") Instant to,
+            @Param("returnCode") Integer returnCode
+    );
+
 
 
 

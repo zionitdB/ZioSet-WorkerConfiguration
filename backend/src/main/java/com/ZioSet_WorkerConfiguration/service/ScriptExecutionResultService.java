@@ -1,9 +1,6 @@
 package com.ZioSet_WorkerConfiguration.service;
 
-import com.ZioSet_WorkerConfiguration.dto.DashboardCountsDto;
-import com.ZioSet_WorkerConfiguration.dto.DashboardCountsView;
-import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
+import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTemplateEntity;
 import com.ZioSet_WorkerConfiguration.parsing.ExecutionParseRequest;
@@ -16,6 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +36,7 @@ public class ScriptExecutionResultService {
                 repo.findAll(ScriptExecutionResultSpecs.filter(filter), pageable);
         List<ScriptExecutionResultSummaryDTO> results= data.map(this::toSummaryReport).stream().toList();
         return new PagedResponse<>(
+
                 results,
                 data.getNumber(),
                 data.getSize(),
@@ -150,6 +151,55 @@ public class ScriptExecutionResultService {
         long total   = v.getTotal()   == null ? 0 : v.getTotal();
 
         return new DashboardCountsDto(success, failed, pending, total);
+    }
+
+    public List<ScriptExecutionResultSummaryDTO> dashboardCountList(ExecutionResultFilterDTO f, String status) {
+        Integer code = getCode(status);
+        List<ScriptExecutionResultEntity> list = repo.filterResultList(f.getScriptId(), f.getSerialNumber(),
+                f.getHostName(), f.getFinishedAfter(),
+                f.getFinishedBefore(),code);
+
+        return list.stream().map(this::toSummary).collect(Collectors.toList());
+    }
+
+    private Integer getCode(String status){
+        if (status.equalsIgnoreCase("success")){
+            return 0;
+        } else if (status.equalsIgnoreCase("failed")) {
+            return 1;
+        }
+        return null;
+    }
+
+    public DashboardSlotCountsDto getLast24HourExecutionCountsSlotted() {
+
+        Instant overallTo = Instant.now();
+        Instant overallFrom = overallTo.minus(24, ChronoUnit.HOURS);
+
+        int slotCount = 4;//take e-one no
+        long slotHours = 24 / slotCount;
+
+        List<TimeSlotCountDto> slots = new ArrayList<>();
+
+        Instant slotStart = overallFrom;
+
+        for (int i = 0; i < slotCount; i++) {
+            Instant slotEnd = slotStart.plus(slotHours, ChronoUnit.HOURS);
+
+            DashboardCountsView v =
+                    repo.dashboardCounts(null, null, null, slotStart, slotEnd);
+
+            long success = v.getSuccess() == null ? 0 : v.getSuccess();
+            long failed  = v.getFailed()  == null ? 0 : v.getFailed();
+            long pending = v.getPending() == null ? 0 : v.getPending();
+            long total   = v.getTotal()   == null ? 0 : v.getTotal();
+
+            slots.add(new TimeSlotCountDto(slotStart, slotEnd, success, failed, pending, total));
+
+            slotStart = slotEnd;
+        }
+
+        return new DashboardSlotCountsDto(overallFrom, overallTo, slots);
     }
 
 

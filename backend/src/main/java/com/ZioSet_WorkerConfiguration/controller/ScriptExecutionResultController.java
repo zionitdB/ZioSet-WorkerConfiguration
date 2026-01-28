@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/execution-results")
@@ -58,10 +59,33 @@ public class ScriptExecutionResultController {
         return service.dashboardCounts(filter);
     }
 
+    @GetMapping("/dashboard-statuswise")
+    public ResponseEntity<Object> dashboardStatusList(@ModelAttribute ExecutionResultFilterDTO filter,
+                                                  @RequestParam String status) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.dashboardCountList(filter,status),
+                        "message", "Data"
+                )
+        );
+
+    }
+
     @GetMapping("/parsed-report")
     public ResponseEntity<Object> paredReport( @ModelAttribute ExecutionResultFilterDTO filter,
                                                @RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(service.parse(filter,page,size));
+    }
+
+    @GetMapping("/last-24-hours-count")
+    public ResponseEntity<?> getLast24HourSlotCounts() {
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.getLast24HourExecutionCountsSlotted(),
+                        "message", "Last 24 hours execution counts"
+                )
+        );
     }
 }
