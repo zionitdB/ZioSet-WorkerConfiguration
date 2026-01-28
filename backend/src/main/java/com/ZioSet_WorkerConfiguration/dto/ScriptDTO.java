@@ -22,7 +22,7 @@ public class ScriptDTO {
     private String description;
 
     private List<Long> dependencyFileIds;
-    private List<String> targetSystemSerials;
+//    private List<String> targetSystemSerials;
     private List<ScriptTargetPlatform> targetPlatforms;
 
     //for req_parameter_value and for script_argument_value
@@ -37,6 +37,6 @@ public class ScriptDTO {
     private List<String> weekDays;   // ["MON","FRI"]
     private Integer monthDay;        // 2, 10, 31
     private LocalTime timeOfDay;        // "09:00"
-    private String hostName;
+    private List<Map<String,String> > serialNoHostName;
 }
 

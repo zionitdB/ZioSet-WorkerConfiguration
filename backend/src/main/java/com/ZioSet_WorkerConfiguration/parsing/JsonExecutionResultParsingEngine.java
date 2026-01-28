@@ -23,6 +23,7 @@ public class JsonExecutionResultParsingEngine {
     public ParsedExecutionResult parse(
             RawExecutionResult raw,
             ScriptTemplateEntity templateEntity) {
+        System.out.println("In main parse \n");
 
         ParsingDefinition template = readTemplate(templateEntity.getParsingTemplate());
 
@@ -51,6 +52,7 @@ public class JsonExecutionResultParsingEngine {
             Object stderrDoc,
             ParsedExecutionResult result) {
 
+        System.out.println("In Evaluate Status\n");
         if (template.getFailureCriteria() != null) {
             if (evaluateCriteria(template.getFailureCriteria(), stdoutDoc, stderrDoc)) {
                 return ExecutionStatus.FAILED;
@@ -73,6 +75,7 @@ public class JsonExecutionResultParsingEngine {
 
         Object doc = criteria.getSource() == SourceType.STDOUT ? stdoutDoc : stderrDoc;
 
+        System.out.println("In criteria evaluate\n");
         try {
             Object value = JsonPath.read(doc, criteria.getJsonPath());
 
@@ -110,6 +113,7 @@ public class JsonExecutionResultParsingEngine {
 
             }
         }
+        System.out.println("In extract fields\n");
 
     }
     private ParsingDefinition readTemplate(String json) {
@@ -122,6 +126,7 @@ public class JsonExecutionResultParsingEngine {
 
     private Object parseJsonSafe(String json, String source, ParsedExecutionResult result) {
         try {
+            System.out.println("In parse json\n"+json);
             return Configuration.defaultConfiguration()
                     .jsonProvider()
                     .parse(json);
@@ -133,7 +138,7 @@ public class JsonExecutionResultParsingEngine {
 
     private Object cast(Object value, FieldType type) {
         if (value == null) return null;
-
+        System.out.println("In cast\n"+value);
         return switch (type) {
             case STRING -> value.toString();
             case INT -> Integer.parseInt(value.toString());

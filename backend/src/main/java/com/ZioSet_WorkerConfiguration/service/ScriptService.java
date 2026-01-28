@@ -49,7 +49,7 @@ public class ScriptService {
         execution.setAddedBy(dto.getAddedBy());
         execution.setDescription(dto.getDescription());
         execution.setScriptType(dto.getScriptType());
-        execution.setHostName(dto.getHostName());
+//        execution.setHostName(dto.getHostName());
 
         //target-platforms ,in case to run simple script for systems without needing template
         if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
@@ -91,11 +91,12 @@ public class ScriptService {
         execution = scriptRepository.save(execution);
 
         targetSystemRepository.deleteByScriptId(execution.getId());
-        if (dto.getTargetSystemSerials() != null) {
-            for (String serial : dto.getTargetSystemSerials()) {
+        if (dto.getSerialNoHostName() != null) {
+            for ( Map<String,String> systems : dto.getSerialNoHostName()) {
                 ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
                 target.setScript(execution);
-                target.setSystemSerialNumber(serial);
+                target.setSystemSerialNumber(systems.get("serialNo"));
+                target.setHostName(systems.get("hostName"));
                 targetSystemRepository.save(target);
             }
         }

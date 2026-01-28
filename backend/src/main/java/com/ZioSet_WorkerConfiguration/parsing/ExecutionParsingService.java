@@ -14,9 +14,10 @@ public class ExecutionParsingService {
 
         // Raw execution result
         RawExecutionResult rawResult = new RawExecutionResult(
-                request.getStdout().asText(),
-                request.getStderr().asText()
+                request.getStdout().toString(),
+                request.getStderr().toString()
         );
+        System.out.println("Raw\n"+rawResult);
 
         ScriptTemplateEntity template = new ScriptTemplateEntity();
 
