@@ -5,12 +5,20 @@ import com.ZioSet_WorkerConfiguration.dto.DashboardCountsView;
 import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
 import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
+import com.ZioSet_WorkerConfiguration.model.ScriptTemplateEntity;
+import com.ZioSet_WorkerConfiguration.parsing.ExecutionParseRequest;
+import com.ZioSet_WorkerConfiguration.parsing.JsonExecutionResultParsingEngine;
+import com.ZioSet_WorkerConfiguration.parsing.ParsedExecutionResult;
+import com.ZioSet_WorkerConfiguration.parsing.RawExecutionResult;
 import com.ZioSet_WorkerConfiguration.repo.ScriptExecutionResultRepository;
+import com.ZioSet_WorkerConfiguration.utils.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +26,24 @@ import java.util.stream.Collectors;
 public class ScriptExecutionResultService {
 
     private final ScriptExecutionResultRepository repo;
+    private final JsonExecutionResultParsingEngine parsingEngine;
+
+    public PagedResponse<ScriptExecutionResultSummaryDTO> parse(ExecutionResultFilterDTO filter, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page-1, size, Sort.by("finishedAt").descending());
+
+        Page<ScriptExecutionResultEntity> data =
+                repo.findAll(ScriptExecutionResultSpecs.filter(filter), pageable);
+        List<ScriptExecutionResultSummaryDTO> results= data.map(this::toSummaryReport).stream().toList();
+        return new PagedResponse<>(
+                results,
+                data.getNumber(),
+                data.getSize(),
+                data.getTotalElements(),
+                data.getTotalPages(),
+                data.isLast());
+
+    }
 
     public Page<ScriptExecutionResultSummaryDTO> getPaginatedResults(
             ExecutionResultFilterDTO filter,
@@ -43,10 +69,56 @@ public class ScriptExecutionResultService {
         dto.setStartedAt(e.getStartedAt());
         dto.setFinishedAt(e.getFinishedAt());
         dto.setReturnCode(e.getReturnCode());
+        dto.setStatus(e.getReturnCode() == 0 ? "SUCCESS" : "FAILED");
         dto.setStdout(e.getStdout());
         dto.setStderr(e.getStderr());
         dto.setHostName(e.getHostName());
         return dto;
+    }
+
+    private ScriptExecutionResultSummaryDTO toSummaryReport(ScriptExecutionResultEntity e) {
+        String status = resolveStatus(e);
+        RawExecutionResult rawResult = new RawExecutionResult(
+                e.getStdout(),
+                e.getStderr()
+        );
+
+        String format = Optional
+                .ofNullable(e.getScript().getTemplate().getParsingTemplate())
+                .orElse(e.getScript().getParsingFormat());
+
+        ParsedExecutionResult parsedOutput =
+                parsingEngine.parse(rawResult, format);
+
+        return getScriptExecutionResultSummaryDTO(e, status, parsedOutput);
+
+    }
+
+    private static ScriptExecutionResultSummaryDTO getScriptExecutionResultSummaryDTO(ScriptExecutionResultEntity e, String status, ParsedExecutionResult parsedOutput) {
+        ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
+
+        dto.setId(e.getId());
+        dto.setRunUuid(e.getRunUuid());
+        dto.setScriptId(e.getScript().getId());
+        dto.setScriptName(e.getScript().getName());
+        dto.setSystemSerialNumber(e.getSystemSerialNumber());
+        dto.setStartedAt(e.getStartedAt());
+        dto.setFinishedAt(e.getFinishedAt());
+        dto.setReturnCode(e.getReturnCode());
+        dto.setStatus(status);
+        dto.setStdout(e.getStdout());
+        dto.setStderr(e.getStderr());
+        dto.setHostName(e.getHostName());
+        dto.setParsedData(parsedOutput);
+        return dto;
+    }
+
+
+    private String resolveStatus(ScriptExecutionResultEntity entity) {
+        if (entity.getFinishedAt() == null) return "PENDING";
+        if (entity.getReturnCode() != null && entity.getReturnCode() == 0)
+            return "SUCCESS";
+        return "FAILED";
     }
 
 
@@ -78,11 +150,6 @@ public class ScriptExecutionResultService {
         long total   = v.getTotal()   == null ? 0 : v.getTotal();
 
         return new DashboardCountsDto(success, failed, pending, total);
-    }
-
-    private static long toLong(Object v) {
-        if (v == null) return 0L;
-        return (long)v;
     }
 
 

@@ -7,6 +7,7 @@ import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
 import com.ZioSet_WorkerConfiguration.service.ScriptExecutionResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,5 +56,12 @@ public class ScriptExecutionResultController {
     @GetMapping("/dashboard-counts")
     public DashboardCountsDto dashboardCounts(@ModelAttribute ExecutionResultFilterDTO filter) {
         return service.dashboardCounts(filter);
+    }
+
+    @GetMapping("/parsed-report")
+    public ResponseEntity<Object> paredReport( @ModelAttribute ExecutionResultFilterDTO filter,
+                                               @RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.parse(filter,page,size));
     }
 }

@@ -13,16 +13,17 @@ public class ExecutionParsingService {
     public ParsedExecutionResult parse(ExecutionParseRequest request) {
 
         // Raw execution result
-        RawExecutionResult rawResult = new RawExecutionResult(
-                request.getStdout().toString(),
-                request.getStderr().toString()
-        );
-        System.out.println("Raw\n"+rawResult);
-
-        ScriptTemplateEntity template = new ScriptTemplateEntity();
-
-        template.setParsingTemplate(request.getParsingTemplate().asText());
-
-        return parsingEngine.parse(rawResult, template);
+//        RawExecutionResult rawResult = new RawExecutionResult(
+//                request.getStdout().toString(),
+//                request.getStderr().toString()
+//        );
+//        System.out.println("Raw\n"+rawResult);
+//
+//        ScriptTemplateEntity template = new ScriptTemplateEntity();
+//
+//        template.setParsingTemplate(request.getParsingTemplate().asText());
+//
+//        return parsingEngine.parse(rawResult, template);
+        return null;
     }
 }

@@ -22,10 +22,10 @@ public class JsonExecutionResultParsingEngine {
 
     public ParsedExecutionResult parse(
             RawExecutionResult raw,
-            ScriptTemplateEntity templateEntity) {
+            String parsingFormat) {
         System.out.println("In main parse \n");
 
-        ParsingDefinition template = readTemplate(templateEntity.getParsingTemplate());
+        ParsingDefinition template = readTemplate(parsingFormat);
 
 
 //        if (template.getOutputType() != OutputType.JSON) {

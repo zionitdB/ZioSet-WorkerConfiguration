@@ -99,4 +99,7 @@ public class ScriptEntity {
     public void setUpdatedAt() {
         this.updatedAt = Instant.now();
     }
+
+    @Lob
+    private String parsingFormat;
 }
