@@ -2,23 +2,23 @@ package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
+import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTemplateEntity;
 import com.ZioSet_WorkerConfiguration.parsing.ExecutionParseRequest;
 import com.ZioSet_WorkerConfiguration.parsing.JsonExecutionResultParsingEngine;
 import com.ZioSet_WorkerConfiguration.parsing.ParsedExecutionResult;
 import com.ZioSet_WorkerConfiguration.parsing.RawExecutionResult;
 import com.ZioSet_WorkerConfiguration.repo.ScriptExecutionResultRepository;
+import com.ZioSet_WorkerConfiguration.repo.ScriptTargetSystemRepository;
 import com.ZioSet_WorkerConfiguration.utils.PagedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +27,7 @@ public class ScriptExecutionResultService {
 
     private final ScriptExecutionResultRepository repo;
     private final JsonExecutionResultParsingEngine parsingEngine;
+    private final ScriptTargetSystemRepository targetRepo;
 
     public PagedResponse<ScriptExecutionResultSummaryDTO> parse(ExecutionResultFilterDTO filter, int page, int size) {
 
@@ -129,6 +130,42 @@ public class ScriptExecutionResultService {
                 collect(Collectors.toList());
     }
 
+    public List<ScriptExecutionResultSummaryDTO> getRecentExecutions(Long scriptId){
+        return repo.findAllByScriptId(scriptId).
+                stream().map(this::toSummary).
+                limit(10).
+                collect(Collectors.toList());
+    }
+
+    public ScriptExecutionMetricsDTO getAvgExecutionTime(Long scriptId){
+        List<ScriptExecutionResultEntity> list = repo.findAllByScriptId(scriptId)
+                .stream().limit(10).toList();
+
+
+        double avgSeconds = list.stream()
+                .mapToLong(e ->
+                        Duration.between(e.getStartedAt(), e.getFinishedAt()).toSeconds()
+                )
+                .average()
+                .orElse(0.0);
+
+        Instant lastExecution = list.stream().findFirst().map(ScriptExecutionResultEntity::getReceivedAt).orElse(null);
+
+        long successCount = list.stream()
+                .filter(e -> e.getReturnCode() != null && e.getReturnCode() == 0)
+                .count();
+
+        double successRate = (successCount * 100.0) / list.size();
+
+        return new ScriptExecutionMetricsDTO(
+                scriptId,
+                avgSeconds,
+                lastExecution,
+                successRate
+        );
+
+    }
+
     public long findByScriptId(Long scriptId){
         return repo.countByScriptId(scriptId);
     }
@@ -140,27 +177,73 @@ public class ScriptExecutionResultService {
                 .toList();
     }
 
-    public DashboardCountsDto dashboardCounts(ExecutionResultFilterDTO f) {
-        DashboardCountsView v = repo.dashboardCounts(f.getScriptId(), f.getSerialNumber(),
-                f.getHostName(), f.getFinishedAfter(),
-                f.getFinishedBefore());
+    public DashboardCountsDto dashboardCounts(Long scriptId) {
+        DashboardCountsView v = repo.dashboardCounts(scriptId, null, null, null, null);
 
         long success = v.getSuccess() == null ? 0 : v.getSuccess();
         long failed  = v.getFailed()  == null ? 0 : v.getFailed();
-        long pending = v.getPending() == null ? 0 : v.getPending();
+        long pending = countPendingSystems(scriptId);
         long total   = v.getTotal()   == null ? 0 : v.getTotal();
 
         return new DashboardCountsDto(success, failed, pending, total);
     }
 
+    public long countPendingSystems(Long scriptId){
+        return repo.findPendingSystems(scriptId).size();
+    }
+
+
     public List<ScriptExecutionResultSummaryDTO> dashboardCountList(ExecutionResultFilterDTO f, String status) {
         Integer code = getCode(status);
-        List<ScriptExecutionResultEntity> list = repo.filterResultList(f.getScriptId(), f.getSerialNumber(),
-                f.getHostName(), f.getFinishedAfter(),
-                f.getFinishedBefore(),code);
+            if (code==null) {
+                return getPendingExecutionList(f.getScriptId());
+            }
+            List<ScriptExecutionResultEntity> list = repo.filterResultList(f.getScriptId(), null,
+                    null, f.getFinishedAfter(),
+                    f.getFinishedBefore(), code);
+            return list.stream().map(this::toSummary).collect(Collectors.toList());
+        }
 
-        return list.stream().map(this::toSummary).collect(Collectors.toList());
+
+    public List<ScriptExecutionResultSummaryDTO> getPendingExecutionList(long scriptId) {
+
+        List<ScriptTargetSystemEntity> targetSystems = targetRepo.findAllByScriptId(scriptId);
+
+        if (targetSystems.isEmpty()) {
+            return List.of();
+        }
+
+        List<ScriptExecutionResultEntity> executedResults =
+                repo.findAllByScriptId(scriptId);
+
+        Set<String> executedSystemSet = executedResults.stream()
+                .map(ScriptExecutionResultEntity::getSystemSerialNumber)
+                .collect(Collectors.toSet());
+
+        return targetSystems.stream()
+                .filter(ts -> !executedSystemSet.contains(ts.getSystemSerialNumber()))
+                .map(ts -> {
+                    ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
+
+                    dto.setId(null);
+                    dto.setRunUuid(null);
+                    dto.setScriptId(ts.getScript().getId());
+                    dto.setScriptName(ts.getScript().getName());
+                    dto.setSystemSerialNumber(ts.getSystemSerialNumber());
+                    dto.setStartedAt(null);
+                    dto.setFinishedAt(null);
+                    dto.setReturnCode(null);
+                    dto.setStatus("PENDING");
+                    dto.setStdout(null);
+                    dto.setStderr(null);
+                    dto.setHostName(ts.getHostName());
+                    dto.setParsedData(null);
+
+                    return dto;
+                })
+                .toList();
     }
+
 
     private Integer getCode(String status){
         if (status.equalsIgnoreCase("success")){

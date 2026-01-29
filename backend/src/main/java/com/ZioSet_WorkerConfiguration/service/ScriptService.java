@@ -231,8 +231,18 @@ public class ScriptService {
         ).toList();
     }
 
-    public List<ScriptWithTargetCountDto> getScriptsWithTargetCount() {
-        return scriptRepository.findAllScriptsWithTargetCount();
+    public Map<String, List<ScriptWithTargetCountDto>> getScriptsWithTargetCount() {
+        List<ScheduleType> ONE_TIME_TYPES =
+                List.of(ScheduleType.NONE, ScheduleType.ONE_TIME);
+
+        List<ScheduleType> RECURRING_TYPES =
+                List.of(ScheduleType.REPEAT_EVERY, ScheduleType.WEEKLY, ScheduleType.MONTHLY);
+
+        List<ScriptWithTargetCountDto> oneTime = scriptRepository.findScriptsWithTargetCountByScheduleTypes(ONE_TIME_TYPES);
+        List<ScriptWithTargetCountDto> recurring = scriptRepository.findScriptsWithTargetCountByScheduleTypes(RECURRING_TYPES);
+
+        return Map.of("OneTimeList",oneTime,
+                        "Recurring",recurring);
     }
 
 
@@ -290,6 +300,14 @@ public class ScriptService {
         }
 
         return yearMonth + nextSequence;
+    }
+
+    public ScriptScheduleCountDto getScriptScheduleCounts() {
+        return scriptRepository.fetchScheduleTypeCounts();
+    }
+
+    public long getScriptCount(){
+        return scriptRepository.findAll().stream().count();
     }
 
 }

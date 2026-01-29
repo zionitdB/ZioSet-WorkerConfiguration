@@ -151,6 +151,18 @@ public class ScriptController {
         return list;
     }
 
+    @GetMapping({"/count"})
+    public long getScriptEntityCount() {
+        long count = 0;
+        try {
+            count = scriptService.getScriptCount();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+
 
 
 }

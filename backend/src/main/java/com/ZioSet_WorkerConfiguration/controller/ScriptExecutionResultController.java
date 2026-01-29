@@ -28,7 +28,6 @@ public class ScriptExecutionResultController {
             @RequestParam(defaultValue = "20") int size
     ) {
         System.out.println("scriptId=" + filter.getScriptId()
-                + ", serial=" + filter.getSerialNumber()
                 + ", after=" + filter.getFinishedAfter()
                 + ", before=" + filter.getFinishedBefore());
         return service.getPaginatedResults(filter, page, size);
@@ -55,8 +54,8 @@ public class ScriptExecutionResultController {
     }
 
     @GetMapping("/dashboard-counts")
-    public DashboardCountsDto dashboardCounts(@ModelAttribute ExecutionResultFilterDTO filter) {
-        return service.dashboardCounts(filter);
+    public DashboardCountsDto dashboardCounts(@RequestParam(required = false)Long scriptId) {
+        return service.dashboardCounts(scriptId);
     }
 
     @GetMapping("/dashboard-statuswise")

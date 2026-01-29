@@ -37,5 +37,10 @@ public class ScriptTemplateController {
                 scriptTemplateService.list(page, size));
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<?> countTemplates() {
+        return ResponseGenerator.generate("Template List", HttpStatus.OK, scriptTemplateService.countTemplate());
+    }
+
 
 }

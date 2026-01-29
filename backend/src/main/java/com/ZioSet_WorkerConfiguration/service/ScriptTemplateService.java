@@ -88,5 +88,9 @@ public class ScriptTemplateService {
         return templateRepository.findByIsActiveTrue(pageable);
     }
 
+    public long countTemplate(){
+        return templateRepository.findAll().stream().count();
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.ZioSet_WorkerConfiguration.repo;
 
 import com.ZioSet_WorkerConfiguration.dto.DashboardCountsView;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
+import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,13 @@ public interface ScriptExecutionResultRepository
 
     long countByScriptId(Long scriptId);
 
+
+    @Query("""
+    select r
+    from ScriptExecutionResultEntity r
+    where (:scriptId is null or r.script.id = :scriptId)
+      order by r.receivedAt DESC
+    """)
     List<ScriptExecutionResultEntity> findAllByScriptId(Long scriptId);
 
     List<ScriptExecutionResultEntity>
@@ -60,6 +68,22 @@ public interface ScriptExecutionResultRepository
             @Param("to") Instant to,
             @Param("returnCode") Integer returnCode
     );
+
+    @Query("""
+    SELECT ts
+    FROM ScriptTargetSystemEntity ts
+    WHERE (:scriptId IS NULL OR ts.script.id = :scriptId)
+    AND NOT EXISTS (
+        SELECT 1
+        FROM ScriptExecutionResultEntity ser
+        WHERE ser.systemSerialNumber = ts.systemSerialNumber
+        AND (:scriptId IS NULL OR ser.script.id = :scriptId)
+    )
+""")
+    List<ScriptTargetSystemEntity> findPendingSystems(@Param("scriptId") Long scriptId);
+
+
+
 
 
 

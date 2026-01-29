@@ -16,21 +16,18 @@ public class ScriptExecutionResultSpecs {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (hasText(f.getSerialNumber())) {
+            if (hasText(f.getSerialNumberOrHostName())) {
                 predicates.add(
-                        cb.equal(root.get("systemSerialNumber"), f.getSerialNumber().trim())
+                        cb.or(
+                                cb.equal(root.get("systemSerialNumber"), f.getSerialNumberOrHostName().trim()),
+                                cb.equal(root.get("hostName"), f.getSerialNumberOrHostName().trim())
+                        )
                 );
             }
 
             if (f.getScriptId() != null) {
                 predicates.add(
                         cb.equal(root.join("script", JoinType.INNER).get("id"), f.getScriptId())
-                );
-            }
-
-            if (hasText(f.getHostName())) {
-                predicates.add(
-                        cb.equal(root.get("hostName"), f.getHostName().trim())
                 );
             }
 

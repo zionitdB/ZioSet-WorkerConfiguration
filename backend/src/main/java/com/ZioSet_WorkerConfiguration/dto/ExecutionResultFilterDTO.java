@@ -7,13 +7,14 @@ import java.time.Instant;
 
 @Data
 public class ExecutionResultFilterDTO {
-    private String serialNumber;
+    private String serialNumberOrHostName;
     private Long scriptId;
-    private String hostName;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant finishedAfter;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant finishedBefore;
+
+    private int status;
 }
