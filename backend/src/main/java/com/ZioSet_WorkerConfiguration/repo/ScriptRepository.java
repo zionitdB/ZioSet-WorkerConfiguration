@@ -4,6 +4,7 @@ import com.ZioSet_WorkerConfiguration.dto.ScriptWithTargetCountDto;
 import com.ZioSet_WorkerConfiguration.model.ScriptEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -19,5 +20,12 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long>,Scri
         GROUP BY s.id, s.name
     """)
     List<ScriptWithTargetCountDto> findAllScriptsWithTargetCount();
+
+    @Query("""
+        SELECT MAX(s.scriptId)
+        FROM ScriptEntity s
+        WHERE s.scriptId LIKE CONCAT(:yearMonth, '%')
+    """)
+    String findMaxScriptIdByYearMonth(@Param("yearMonth") String yearMonth);
 
 }

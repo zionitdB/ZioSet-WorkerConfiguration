@@ -11,6 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +48,7 @@ public class ScriptService {
         execution.setAddedBy(dto.getAddedBy());
         execution.setDescription(dto.getDescription());
         execution.setScriptType(dto.getScriptType());
+        execution.setScriptId(generateNextCode());
 //        execution.setHostName(dto.getHostName());
 
         //target-platforms ,in case to run simple script for systems without needing template
@@ -79,11 +82,13 @@ public class ScriptService {
             execution.setWeekDaysCsv(null);
         }
 
-        String script = parserService.parseScript(template.getParameters(),dto.getParams());
-        execution.setScriptText(script);
+        if(template!=null) {
+            String script = parserService.parseScript(template.getParameters(), dto.getParams());
+            execution.setScriptText(script);
 
-        Map<String, String> scriptArgs = parserService.extractScriptArguments(template.getParameters(), dto.getParams());
-        execution.setScriptArgument(scriptArgs);
+            Map<String, String> scriptArgs = parserService.extractScriptArguments(template.getParameters(), dto.getParams());
+            execution.setScriptArgument(scriptArgs);
+        }
 
         execution = scriptRepository.save(execution);
 
@@ -267,6 +272,24 @@ public class ScriptService {
 
     public int getCountAllScriptEntityByLimitAndGroupSearch(GroupSearchDTO groupSearchDTO){
         return scriptRepository.getCountAllScriptEntityByLimitAndGroupSearch(groupSearchDTO);
+    }
+
+    public String generateNextCode() {
+
+        String yearMonth = YearMonth.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
+
+        String maxScriptId = scriptRepository.findMaxScriptIdByYearMonth(yearMonth);
+
+        String nextSequence;
+        if (maxScriptId == null) {
+            nextSequence = "0001";
+        } else {
+            int next =
+                    Integer.parseInt(maxScriptId.substring(yearMonth.length())) + 1;
+            nextSequence = String.format("%04d", next);
+        }
+
+        return yearMonth + nextSequence;
     }
 
 }
