@@ -1,9 +1,6 @@
 package com.ZioSet_WorkerConfiguration.service;
 
-import com.ZioSet_WorkerConfiguration.dto.CreateScriptArgDto;
-import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
+import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.placholder.service.ScriptParserService;
 import com.ZioSet_WorkerConfiguration.repo.*;
@@ -227,6 +224,10 @@ public class ScriptService {
                         t.getScript().getId()
                 )
         ).toList();
+    }
+
+    public List<ScriptWithTargetCountDto> getScriptsWithTargetCount() {
+        return scriptRepository.findAllScriptsWithTargetCount();
     }
 
 
