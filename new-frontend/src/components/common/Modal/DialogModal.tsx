@@ -145,13 +145,13 @@ const CustomModal = ({
   formId,
   isLoading = false,
   side = "right",
-  width = "w-130!",
+   width = "w-130!",
   showCloseButton = true,
   showSaveButton = true,
 }: CustomSheetProps) => {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side={side} className={`${width} max-w-none! w-130! flex flex-col`}>
+      <SheetContent side={side} className={`${width} max-w-none! w-150! flex flex-col`}>
         {/* Header */}
    <SheetHeader className="border-b border-border pb-2 space-y-3">
   <div className="flex items-center gap-3">

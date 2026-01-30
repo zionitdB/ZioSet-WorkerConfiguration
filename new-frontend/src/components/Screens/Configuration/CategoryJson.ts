@@ -10,6 +10,17 @@ export const CategoryJson = {
       navigationUrl: "/accessControl/dashboard",
       actions: ["View", "Add", "Edit", "Delete"],
     },
+        {
+      permissionsName: "Script Dashboard",
+      navigationUrl: "/scriptRunner/scriptDashboard",
+      actions: ["View", "Add", "Edit", "Delete"],
+    },
+       {
+      permissionsName: "Script Wise Dashboard",
+      navigationUrl: "/scriptRunner/scriptWiseDashboard",
+      actions: ["View", "Add", "Edit", "Delete"],
+    },
+    
   ], 
 
     Master: [
@@ -81,8 +92,12 @@ export const CategoryJson = {
       navigationUrl: "/scriptRunner/scriptRunner",
       actions: ["View",  "Export"],
     },
+      {
+      permissionsName: "Script Templates",
+      navigationUrl: "/scriptRunner/scriptTemplate",
+      actions: ["View",  "Export"],
+    },
 
-    
   ],
 
    
@@ -92,6 +107,11 @@ export const CategoryJson = {
      {
       permissionsName: "Execution Result",
       navigationUrl: "/scriptRunner/executionResult",
+      actions: ["View",  "Export"],
+    },
+       {
+      permissionsName: "Parsed Result",
+      navigationUrl: "/scriptRunner/parsedReport",
       actions: ["View",  "Export"],
     },
 
@@ -125,7 +145,12 @@ export const CategoryJson = {
       actions: ["View", "Add"],
     },
 
-
+ {
+      permissionsName: "Script Approval",
+      navigationUrl: "/scriptRunner/scriptApproval",
+      actions: ["View",  "Export"],
+    },
+    
 
   ],
 };

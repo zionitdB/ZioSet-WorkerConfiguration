@@ -15,6 +15,7 @@ import { ThemeProviders } from './components/components/provider/theme-provider'
 import { SettingsProvider } from './components/components/settingsContext'
 import { PermissionsProvider } from './components/context/permission-context'
 import { AuthProvider } from './components/context/auth-context'
+import AppTour from './components/SNM/TourGuide/AppTour'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   return (
     <>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={true}>
+           <AppTour />
       <GlobalUIProvider>
             <AuthProvider>
         <QueryClientProvider client={queryClient}> 

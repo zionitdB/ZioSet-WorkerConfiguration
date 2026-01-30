@@ -11,7 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Plus, Trash2, FileText, HardDrive, Download, Upload, Calendar, 
   CheckCircle2, Save, Loader2, AlertCircle, Clock, Database,
-  Trash
+  Monitor,
+  RotateCw
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
@@ -23,10 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import DataTable from "@/components/common/DataTable";
 import { 
-  useGetUsersByGroupSearch, 
-  useGetUserCountByGroupSearch, 
   useAddAgentUpdate,
-  useGetInstalledSystems,
   useGetLocalDirectory,
   useGetServerDirectory
 } from "./hooks";
@@ -41,25 +39,23 @@ import * as XLSX from "xlsx";
 import toast from "react-hot-toast";
 import CustomModal from "@/components/common/Modal/DialogModal";
 import Breadcrumb from "@/components/common/breadcrumb";
-import { Combobox } from "@/components/common/ComboBox";
+import { Combobox } from "@/components/common/ComboBoxWithInput";
+import { useGetAllAssetByLimitAndGroupSearch, useGetCountAllAssetByLimitAndGroupSearch, useGetSystemList, useGetSystemListCount } from "../ScriptManagementScreens/ScriptRunner/hooks";
 
-const formatDate = (date: string) => {
-  if (!date) return "-";
-  const d = new Date(date);
-  return d.toLocaleString('en-GB', { 
-    day: '2-digit', 
-    month: '2-digit', 
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
+// const formatDate = (date: string) => {
+//   if (!date) return "-";
+//   const d = new Date(date);
+//   return d.toLocaleString('en-GB', { 
+//     day: '2-digit', 
+//     month: '2-digit', 
+//     year: 'numeric',
+//     hour: '2-digit',
+//     minute: '2-digit'
+//   });
+// };
 
 const AgentUpdateForm = () => {
   const addMutation = useAddAgentUpdate();
-  const getUsersByGroupSearch = useGetUsersByGroupSearch();
-  const getUserCountByGroupSearch = useGetUserCountByGroupSearch();
-  const { data: installSystem } = useGetInstalledSystems();
 
    const { data: localDirectory } = useGetLocalDirectory();
 
@@ -85,7 +81,9 @@ const localDirectories = localDirectory?.map((dir: any) => ({
 
 const initialFormState = {
   targetDateTime: "",
-  systemSerialNumbers: [] as string[],
+  selectedWindowsSystems: [],
+  selectedMacSystems: [],
+  selectedLinuxSystems: [],
   files: [
     {
       updateType: "STORE",
@@ -98,69 +96,105 @@ const initialFormState = {
 
 
 
+
  const [formData, setFormData] = useState(initialFormState);
 
 
-  // --- Table/Search State ---
-  const [filteredData, setFilteredData] = useState([]);
+const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterColumns, setFilterColumns] = useState<any[]>([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchDataCount, setSearchDataCount] = useState(0);
-  console.log("searchDataCount",searchDataCount);
-  
-  const [page, setPage] = useState(1);
-  const [rowsPerPage] = useState(10);
-  const [filterColumns, setFilterColumns] = useState<any[]>([]);
-
-  const installSystemData = isSearchActive ? filteredData : installSystem;
-
-  const [uploadedSerialNumbers, setUploadedSerialNumbers] = useState<string[]>([]);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [uploadedSerialNumbers, setUploadedSerialNumbers] = useState<any[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [showSerialListModal, setShowSerialListModal] = useState(false);
 
-  // --- Handlers ---
 
-  const handleExcelUpload = (file: File) => {
-    setIsUploading(true);
-    setUploadProgress(0);
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = e.target?.result;
-      if (!data) return;
+  
+   
+     const [activePlatform, setActivePlatform] = useState<string>(
+     "",
+     );
+   
+     const { data: systems, isLoading: loading } = useGetSystemList(
+       `/api/sam/getAssetsByLimit?pageNo=${page}&perPage=${rowsPerPage}&osType=${activePlatform}`,
+     );
+   
+     const { data: systemCount } = useGetSystemListCount(activePlatform);
+   
+     const sysTableData = useMemo(
+       () => (filteredData.length ? filteredData : systems || []),
+       [filteredData, systems],
+     );
+   
+     const totalItems = isSearchActive
+       ? searchDataCount
+       : systemCount || sysTableData.length;
+     const totalPages = Math.ceil(totalItems / rowsPerPage);
+  
+     
 
-      let progressVal = 0;
-      const interval = setInterval(() => {
-        progressVal += 20;
-        if (progressVal >= 80) clearInterval(interval);
-        setUploadProgress(progressVal);
-      }, 300);
+     
+         const handleExcelUpload = (file: File) => {
+       setIsUploading(true);
+       setUploadProgress(0);
+     
+       const reader = new FileReader();
+       reader.onload = (e) => {
+         const data = e.target?.result;
+         if (!data) return;
+     
+         let progressVal = 0;
+         const interval = setInterval(() => {
+           progressVal += 20;
+           if (progressVal >= 80) clearInterval(interval);
+           setUploadProgress(progressVal);
+         }, 300);
+     
+         const workbook = XLSX.read(data, { type: "binary" });
+         const sheetName = workbook.SheetNames[0];
+         const worksheet = workbook.Sheets[sheetName];
+         const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
+     
+         // ✅ Extract Serial Number + Host Name
+         const devices = jsonData
+           .map((row) => ({
+             serialNo: row["Serial Number"]?.toString().trim(),
+             hostName: row["Host Name"]?.toString().trim(),
+           }))
+           .filter(item => item.serialNo || item.hostName);
+     
+         setUploadedSerialNumbers(devices); 
+         // example output:
+         // [{ serialNumber: "ABC123", hostName: "HOST-01" }]
+     
+         setUploadProgress(100);
+         setTimeout(() => {
+           setIsUploading(false);
+         }, 300);
+       };
+     
+       reader.readAsBinaryString(file);
+     };
+     
+     
+     const handleDownloadTemplate = () => {
+       const ws = XLSX.utils.json_to_sheet([
+         {
+           "Serial Number": "",
+           "Host Name": ""
+         }
+       ]);
+     
+       const wb = XLSX.utils.book_new();
+       XLSX.utils.book_append_sheet(wb, ws, "Template");
+       XLSX.writeFile(wb, "serial_and_host_template.xlsx");
+     };
 
-      const workbook = XLSX.read(data, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
 
-      const serials = jsonData
-        .map((row) => row["Serial Number"]?.toString().trim())
-        .filter(Boolean);
-
-      setUploadedSerialNumbers(serials);
-      
-      setUploadProgress(100);
-      setTimeout(() => {
-        setIsUploading(false);
-      }, 300);
-    };
-    reader.readAsBinaryString(file);
-  };
-
-  const handleDownloadTemplate = () => {
-    const ws = XLSX.utils.json_to_sheet([{ "Serial Number": "" }]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Template");
-    XLSX.writeFile(wb, "serial_numbers_template.xlsx");
-  };
 
 const updateFile = (index: number, field: string, value: string) => {
   const updatedFiles = [...formData.files];
@@ -181,32 +215,8 @@ const updateFile = (index: number, field: string, value: string) => {
 };
 
 
-  const handleGroupSearch = (filters: Record<string, any>) => {
-    const activeFilters = Object.entries(filters)
-      .filter(([_, v]) => v.filter && v.filter.trim() !== "")
-      .map(([key, v]) => ({ columnName: key, value: v.filter }));
 
-    if (activeFilters.length === 0) {
-      setFilteredData([]);
-      setIsSearchActive(false);
-      setPage(1);
-      return;
-    }
 
-    const payload = { columns: activeFilters, pageNo: page, perPage: rowsPerPage };
-    setFilterColumns(activeFilters);
-    setIsSearchActive(true);
-
-    getUsersByGroupSearch.mutate(payload, { onSuccess: (data) => setFilteredData(data) });
-    getUserCountByGroupSearch.mutate(payload, { onSuccess: (count) => setSearchDataCount(count || 0) });
-  };
-
-  useEffect(() => {
-    if (isSearchActive && filterColumns?.length) {
-      const payload = { columns: filterColumns, pageNo: page, perPage: rowsPerPage };
-      getUsersByGroupSearch.mutate(payload, { onSuccess: (data) => setFilteredData(data) });
-    }
-  }, [page, rowsPerPage]);
 
   const simulateProgress = () => {
     setProgress(0);
@@ -231,6 +241,11 @@ const updateFile = (index: number, field: string, value: string) => {
 // };
 
 
+  const combinedSerials = Array.from(
+    new Set([  ...formData.selectedWindowsSystems,
+  ...formData.selectedMacSystems,
+  ...formData.selectedLinuxSystems, ...uploadedSerialNumbers])
+  );
 
  const handleFinalSubmit = (e: React.FormEvent) => {
   e.preventDefault();
@@ -254,7 +269,9 @@ const updateFile = (index: number, field: string, value: string) => {
   }
 
   const combinedSerials = Array.from(
-    new Set([...formData.systemSerialNumbers, ...uploadedSerialNumbers])
+    new Set([  ...formData.selectedWindowsSystems,
+  ...formData.selectedMacSystems,
+  ...formData.selectedLinuxSystems, ...uploadedSerialNumbers])
   );
 
   if (combinedSerials.length === 0) {
@@ -268,9 +285,14 @@ const updateFile = (index: number, field: string, value: string) => {
   const progressInterval = simulateProgress();
 
   const payload = {
-    ...formData,
-    systemSerialNumbers: combinedSerials,
+     serialNoHostName: [
+  ...formData.selectedWindowsSystems,
+  ...formData.selectedMacSystems,
+  ...formData.selectedLinuxSystems,
+  ...uploadedSerialNumbers,
+],
     targetDateTime: formData.targetDateTime,
+    files: formData.files,
   };
 
   addMutation.mutate(payload, {
@@ -301,60 +323,135 @@ const updateFile = (index: number, field: string, value: string) => {
 };
 
 
-  const systemColumns = useMemo(() => [
-    { field: "serialNo", headerName: "Serial Number", flex: 1 },
-    { 
-      field: "installedAt", 
-      headerName: "Installed At", 
-      flex: 1, 
-      cellRenderer: (p: any) => p.value ? formatDate(p.value) : "-" 
-    },
-  ], []);
 
-  const modalColumns = useMemo(() => [
-  { 
-    field: "serialNo", 
-    headerName: "Serial Number", 
-    flex: 1,
-    cellRenderer: (p: any) => <span className="font-mono">{p.value}</span>
-  },
-  {
-    field: "actions",
-    headerName: "Action",
-    width: 100,
-    sortable: false,
-    filter: false,
-    cellRenderer: (params: any) => (
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-7 w-7 text-destructive hover:bg-destructive/10"
-        onClick={() => {
-          const serialToDelete = params.data.serialNo;
-          const updated = uploadedSerialNumbers.filter((sn) => sn !== serialToDelete);
-          setUploadedSerialNumbers(updated);
-          setFormData(prev => ({
-            ...prev,
-            systemSerialNumbers: prev.systemSerialNumbers.filter(sn => sn !== serialToDelete)
-          }));
-        }}
-      >
-        <Trash className="h-4 w-4" />
-      </Button>
-    ),
-  },
-], [uploadedSerialNumbers]);
+  
 
 
-const modalRowData = useMemo(() => {
-  return uploadedSerialNumbers.map((sn, index) => ({
-    id: index, 
-    serialNo: sn
-  }));
-}, [uploadedSerialNumbers]);
+  const getUsersByGroupSearch = useGetAllAssetByLimitAndGroupSearch();
+  const getUserCountByGroupSearch = useGetCountAllAssetByLimitAndGroupSearch();
 
+  const handleGroupSearch = (filters: Record<string, any>) => {
+    const hasFilters = Object.values(filters).some(
+      (f) => f.filter && f.filter.trim() !== "",
+    );
 
+    if (!hasFilters) {
+      setFilteredData([]);
+      setIsSearchActive(false);
+      setPage(1);
+      return;
+    }
 
+    const payload = {
+      columns: Object.entries(filters)
+        .filter(([_, value]) => value.filter && value.filter.trim() !== "")
+        .map(([key, value]) => ({
+          columnName: key,
+          value: value.filter,
+        })),
+      osType: activePlatform,
+      pageNo: 1,
+      perPage: rowsPerPage,
+    };
+
+    setFilterColumns(payload.columns);
+    setIsSearchActive(true);
+    setPage(1);
+
+    getUsersByGroupSearch.mutate(payload, {
+      onSuccess: (data) => setFilteredData(data),
+    });
+    getUserCountByGroupSearch.mutate(payload, {
+      onSuccess: (count) => setSearchDataCount(count || 0),
+    });
+  };
+
+  useEffect(() => {
+    if (isSearchActive && filterColumns?.length) {
+      const payload = {
+        columns: filterColumns,
+        osType: activePlatform,
+        pageNo: page,
+        perPage: rowsPerPage,
+      };
+
+      getUsersByGroupSearch.mutate(payload, {
+        onSuccess: (data) => setFilteredData(data),
+      });
+      getUserCountByGroupSearch.mutate(payload, {
+        onSuccess: (count) => setSearchDataCount(count || 0),
+      });
+    }
+  }, [page, rowsPerPage, activePlatform]);
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr No",
+        valueGetter: (params: any) =>
+          (page - 1) * rowsPerPage + (params.node.rowIndex + 1),
+        width: 80,
+        filter: false,
+      },
+      { field: "serialNo", headerName: "Serial Number" },
+      { field: "hostName", headerName: "Host Name" },
+      { field: "employeeName", headerName: "Employee Name" },
+      { field: "employeeNo", headerName: "Employee Number" },
+      { field: "assetId", headerName: "Asset ID" },
+      { field: "projectName", headerName: "Project Name" },
+      { field: "make", headerName: "Make" },
+      { field: "model", headerName: "Model" },
+    ],
+    [page, rowsPerPage],
+  );
+
+  
+    const transformSystemData = (data: any[]) =>
+    data.map((item) => ({
+      ...item,
+      serialNo: item.serialNo || "-",
+      hostName: item.hostName || "-",
+      employeeName: item.employeeName || "-",
+      employeeNo: item.employeeNo || "-",
+      assetId: item.assetId || "-",
+      projectName: item.projectName || "-",
+      make: item.make || "-",
+      model: item.model || "-",
+    }));
+  
+  
+    const exportPayload = useMemo(
+    () => ({
+      columns: filterColumns,
+      osType: activePlatform,
+      pageNo: 1,
+      perPage: isSearchActive ? searchDataCount : totalItems||10000,
+    }),
+    [filterColumns, activePlatform, isSearchActive, searchDataCount, totalItems],
+  );
+  
+  
+  const getAllSystems = useGetSystemList(
+    `/api/sam/getAssetsByLimit?pageNo=1&perPage=${exportPayload.perPage}&osType=${activePlatform}`
+  );
+  
+  const allSystemsForExport = async (): Promise<any[]> => {
+    if (isSearchActive) {
+      return new Promise<any[]>((resolve, reject) => {
+        getUsersByGroupSearch.mutate(exportPayload, {
+          onSuccess: (data) => resolve(transformSystemData(data)),
+          onError: reject,
+        });
+      });
+    } else {
+      return new Promise<any[]>((resolve, reject) => {
+        getAllSystems
+          .refetch()
+          .then((res: any) => resolve(transformSystemData(res.data || [])))
+          .catch(reject);
+      });
+    }
+  };
 
 
   return (
@@ -589,7 +686,7 @@ const modalRowData = useMemo(() => {
       options={localDirectories}
       value={file.localDirectory}
       onChange={(val) => updateFile(index, "localDirectory", val)}
-      placeholder="Select local directory..."
+      placeholder="Select and Type local directory..."
     />
   ) : (
     <Input disabled value={file.localDirectory} />
@@ -624,7 +721,7 @@ const modalRowData = useMemo(() => {
                   </TabsList>
 
                   <TabsContent value="manual" className="space-y-4 mt-6">
-                    <div className="rounded-md border">
+                    {/* <div className="rounded-md border">
                       <DataTable
                         rowData={installSystemData}
                         colDefs={systemColumns}
@@ -641,16 +738,128 @@ const modalRowData = useMemo(() => {
                         showExportButton={false}
                         onRowsPerPageChange={undefined}
                       />
-                    </div>
+                    </div> */}
+
+
+                      <div className="flex justify-between items-center mb-4">
+                                          <Tabs
+                                            value={activePlatform}
+                                            onValueChange={(val) => {
+                                              setActivePlatform(val);
+                                              setPage(1);
+                                            }}
+                                          >
+                                            <TabsList className="bg-muted p-1 rounded-xl h-12">
+                                             
+                                                <TabsTrigger
+                                                  value="WINDOWS"
+                                                  className="px-6 rounded-lg gap-2"
+                                                >
+                                                  <Monitor className="w-4 h-4" /> Windows
+                                                </TabsTrigger>
+                                            
                     
-                    {formData.systemSerialNumbers.length > 0 && (
+                                         
+                                                <TabsTrigger
+                                                  value="MAC"
+                                                  className="px-6 rounded-lg gap-2"
+                                                >
+                                                  <RotateCw className="w-4 h-4" /> macOS
+                                                </TabsTrigger>
+                                            
+                    
+                                         
+                                                <TabsTrigger
+                                                  value="LINUX"
+                                                  className="px-6 rounded-lg gap-2"
+                                                >
+                                                  <HardDrive className="w-4 h-4" /> Linux
+                                                </TabsTrigger>
+                                           
+                                            </TabsList>
+                                          </Tabs>
+                    
+                                          <div className="text-right">
+                                            {/* <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">
+                                              Selected (Current View)
+                                            </p>
+                                            <p className="text-2xl font-black text-primary">
+                                              {activePlatform === "WINDOWS"
+                                                ? form.selectedWindowsSystems.length
+                                                : activePlatform === "MAC"
+                                                  ? form.selectedMacSystems.length
+                                                  : form.selectedLinuxSystems.length}
+                                            </p> */}
+                                          </div>
+                                        </div>
+                    
+                                        <div className="border rounded-2xl overflow-hidden bg-background">
+                                         <DataTable
+  rowData={sysTableData || []}
+  colDefs={columnDefs}
+  showCheckbox
+    selectedRows={
+                          activePlatform === "WINDOWS"
+                            ? formData.selectedWindowsSystems
+                            : activePlatform === "MAC"
+                              ? formData.selectedMacSystems
+                              : formData.selectedLinuxSystems
+                        }
+
+           onRowSelection={(currentlySelectedRows: any[]) => {
+  const key =
+    activePlatform === "WINDOWS"
+      ? "selectedWindowsSystems"
+      : activePlatform === "MAC"
+        ? "selectedMacSystems"
+        : "selectedLinuxSystems";
+
+  const mappedCurrentPageSelection = currentlySelectedRows.map((row) => ({
+    serialNo: row.serialNo,
+    hostname: row.hostName,
+  }));
+
+  setFormData((prev: any) => {
+    const otherPagesSelection = prev[key].filter(
+      (savedRow: any) =>
+        !sysTableData.some(
+          (currentPageRow: any) =>
+            currentPageRow.serialNo === savedRow.serialNo
+        )
+    );
+
+    return {
+      ...prev,
+      [key]: [...otherPagesSelection, ...mappedCurrentPageSelection],
+    };
+  });
+}}
+  isLoading={loading}
+  showActions={false}
+  pagination={false}
+  showPagination
+  page={page}
+  totalPages={totalPages}
+  setPage={setPage}
+  rowsPerPage={rowsPerPage}
+  onRowsPerPageChange={setRowsPerPage}
+  onFilterChange={handleGroupSearch}
+  
+    fileName="targetSysten"
+        allData={allSystemsForExport}
+  rowIdField="serialNo"
+/>
+                                        </div>
+
+                    
+                    {/* {formData.systemSerialNumbers.length > 0 && (
                       <div className="flex items-center gap-2 p-4 rounded-lg bg-muted">
                         <CheckCircle2 className="h-5 w-5 text-primary" />
                         <span className="text-sm font-medium">
                           {formData.systemSerialNumbers.length} system{formData.systemSerialNumbers.length !== 1 ? 's' : ''} selected manually
                         </span>
                       </div>
-                    )}
+                    )} */}
                   </TabsContent>
 
                   <TabsContent value="bulk" className="mt-6">
@@ -710,13 +919,13 @@ const modalRowData = useMemo(() => {
                 </Tabs>
 
                 {/* Combined Totals Summary */}
-                {(formData.systemSerialNumbers.length > 0 || uploadedSerialNumbers.length > 0) && (
+                {(combinedSerials.length > 0 || uploadedSerialNumbers.length > 0) && (
                   <div className="mt-6 border-t pt-4">
                     <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
                       <div className="flex items-center gap-2">
                         <Database className="h-4 w-4 text-primary" />
                         <span className="text-sm font-semibold">
-                          Total Deployment Target: {Array.from(new Set([...formData.systemSerialNumbers, ...uploadedSerialNumbers])).length} unique systems
+                          Total Deployment Target: {Array.from(new Set([...combinedSerials, ...uploadedSerialNumbers])).length} unique systems
                         </span>
                       </div>
                     </div>
@@ -776,76 +985,31 @@ const modalRowData = useMemo(() => {
       </Dialog>
 
 
-   <Dialog open={showSerialListModal} onOpenChange={setShowSerialListModal}>
-  <DialogContent className="max-w-4xl p-0 overflow-hidden">
-    {/* Header */}
-    <div className="px-6 py-4 border-b flex items-center justify-between bg-muted/20">
-      <div>
-        <h2 className="text-lg font-semibold">Uploaded Serial Numbers</h2>
-        <p className="text-sm text-muted-foreground">
-          Reviewing {uploadedSerialNumbers.length} entries from bulk upload
-        </p>
-      </div>
-      <Badge variant="outline" className="h-6">Excel Source</Badge>
-    </div>
-
-    {/* DataTable Area */}
-    <div className="p-4 overflow-hidden">
-      <div className="rounded-md border bg-card">
-        <DataTable
-                rowData={modalRowData}
-                colDefs={modalColumns}
-                isLoading={false}
-                pagination={true}
-                showCheckbox={false}
-                showFilter={true}
-                showActions={false}
-                showExportButton={false} onRowsPerPageChange={undefined}        />
-      </div>
-    </div>
-
-    {/* Footer */}
-    <div className="flex justify-end gap-2 border-t px-6 py-4 bg-muted/10">
-      <Button 
-        variant="outline" 
-        onClick={() => setShowSerialListModal(false)}
-      >
-        Close
-      </Button>
-    </div>
-  </DialogContent>
-</Dialog>
+  
 
 
+    
 
-
-      <CustomModal
-        isOpen={showSerialListModal}
-        onClose={() => setShowSerialListModal(false)}
-        dialogTitle={ "Uploaded Serial Numbers"}
-        dialogDescription={ `Reviewing ${uploadedSerialNumbers.length} entries from bulk upload`}
-        formId="user-form"
-        width="max-w-5xl"
-        height="h-auto"
-      >
-   
-    <div className="p-4 overflow-hidden">
-      <div className="rounded-md border bg-card">
-        <DataTable
-                rowData={modalRowData}
-                colDefs={modalColumns}
-                isLoading={false}
-                pagination={true}
-                showCheckbox={false}
-                showFilter={false}
-                showActions={false}
-                showExportButton={false}
-                showRowsPerPage={false}
-                
-                 onRowsPerPageChange={undefined}        />
-      </div>
-    </div>
-      </CustomModal>
+        <CustomModal
+                    isOpen={showSerialListModal}
+                    onClose={() => setShowSerialListModal(false)}
+                    dialogTitle="Uploaded Serial Numbers"
+                    width="w-230!"
+                  >
+                    <DataTable
+                       rowData={uploadedSerialNumbers}
+                  colDefs={[{ field: "serialNo", headerName: "Serial Number" },{ field: "hostName", headerName: "Host Name" },]}
+                      pagination
+                      showFilter={false}
+                      showCheckbox={false}
+                      showActions={false}
+                      showRowsPerPage={false}
+                      showExportButton={false}
+                      isLoading={false}
+                      onRowsPerPageChange={undefined}
+                    />
+                  </CustomModal>
+      
 
     </>
   );

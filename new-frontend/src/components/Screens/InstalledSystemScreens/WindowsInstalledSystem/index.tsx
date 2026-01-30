@@ -146,8 +146,9 @@ const WindowInstalledSystemsRoute = () => {
     () => [
       {
         headerName: "Sr No",
-        valueGetter: (params: any) =>
+        cellRenderer: (params: any) =>
           (page - 1) * rowsPerPage + (params.node.rowIndex + 1),
+        
         width: 80,
         filter: false,
       },

@@ -2,7 +2,8 @@
 
 import { useState, useMemo } from "react";
 import {  RefreshCw, ClipboardList, CheckCircle2, 
-  ShieldAlert, Monitor, Search, Calendar, XCircle 
+  ShieldAlert, Monitor, Search, Calendar, XCircle, 
+  SubscriptIcon
 } from "lucide-react";
 import DataTable from "@/components/common/DataTable";
 import { Button } from "@/components/ui/button";
@@ -13,52 +14,61 @@ import {
   useGetExecutionResults,
   useGetExecutionByGroupSearch,
   useGetExecutionCountByGroupSearch,
+  useGetScripts,
 } from "./hooks";
-import Breadcrumb from "@/components/common/breadcrumb";
+import ScriptExecutionDialog from "./ViewScript";
+import { ComboboxDropdown } from "@/components/common/ComboBox";
 
 const ExecutionResultRoute = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  
-  // New Filter States
-  const [srNumber, setSrNumber] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+const [selectedScript, setSelectedScript] = useState<any>(null);
+
 
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchDataCount, setSearchDataCount] = useState(0);
   const [filteredData, setFilteredData] = useState<any[]>([]);
-const [activeFilters, setActiveFilters] = useState({
-    srNumber: "",
-    startDate: "",
-    endDate: ""
+  const [filters, setFilters] = useState({
+    serialNumber: "",
+    scriptId: "",
+    hostName: "",
+    finishedAfter: "",
+    finishedBefore: "",
   });
-  // Fetch data with new filters
+
+  const [activeFilters, setActiveFilters] = useState(filters);
+
   const { data: apiResponse, isLoading } = useGetExecutionResults(
     page, 
     rowsPerPage, 
    activeFilters
   );
+const { data: scripts=[] } = useGetScripts();
 
   const getExecBySearch = useGetExecutionByGroupSearch();
   const getExecCountBySearch = useGetExecutionCountByGroupSearch();
 
-  const handleApplyFilters = () => {
-    setActiveFilters({
-      srNumber: srNumber,
-      startDate: startDate,
-      endDate: endDate
-    });
-    setPage(1); // Reset to first page on new search
-  };
 
-  // Reset logic
-  const handleClearFilters = () => {
-    setSrNumber("");
-    setStartDate("");
-    setEndDate("");
-    setPage(1);
+const handleApplyFilters = () => {
+  console.log("njfsbdn");
+  
+  setActiveFilters(filters);
+  setPage(1);
+};
+
+const handleClearFilters = () => {
+  const empty = {
+    serialNumber: "",
+    scriptId: "",
+    hostName: "",
+    finishedAfter: "",
+    finishedBefore: "",
   };
+  setFilters(empty);
+  setActiveFilters(empty);
+  setPage(1);
+};
+
 
   const serviceData = useMemo(() => (filteredData.length ? filteredData : apiResponse?.content || []), [filteredData, apiResponse]);
   const totalItems = isSearchActive ? searchDataCount : apiResponse?.totalElements || 0;
@@ -79,8 +89,11 @@ const [activeFilters, setActiveFilters] = useState({
       filter: false,
     },
     { field: "scriptName", headerName: "Script Name", flex: 1.5 },
+      { field: "hostName", headerName: "Host Name", flex: 1.5 },
     { field: "runUuid", headerName: "Script Run ID", flex: 1 },
     { field: "systemSerialNumber", headerName: "Serial Number", flex: 1 },
+        { field: "stdout", headerName: "Standard Output ", flex: 1 },
+            { field: "stderr", headerName: "Standard Error ", flex: 1 },
     { 
       field: "startedAt", 
       headerName: "Execution Start", 
@@ -93,6 +106,28 @@ const [activeFilters, setActiveFilters] = useState({
       flex: 1,
       cellRenderer: (p: any) => p.value ? format(new Date(p.value), "dd-MM-yyyy HH:mm") : "-" 
     },
+    {
+  headerName: "scriptId",
+  flex: 2,
+  cellRenderer: (params: any) => (
+    <div className="flex items-center gap-2">
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={() =>
+          setSelectedScript({
+            id: params.data.scriptId,
+            name: params.data.scriptName,
+          })
+        }
+        className="mt-2"
+      >
+        View Script
+      </Button>
+    </div>
+  ),
+},
+
     {
       field: "returnCode",
       headerName: "Result Code",
@@ -124,9 +159,15 @@ const [activeFilters, setActiveFilters] = useState({
     getExecCountBySearch.mutate(payload, { onSuccess: (count) => setSearchDataCount(count || 0) });
   };
 
+
+
+    // const getAllData = useGetExecutionResults(1, totalItems||10000,activeFilters);
+  
+
+    
   return (
     <div className="container mx-auto space-y-6">
-   <div className="mb-6">
+   {/* <div className="mb-6">
           <Breadcrumb
             items={[
               {
@@ -138,7 +179,7 @@ const [activeFilters, setActiveFilters] = useState({
               },
             ]}
           />
-        </div>
+        </div> */}
         
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-border">
         <div className="flex items-center gap-3">
@@ -161,27 +202,65 @@ const [activeFilters, setActiveFilters] = useState({
       </div>
 
       {/* NEW: Filter Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-card p-5 rounded-xl border border-border shadow-sm items-end">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-card p-5 rounded-xl border border-border shadow-sm items-end">
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
             <Search className="h-3.5 w-3.5" /> Serial Number
           </label>
           <Input 
-            placeholder="Enter Serial Number..." 
-            value={srNumber}
-            onChange={(e) => { setSrNumber(e.target.value); setPage(1); }}
+            placeholder="Enter Serial Number/Host Name here..." 
+            value={filters.serialNumber}
+  onChange={(e) =>
+    setFilters((p) => ({ ...p, serialNumber: e.target.value }))
+  }
             className="bg-background"
           />
         </div>
-
+            <div className="space-y-2">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <SubscriptIcon className="h-3.5 w-3.5" /> Scripts
+          </label>
+        {/* <Select value={filters.scriptId} onValueChange={(v) => setFilters(p => ({ ...p, scriptId: v }))}>
+          <SelectTrigger className="w-full bg-background"><SelectValue placeholder="Select Script" /></SelectTrigger>
+          <SelectContent>
+            {scripts?.map((s: any) => (
+              <SelectItem key={s.id} value={String(s.id)}>{s.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select> */}
+        
+                      <ComboboxDropdown
+          value={filters.scriptId}
+          onChange={(v) => setFilters(p => ({ ...p, scriptId: v }))}
+          placeholder="⚡ Select or type script"
+          options={scripts.map((s: any) => ({
+            value: s.id,
+            label: s.name,
+            description: s.description || "No description available",
+          }))}
+        />
+     </div>
+     {/* <div className="space-y-2">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <Laptop className="h-3.5 w-3.5" /> Host Name
+          </label>
+        <Input
+          placeholder="Host Name"
+          value={filters.hostName}
+          onChange={(e) => setFilters(p => ({ ...p, hostName: e.target.value }))}
+            className="bg-background"
+        />
+    </div> */}
         <div className="space-y-2">
           <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
             <Calendar className="h-3.5 w-3.5" /> Finished After
           </label>
           <Input 
             type="date"
-            value={startDate}
-            onChange={(e) => { setStartDate(e.target.value); setPage(1); }}
+            value={filters.finishedAfter}
+  onChange={(e) =>
+    setFilters((p) => ({ ...p, finishedAfter: e.target.value }))
+  }
             className="bg-background"
           />
         </div>
@@ -192,8 +271,10 @@ const [activeFilters, setActiveFilters] = useState({
           </label>
           <Input 
             type="date"
-            value={endDate}
-            onChange={(e) => { setEndDate(e.target.value); setPage(1); }}
+       value={filters.finishedBefore}
+  onChange={(e) =>
+    setFilters((p) => ({ ...p, finishedBefore: e.target.value }))
+  }
             className="bg-background"
           />
         </div>
@@ -236,6 +317,16 @@ const [activeFilters, setActiveFilters] = useState({
         onFilterChange={handleGroupSearch}
         fileName="execution_logs"
       />
+
+      {selectedScript && (
+  <ScriptExecutionDialog
+    open={!!selectedScript}
+    scriptId={selectedScript.id}
+    scriptName={selectedScript.name}
+    onClose={() => setSelectedScript(null)}
+  />
+)}
+
     </div>
   );
 };

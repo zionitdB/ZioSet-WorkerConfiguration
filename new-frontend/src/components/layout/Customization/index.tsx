@@ -26,6 +26,7 @@ export default function Customization() {
    
         <Button
           size="icon"
+          id="theme-toggle"
           className="fixed right-2 top-1/4 z-50 h-12 w-12 rounded-tl-full rounded-bl-full rounded-tr-full rounded-br-md shadow-md
             bg-primary text-primary-foreground dark:bg-primary dark:text-primary-foreground"
         >
@@ -47,9 +48,10 @@ export default function Customization() {
       {/* Drawer Content */}
       <DrawerContent
         className="bg-background text-foreground dark:bg-background dark:text-foreground 
-                   w-[280px] ml-auto h-full shadow-xl border-l border-border dark:border-border"
+                   w-70 ml-auto h-full shadow-xl border-l border-border dark:border-border"
       >
-        {/* Header */}
+
+        
         <DrawerHeader className="flex justify-between items-center px-4 py-3 border-b border-border dark:border-border">
           <DrawerTitle className="text-lg font-semibold">UI Customization</DrawerTitle>
           <DrawerClose asChild>
