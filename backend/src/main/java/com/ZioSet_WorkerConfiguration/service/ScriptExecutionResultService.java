@@ -158,6 +158,7 @@ public class ScriptExecutionResultService {
                 .mapToLong(e ->
                         Duration.between(e.getStartedAt(), e.getFinishedAt()).toSeconds()
                 )
+                .limit(10)
                 .average()
                 .orElse(0.0);
 
@@ -205,12 +206,12 @@ public class ScriptExecutionResultService {
     }
 
 
-    public Object dashboardCountList(ExecutionResultFilterDTO f, String status, Pageable pageable) {
+    public PagedResponse<ScriptExecutionResultSummaryDTO> dashboardCountList(ExecutionResultFilterDTO f, String status, Pageable pageable) {
         System.out.println("in dashboard  list");
         Integer code = getCode(status);
         System.out.println("code :"+code);
             if (code==null) {
-                return getPendingExecutionList(f.getScriptId());
+                return getPendingExecutionList(f.getScriptId(),pageable);
             }
             Page<ScriptExecutionResultEntity> data = repo.filterResultList(f.getScriptId(), null, null,
                     f.getFinishedAfter(),
@@ -222,33 +223,16 @@ public class ScriptExecutionResultService {
         List<ScriptExecutionResultSummaryDTO> results = data.stream().map(this::toSummary).collect(Collectors.toList());
 
         return new PagedResponse<>(
-                results,
-                data.getNumber(),
-                data.getSize(),
-                data.getTotalElements(),
-                data.getTotalPages(),
-                data.isLast());
+                results, data.getNumber(), data.getSize(),
+                data.getTotalElements(), data.getTotalPages(), data.isLast());
 
     }
 
-    public List<ScriptExecutionResultSummaryDTO> getPendingExecutionList(long scriptId) {
+    public PagedResponse<ScriptExecutionResultSummaryDTO> getPendingExecutionList(long scriptId, Pageable pageable) {
 
-        List<ScriptTargetSystemEntity> targetSystems = targetRepo.findAllByScriptId(scriptId);
+        Page<ScriptTargetSystemEntity> data = targetRepo.findPendingTargets(scriptId,pageable);
 
-        if (targetSystems.isEmpty()) {
-            return List.of();
-        }
-
-        List<ScriptExecutionResultEntity> executedResults =
-                repo.findAllByScriptId(scriptId);
-
-        Set<String> executedSystemSet = executedResults.stream()
-                .map(ScriptExecutionResultEntity::getSystemSerialNumber)
-                .collect(Collectors.toSet());
-        System.out.println("in pending list");
-
-        return targetSystems.stream()
-                .filter(ts -> !executedSystemSet.contains(ts.getSystemSerialNumber()))
+        List<ScriptExecutionResultSummaryDTO> results = data.stream()
                 .map(ts -> {
                     ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
 
@@ -269,7 +253,12 @@ public class ScriptExecutionResultService {
                     return dto;
                 })
                 .toList();
+
+        return new PagedResponse<>(results, data.getNumber(), data.getSize(),
+                data.getTotalElements(), data.getTotalPages(), data.isLast());
+
     }
+
 
 
     private Integer getCode(String status){

@@ -190,6 +190,18 @@ public class ScriptController {
         );
     }
 
+    @GetMapping("/rejected")
+    public ResponseEntity<?> getRejectedScripts(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getRejectedScripts(pageable),
+                        "message", "Rejected scripts"
+                )
+        );
+    }
+
     @PutMapping("/{id}/approve")
     public ResponseEntity<?> approve(@PathVariable Long id) {
         scriptService.approveScript(id);

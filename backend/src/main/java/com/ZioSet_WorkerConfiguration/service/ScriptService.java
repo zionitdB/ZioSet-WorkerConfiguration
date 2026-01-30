@@ -328,6 +328,13 @@ public class ScriptService {
         );
     }
 
+    public Page<ScriptEntity> getRejectedScripts(Pageable pageable) {
+        return scriptRepository.findByApprovalStatus(
+                ScriptApprovalStatus.REJECTED,
+                pageable
+        );
+    }
+
     public void approveScript(Long scriptId) {
         ScriptEntity script = scriptRepository.findById(scriptId)
                 .orElseThrow(()->new ResourceNotFoundException("Script not found."));
