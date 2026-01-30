@@ -44,4 +44,18 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long>,Scri
     """)
     ScriptScheduleCountDto fetchScheduleTypeCounts();
 
+    @Query(
+            value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM scripts s
+            WHERE s.id = :scriptId
+              AND s.schedule_type = 'ONE_TIME'
+        )
+    """,
+            nativeQuery = true
+    )
+    Long checkScriptIsOneTime(@Param("scriptId") Long scriptId);
+
+
 }

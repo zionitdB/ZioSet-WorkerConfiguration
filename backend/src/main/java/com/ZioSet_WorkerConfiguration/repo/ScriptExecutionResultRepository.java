@@ -3,6 +3,8 @@ package com.ZioSet_WorkerConfiguration.repo;
 import com.ZioSet_WorkerConfiguration.dto.DashboardCountsView;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -60,13 +62,14 @@ public interface ScriptExecutionResultRepository
       and (:to is null or r.startedAt <= :to)
       and (:returnCode is null or r.returnCode = :returnCode)
     """)
-    List<ScriptExecutionResultEntity> filterResultList(
+    Page<ScriptExecutionResultEntity> filterResultList(
             @Param("scriptId") Long scriptId,
             @Param("serial") String serial,
             @Param("host") String host,
             @Param("from") Instant from,
             @Param("to") Instant to,
-            @Param("returnCode") Integer returnCode
+            @Param("returnCode") Integer returnCode,
+            Pageable pageable
     );
 
     @Query("""

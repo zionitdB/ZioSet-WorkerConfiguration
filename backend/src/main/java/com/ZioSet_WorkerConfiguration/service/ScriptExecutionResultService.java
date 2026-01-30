@@ -3,12 +3,11 @@ package com.ZioSet_WorkerConfiguration.service;
 import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
-import com.ZioSet_WorkerConfiguration.model.ScriptTemplateEntity;
-import com.ZioSet_WorkerConfiguration.parsing.ExecutionParseRequest;
 import com.ZioSet_WorkerConfiguration.parsing.JsonExecutionResultParsingEngine;
 import com.ZioSet_WorkerConfiguration.parsing.ParsedExecutionResult;
 import com.ZioSet_WorkerConfiguration.parsing.RawExecutionResult;
 import com.ZioSet_WorkerConfiguration.repo.ScriptExecutionResultRepository;
+import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptTargetSystemRepository;
 import com.ZioSet_WorkerConfiguration.utils.PagedResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,7 @@ public class ScriptExecutionResultService {
     private final ScriptExecutionResultRepository repo;
     private final JsonExecutionResultParsingEngine parsingEngine;
     private final ScriptTargetSystemRepository targetRepo;
+    private final ScriptRepository scriptRepository;
 
     public PagedResponse<ScriptExecutionResultSummaryDTO> parse(ExecutionResultFilterDTO filter, int page, int size) {
 
@@ -47,7 +47,7 @@ public class ScriptExecutionResultService {
 
     }
 
-    public Page<ScriptExecutionResultSummaryDTO> getPaginatedResults(
+    public Page<?> getPaginatedResults(
             ExecutionResultFilterDTO filter,
             int page,
             int size
@@ -58,10 +58,22 @@ public class ScriptExecutionResultService {
         Page<ScriptExecutionResultEntity> data =
                 repo.findAll(ScriptExecutionResultSpecs.filter(filter), pageable);
 
+       if (filter.getScriptId()!=null && scriptRepository.checkScriptIsOneTime(filter.getScriptId())!=1){
+           return data.map(this::toRecurringSummary);
+       }
+
         return data.map(this::toSummary);
     }
 
+    private ScriptExecutionResultRecurringDto toRecurringSummary(ScriptExecutionResultEntity e){
+        return new ScriptExecutionResultRecurringDto(
+                e.getScript().getId(), e.getScript().getName(),e.getSystemSerialNumber(), e.getHostName(),
+                e.getReturnCode() == 0 ? "SUCCESS" : "FAILED", e.getFinishedAt()
+        );
+    }
+
     private ScriptExecutionResultSummaryDTO toSummary(ScriptExecutionResultEntity e) {
+        System.out.println("in Summary");
         ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
         dto.setId(e.getId());
         dto.setRunUuid(e.getRunUuid());
@@ -193,17 +205,31 @@ public class ScriptExecutionResultService {
     }
 
 
-    public List<ScriptExecutionResultSummaryDTO> dashboardCountList(ExecutionResultFilterDTO f, String status) {
+    public Object dashboardCountList(ExecutionResultFilterDTO f, String status, Pageable pageable) {
+        System.out.println("in dashboard  list");
         Integer code = getCode(status);
+        System.out.println("code :"+code);
             if (code==null) {
                 return getPendingExecutionList(f.getScriptId());
             }
-            List<ScriptExecutionResultEntity> list = repo.filterResultList(f.getScriptId(), null,
-                    null, f.getFinishedAfter(),
-                    f.getFinishedBefore(), code);
-            return list.stream().map(this::toSummary).collect(Collectors.toList());
-        }
+            Page<ScriptExecutionResultEntity> data = repo.filterResultList(f.getScriptId(), null, null,
+                    f.getFinishedAfter(),
+                    f.getFinishedBefore(),
+                    code,pageable);
 
+        System.out.println("in failed&succuss list");
+
+        List<ScriptExecutionResultSummaryDTO> results = data.stream().map(this::toSummary).collect(Collectors.toList());
+
+        return new PagedResponse<>(
+                results,
+                data.getNumber(),
+                data.getSize(),
+                data.getTotalElements(),
+                data.getTotalPages(),
+                data.isLast());
+
+    }
 
     public List<ScriptExecutionResultSummaryDTO> getPendingExecutionList(long scriptId) {
 
@@ -219,6 +245,7 @@ public class ScriptExecutionResultService {
         Set<String> executedSystemSet = executedResults.stream()
                 .map(ScriptExecutionResultEntity::getSystemSerialNumber)
                 .collect(Collectors.toSet());
+        System.out.println("in pending list");
 
         return targetSystems.stream()
                 .filter(ts -> !executedSystemSet.contains(ts.getSystemSerialNumber()))

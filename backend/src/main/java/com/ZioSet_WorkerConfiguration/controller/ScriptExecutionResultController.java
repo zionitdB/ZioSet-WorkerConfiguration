@@ -7,6 +7,8 @@ import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
 import com.ZioSet_WorkerConfiguration.service.ScriptExecutionResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ public class ScriptExecutionResultController {
     private final ScriptExecutionResultService service;
 
     @GetMapping
-    public Page<ScriptExecutionResultSummaryDTO> getResults(
+    public Page<?> getResults(
             @ModelAttribute ExecutionResultFilterDTO filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
@@ -60,10 +62,13 @@ public class ScriptExecutionResultController {
 
     @GetMapping("/dashboard-statuswise")
     public ResponseEntity<Object> dashboardStatusList(@ModelAttribute ExecutionResultFilterDTO filter,
-                                                  @RequestParam String status) {
+                                                  @RequestParam String status,
+                                                      @RequestParam(defaultValue = "1") int page,
+                                                      @RequestParam(defaultValue = "10") int pageSize) {
+        Pageable pageable = PageRequest.of(page-1,pageSize);
         return ResponseEntity.ok(
                 Map.of(
-                        "data", service.dashboardCountList(filter,status),
+                        "data", service.dashboardCountList(filter,status,pageable),
                         "message", "Data"
                 )
         );

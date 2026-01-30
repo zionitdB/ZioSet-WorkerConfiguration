@@ -16,5 +16,4 @@ public class ExecutionResultFilterDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant finishedBefore;
 
-    private int status;
 }
