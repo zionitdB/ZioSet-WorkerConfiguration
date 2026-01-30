@@ -111,6 +111,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
       <div className="space-y-2">
         <Label>Parent Category</Label>
         <Select
+          key={category}
           value={category}
           onValueChange={(val) => setCategory(val)}
           disabled={!!defaultValues}
