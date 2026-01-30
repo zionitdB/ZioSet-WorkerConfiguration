@@ -17,5 +17,6 @@ public record CreateScriptTemplateRequest (
         List<Long> dependencyFileIds,
         List<ScriptTargetPlatform> targetPlatforms,
         List<TemplateParameter> parameters,
-        Boolean active){
+        Boolean active,
+        String format){
 }

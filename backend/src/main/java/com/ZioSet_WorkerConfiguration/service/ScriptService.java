@@ -1,6 +1,8 @@
 package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.*;
+import com.ZioSet_WorkerConfiguration.enums.ScriptApprovalStatus;
+import com.ZioSet_WorkerConfiguration.exception.ResourceNotFoundException;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.placholder.service.ScriptParserService;
 import com.ZioSet_WorkerConfiguration.repo.*;
@@ -49,6 +51,7 @@ public class ScriptService {
         execution.setDescription(dto.getDescription());
         execution.setScriptType(dto.getScriptType());
         execution.setScriptId(generateNextCode());
+        execution.setParsingFormat(dto.getFormat());
 //        execution.setHostName(dto.getHostName());
 
         //target-platforms ,in case to run simple script for systems without needing template
@@ -148,6 +151,7 @@ public class ScriptService {
         execution.setRepeatEverySeconds(dto.getRepeatEverySeconds());
         execution.setMonthDay(dto.getMonthDay());
         execution.setTimeOfDay(dto.getTimeOfDay());
+        execution.setParsingFormat(dto.getFormat());
 
 
         if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
@@ -308,6 +312,34 @@ public class ScriptService {
 
     public long getScriptCount(){
         return scriptRepository.findAll().stream().count();
+    }
+
+    public Page<ScriptEntity> getPendingScripts(Pageable pageable) {
+        return scriptRepository.findByApprovalStatus(
+                ScriptApprovalStatus.PENDING,
+                pageable
+        );
+    }
+
+    public Page<ScriptEntity> getApprovedScripts(Pageable pageable) {
+        return scriptRepository.findByApprovalStatus(
+                ScriptApprovalStatus.APPROVED,
+                pageable
+        );
+    }
+
+    public void approveScript(Long scriptId) {
+        ScriptEntity script = scriptRepository.findById(scriptId)
+                .orElseThrow(()->new ResourceNotFoundException("Script not found."));
+        script.setApprovalStatus(ScriptApprovalStatus.APPROVED);
+        scriptRepository.save(script);
+    }
+
+    public void rejectScript(Long scriptId) {
+       ScriptEntity script = scriptRepository.findById(scriptId)
+               .orElseThrow(()->new ResourceNotFoundException("Script not found."));
+       script.setApprovalStatus(ScriptApprovalStatus.REJECTED);
+       scriptRepository.save(script);
     }
 
 }

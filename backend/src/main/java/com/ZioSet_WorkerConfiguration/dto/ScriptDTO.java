@@ -38,5 +38,6 @@ public class ScriptDTO {
     private Integer monthDay;        // 2, 10, 31
     private LocalTime timeOfDay;        // "09:00"
     private List<Map<String,String> > serialNoHostName;
+    private String format;
 }
 

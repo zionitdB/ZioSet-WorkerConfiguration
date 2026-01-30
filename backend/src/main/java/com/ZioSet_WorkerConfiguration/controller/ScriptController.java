@@ -7,6 +7,9 @@ import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -160,6 +163,43 @@ public class ScriptController {
             e.printStackTrace();
         }
         return count;
+    }
+
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> pending(@RequestParam(defaultValue = "1") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getPendingScripts(pageable),
+                        "message", "Pending scripts"
+                )
+        );
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<?> approved(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getApprovedScripts(pageable),
+                        "message", "Approved scripts"
+                )
+        );
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<?> approve(@PathVariable Long id) {
+        scriptService.approveScript(id);
+        return ResponseEntity.ok(Map.of("message", "Script approved"));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<?> reject(@PathVariable Long id) {
+        scriptService.rejectScript(id);
+        return ResponseEntity.ok(Map.of("message", "Script rejected"));
     }
 
 

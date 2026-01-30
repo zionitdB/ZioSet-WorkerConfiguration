@@ -36,6 +36,7 @@ public class ScriptTemplateService {
         template.setIsActive(dto.active() != null ? dto.active() : true);
         template.setParameters(dto.parameters());
         template.setCommand(dto.command());
+        template.setParsingTemplate(dto.format());
 
         if (dto.scriptFileId() != null) {
             ScriptFileEntity file = getFile(dto.scriptFileId());

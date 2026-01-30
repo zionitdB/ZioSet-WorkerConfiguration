@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.model;
 
+import com.ZioSet_WorkerConfiguration.enums.ScriptApprovalStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -105,4 +106,8 @@ public class ScriptEntity {
 
     @Lob
     private String parsingFormat;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status", nullable = false)
+    private ScriptApprovalStatus approvalStatus = ScriptApprovalStatus.PENDING;
 }
