@@ -203,6 +203,21 @@ public class ScriptController {
     }
 
 
+    @GetMapping("/with-parsing-rule")
+    public ResponseEntity<?> getScriptsWithParsingRules(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getScriptsWithParsingRules(pageable),
+                        "message", "Scripts with parsing rules"
+                )
+        );
+    }
 
 
 }

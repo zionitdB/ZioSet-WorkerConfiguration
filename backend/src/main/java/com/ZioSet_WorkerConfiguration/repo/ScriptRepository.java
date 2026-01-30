@@ -66,5 +66,19 @@ public interface ScriptRepository extends JpaRepository<ScriptEntity, Long>,Scri
             Pageable pageable
     );
 
+    @Query("""
+        SELECT DISTINCT s
+        FROM ScriptEntity s
+        LEFT JOIN s.template t
+        WHERE
+            s.parsingFormat IS NOT NULL
+            OR
+            (
+                s.parsingFormat IS NULL
+                AND t.parsingTemplate IS NOT NULL
+            )
+    """)
+    Page<ScriptEntity> findScriptsWithParsingRules(Pageable pageable);
+
 
 }

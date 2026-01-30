@@ -342,4 +342,10 @@ public class ScriptService {
        scriptRepository.save(script);
     }
 
+    public Page<ScriptEntity> getScriptsWithParsingRules(Pageable pageable) {
+
+        return scriptRepository.findScriptsWithParsingRules(pageable);
+
+    }
+
 }
