@@ -160,8 +160,7 @@ const ActionRoute = () => {
     () => [
       {
         headerName: "Sr No",
-        valueGetter: (p: any) =>
-          (page - 1) * rowsPerPage + (p.node.rowIndex + 1),
+     valueGetter: (params: any) => (page - 1) * rowsPerPage + (params.node.rowIndex + 1),
         width: 80,
         filter: false,
       },

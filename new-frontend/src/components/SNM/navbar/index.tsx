@@ -22,7 +22,8 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      id="app-header"
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60"
     >
       <div className="flex h-16 items-center justify-between px-4 lg:px-6">
         
@@ -33,7 +34,7 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
             <motion.div 
               whileHover={{ scale: 1.05, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
-              className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20"
+              className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20"
             >
               <FiBox className="w-5 h-5" />
             </motion.div>
@@ -91,6 +92,7 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
                   whileHover={{ scale: 1.01 }}
                   className="relative w-full cursor-pointer group"
                   onClick={() => setSearchOpen(true)}
+                        id="quick-search"
                 >
                   <div className="relative">
                     <Input 
@@ -121,6 +123,7 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <motion.button
+          
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSearchOpen(true)}
@@ -161,6 +164,7 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  id="notifications"
                   className="flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-background hover:bg-accent transition-colors cursor-pointer relative"
                 >
                   <NotificationSection />
@@ -180,13 +184,13 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             className="ml-1"
+            id="user-profile"
           >
             <ProfileSection />
           </motion.div>
         </div>
       </div>
 
-      {/* Search Command Dialog */}
       <SearchCommandDialog open={searchOpen} setOpen={setSearchOpen} />
     </motion.nav>
   );

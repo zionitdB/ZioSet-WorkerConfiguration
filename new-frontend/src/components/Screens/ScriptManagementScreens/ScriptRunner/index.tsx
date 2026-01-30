@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CloudUpload,
   ChevronRight,
@@ -14,6 +14,8 @@ import {
   Package,
   HardDrive,
   ScreenShareIcon,
+  Upload,
+  Download,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,7 +40,13 @@ import {
   useGetSystemList,
   useUploadFile,
   useSubmitScript,
+  useGetSystemListCount,
+  useGetAllAssetByLimitAndGroupSearch,
+  useGetCountAllAssetByLimitAndGroupSearch,
 } from "./hooks";
+import * as XLSX from "xlsx";
+import { Progress } from "@/components/ui/progress";
+import CustomModal from "@/components/common/Modal/DialogModal";
 
 const STEPS = [
   "Script Info",
@@ -60,47 +68,176 @@ const WEEK_DAYS = [
 
 export default function ScriptRunner() {
   const [activeStep, setActiveStep] = useState(0);
+const [page, setPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filterColumns, setFilterColumns] = useState<any[]>([]);
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchDataCount, setSearchDataCount] = useState(0);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+const [showSuccess, setShowSuccess] = useState(false);
 
-  // Main Form State
-  const [form, setForm] = useState<any>({
-    scriptName: "",
-    scriptDescription: "",
-    scriptType: "",
-    scriptCategory: "", // TEXT or FILE
-    allowedExtensions: [],
-    commandText: "",
-    scriptFile: null,
-    scriptFileId: null,
-    dependencyFiles: [],
-    dependencyFileIds: [],
-    scheduleType: "ONE_TIME",
-    startDateTime: "",
-    repeatIntervalSeconds: "",
-    repeatType: "seconds",
-    selectedWeekDays: [],
-    selectedMonthDay: null,
-    selectedPlatforms: [],
-    selectedWindowsSystems: [],
-    selectedMacSystems: [],
-    selectedLinuxSystems: [],
-    isActive: true,
-  });
+const initialFormState = {
+  scriptName: "",
+  scriptDescription: "",
+  scriptType: "",
+  scriptCategory: "",
+  allowedExtensions: [],
+  commandText: "",
+  scriptFile: null,
+  scriptFileId: null,
+  dependencyFiles: [],
+  dependencyFileIds: [],
+  scheduleType: "ONE_TIME",
+  startDateTime: "",
+  repeatIntervalSeconds: "",
+  repeatType: "seconds",
+  selectedWeekDays: [],
+  selectedMonthDay: null,
+  selectedPlatforms: [],
+  selectedWindowsSystems: [],
+  selectedMacSystems: [],
+  selectedLinuxSystems: [],
+  isActive: true,
+};
+
+const [form, setForm] = useState<any>(initialFormState);
+
 
   const { data: scriptTypes } = useGetScriptTypes();
   const { data: platformList } = useGetPlatforms();
   const uploadMutation = useUploadFile();
   const submitMutation = useSubmitScript();
 
-  // Load Systems
-  const { data: winSystems } = useGetSystemList(
-    "/installed-systems/get-all-list"
-  );
-  const { data: macSystems } = useGetSystemList(
-    "/mac-installed-systems/get-all-list"
-  );
-  const { data: linuxSystems } = useGetSystemList(
-    "/linux-installed-systems/get-all-list"
-  );
+ 
+ 
+   const [activePlatform, setActivePlatform] = useState<string>(
+   "",
+   );
+ 
+   const { data: systems, isLoading: loading } = useGetSystemList(
+     `/api/sam/getAssetsByLimit?pageNo=${page}&perPage=${rowsPerPage}&osType=${activePlatform}`,
+   );
+ 
+   const { data: systemCount } = useGetSystemListCount(activePlatform);
+ 
+   const sysTableData = useMemo(
+     () => (filteredData.length ? filteredData : systems || []),
+     [filteredData, systems],
+   );
+ 
+   const totalItems = isSearchActive
+     ? searchDataCount
+     : systemCount || sysTableData.length;
+   const totalPages = Math.ceil(totalItems / rowsPerPage);
+
+   
+
+     const [uploadedSerialNumbers, setUploadedSerialNumbers] = useState<any[]>(
+       [],
+     );
+     const [uploadProgress, setUploadProgress] = useState(0);
+     const [isUploading, setIsUploading] = useState(false);
+     const [showSerialListModal, setShowSerialListModal] = useState(false);
+   
+    //  const handleExcelUpload = (file: File) => {
+    //    setIsUploading(true);
+    //    setUploadProgress(0);
+   
+    //    const reader = new FileReader();
+    //    reader.onload = (e) => {
+    //      const data = e.target?.result;
+    //      if (!data) return;
+   
+    //      let progressVal = 0;
+    //      const interval = setInterval(() => {
+    //        progressVal += 20;
+    //        if (progressVal >= 80) clearInterval(interval);
+    //        setUploadProgress(progressVal);
+    //      }, 300);
+   
+    //      const workbook = XLSX.read(data, { type: "binary" });
+    //      const sheetName = workbook.SheetNames[0];
+    //      const worksheet = workbook.Sheets[sheetName];
+    //      const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
+   
+    //      const serials = jsonData
+    //        .map((row) => row["Serial Number"]?.toString().trim())
+    //        .filter(Boolean);
+   
+    //      setUploadedSerialNumbers(serials);
+   
+    //      setUploadProgress(100);
+    //      setTimeout(() => {
+    //        setIsUploading(false);
+    //      }, 300);
+    //    };
+    //    reader.readAsBinaryString(file);
+    //  };
+   
+    //  const handleDownloadTemplate = () => {
+    //    const ws = XLSX.utils.json_to_sheet([{ "Serial Number": "" }]);
+    //    const wb = XLSX.utils.book_new();
+    //    XLSX.utils.book_append_sheet(wb, ws, "Template");
+    //    XLSX.writeFile(wb, "serial_numbers_template.xlsx");
+    //  };
+
+
+    const handleExcelUpload = (file: File) => {
+  setIsUploading(true);
+  setUploadProgress(0);
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target?.result;
+    if (!data) return;
+
+    let progressVal = 0;
+    const interval = setInterval(() => {
+      progressVal += 20;
+      if (progressVal >= 80) clearInterval(interval);
+      setUploadProgress(progressVal);
+    }, 300);
+
+    const workbook = XLSX.read(data, { type: "binary" });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
+
+    // ✅ Extract Serial Number + Host Name
+    const devices = jsonData
+      .map((row) => ({
+        serialNo: row["Serial Number"]?.toString().trim(),
+        hostName: row["Host Name"]?.toString().trim(),
+      }))
+      .filter(item => item.serialNo || item.hostName);
+
+    setUploadedSerialNumbers(devices); 
+    // example output:
+    // [{ serialNo: "ABC123", hostName: "HOST-01" }]
+
+    setUploadProgress(100);
+    setTimeout(() => {
+      setIsUploading(false);
+    }, 300);
+  };
+
+  reader.readAsBinaryString(file);
+};
+
+
+const handleDownloadTemplate = () => {
+  const ws = XLSX.utils.json_to_sheet([
+    {
+      "Serial Number": "",
+      "Host Name": ""
+    }
+  ]);
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Template");
+  XLSX.writeFile(wb, "serial_and_host_template.xlsx");
+};
+
 
   const validateStep = (step: number) => {
     switch (step) {
@@ -185,6 +322,9 @@ export default function ScriptRunner() {
     }
   };
 
+
+
+
   const handleSubmit = () => {
     let repeatSeconds = 0;
     if (form.scheduleType === "REPEAT_EVERY") {
@@ -204,11 +344,12 @@ export default function ScriptRunner() {
       isActive: form.isActive,
       dependencyFileIds: form.dependencyFileIds,
       targetPlatforms: form.selectedPlatforms,
-      targetSystemSerials: [
-        ...(form.selectedWindowsSystems || []).map((s: any) => s.id),
-        ...(form.selectedMacSystems || []).map((s: any) => s.id),
-        ...(form.selectedLinuxSystems || []).map((s: any) => s.id),
-      ],
+   serialNoHostName: [
+  ...form.selectedWindowsSystems,
+  ...form.selectedMacSystems,
+  ...form.selectedLinuxSystems,
+  ...uploadedSerialNumbers,
+],
 
       scheduleType: form.scheduleType,
       startDateTime: form.startDateTime
@@ -221,46 +362,142 @@ export default function ScriptRunner() {
     submitMutation.mutate(payload);
   };
 
-  // useEffect(() => {
-  //   if (form.selectedPlatforms.includes("WINDOWS")) {
-  //     setActiveTab("windows");
-  //   } else if (form.selectedPlatforms.includes("MAC")) {
-  //     setActiveTab("mac");
-  //   } else if (form.selectedPlatforms.includes("LINUX")) {
-  //     setActiveTab("linux");
-  //   }
-  // }, [form.selectedPlatforms]);
 
-  const filteredSystems = () => {
-    if (
-      // form.selectedPlatforms.length === 0 ||
-      form.selectedPlatforms.includes("ANY")
-    ) {
-      return {
-        windows: winSystems || [],
-        mac: macSystems || [],
-        linux: linuxSystems || [],
-      };
+  useEffect(() => {
+  if (submitMutation.isSuccess) {
+    setShowSuccess(true);
+
+    setForm(initialFormState);
+
+    setActiveStep(0);
+  }
+}, [submitMutation.isSuccess]);
+
+
+  const getUsersByGroupSearch = useGetAllAssetByLimitAndGroupSearch();
+  const getUserCountByGroupSearch = useGetCountAllAssetByLimitAndGroupSearch();
+
+  const handleGroupSearch = (filters: Record<string, any>) => {
+    const hasFilters = Object.values(filters).some(
+      (f) => f.filter && f.filter.trim() !== "",
+    );
+
+    if (!hasFilters) {
+      setFilteredData([]);
+      setIsSearchActive(false);
+      setPage(1);
+      return;
     }
 
-    return {
-      windows: form.selectedPlatforms.some((p: string) =>
-        p.startsWith("WINDOWS")
-      )
-        ? winSystems || []
-        : [],
-      mac: form.selectedPlatforms.some(
-        (p: string) => p.startsWith("MAC") || p.startsWith("MACOS")
-      )
-        ? macSystems || []
-        : [],
-      linux: form.selectedPlatforms.some((p: string) => p.startsWith("LINUX"))
-        ? linuxSystems || []
-        : [],
+    const payload = {
+      columns: Object.entries(filters)
+        .filter(([_, value]) => value.filter && value.filter.trim() !== "")
+        .map(([key, value]) => ({
+          columnName: key,
+          value: value.filter,
+        })),
+      osType: activePlatform,
+      pageNo: 1,
+      perPage: rowsPerPage,
     };
+
+    setFilterColumns(payload.columns);
+    setIsSearchActive(true);
+    setPage(1);
+
+    getUsersByGroupSearch.mutate(payload, {
+      onSuccess: (data) => setFilteredData(data),
+    });
+    getUserCountByGroupSearch.mutate(payload, {
+      onSuccess: (count) => setSearchDataCount(count || 0),
+    });
   };
 
-  const systems = filteredSystems();
+  useEffect(() => {
+    if (isSearchActive && filterColumns?.length) {
+      const payload = {
+        columns: filterColumns,
+        osType: activePlatform,
+        pageNo: page,
+        perPage: rowsPerPage,
+      };
+
+      getUsersByGroupSearch.mutate(payload, {
+        onSuccess: (data) => setFilteredData(data),
+      });
+      getUserCountByGroupSearch.mutate(payload, {
+        onSuccess: (count) => setSearchDataCount(count || 0),
+      });
+    }
+  }, [page, rowsPerPage, activePlatform]);
+
+  const columnDefs = useMemo(
+    () => [
+      {
+        headerName: "Sr No",
+        valueGetter: (params: any) =>
+          (page - 1) * rowsPerPage + (params.node.rowIndex + 1),
+        width: 80,
+        filter: false,
+      },
+      { field: "serialNo", headerName: "Serial Number" },
+      { field: "hostName", headerName: "Host Name" },
+      { field: "employeeName", headerName: "Employee Name" },
+      { field: "employeeNo", headerName: "Employee Number" },
+      { field: "assetId", headerName: "Asset ID" },
+      { field: "projectName", headerName: "Project Name" },
+      { field: "make", headerName: "Make" },
+      { field: "model", headerName: "Model" },
+    ],
+    [page, rowsPerPage],
+  );
+
+  const transformSystemData = (data: any[]) =>
+  data.map((item) => ({
+    ...item,
+    serialNo: item.serialNo || "-",
+    hostName: item.hostName || "-",
+    employeeName: item.employeeName || "-",
+    employeeNo: item.employeeNo || "-",
+    assetId: item.assetId || "-",
+    projectName: item.projectName || "-",
+    make: item.make || "-",
+    model: item.model || "-",
+  }));
+
+
+  const exportPayload = useMemo(
+  () => ({
+    columns: filterColumns,
+    osType: activePlatform,
+    pageNo: 1,
+    perPage: isSearchActive ? searchDataCount : totalItems,
+  }),
+  [filterColumns, activePlatform, isSearchActive, searchDataCount, totalItems||10000],
+);
+
+
+const getAllSystems = useGetSystemList(
+  `/api/sam/getAssetsByLimit?pageNo=1&perPage=${exportPayload.perPage}&osType=${activePlatform}`
+);
+
+const allSystemsForExport = async (): Promise<any[]> => {
+  if (isSearchActive) {
+    return new Promise<any[]>((resolve, reject) => {
+      getUsersByGroupSearch.mutate(exportPayload, {
+        onSuccess: (data) => resolve(transformSystemData(data)),
+        onError: reject,
+      });
+    });
+  } else {
+    return new Promise<any[]>((resolve, reject) => {
+      getAllSystems
+        .refetch()
+        .then((res: any) => resolve(transformSystemData(res.data || [])))
+        .catch(reject);
+    });
+  }
+};
 
   return (
     <div className=" mx-auto  px-4 space-y-8">
@@ -279,13 +516,14 @@ export default function ScriptRunner() {
           </div>
         </div>
       </div>
-
+  {!showSuccess ? ( 
+    <>
       <div className="flex flex-col items-center space-y-8">
+        
         <div className="flex w-full items-center justify-between relative max-w-5xl mx-auto px-4">
-          {/* Background Track (Gray Line) */}
+        
           <div className="absolute top-5 left-5 right-5 h-0.5 bg-muted z-0" />
 
-          {/* Dynamic Progress Fill (Blue/Primary Line) */}
           <div
             className="absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500 ease-in-out -z-10 px-10"
             style={{
@@ -325,7 +563,7 @@ export default function ScriptRunner() {
           ))}
         </div>
       </div>
-
+ 
       <Card className="shadow-xl border-t-4 border-t-primary min-h-137.5 flex flex-col">
         <CardContent className="p-8 grow">
           {/* STEP 0: SCRIPT INFO */}
@@ -586,137 +824,233 @@ export default function ScriptRunner() {
             </div>
           )}
 
-          {/* STEP 3: TARGET SYSTEMS */}
           {activeStep === 3 && (
             <div className="space-y-6 animate-in fade-in">
-              <div className="space-y-2">
-                <Label className="text-lg font-bold">Platform Selection</Label>
-                <div className="flex gap-3">
-                  {platformList?.map((p: any) => (
+             <div className="flex gap-3">
+  {platformList?.map((p: any) => (
+    <Button
+      key={p.enumName}
+      variant={
+        form.selectedPlatforms.includes(p.enumName)
+          ? "default"
+          : "outline"
+      }
+      onClick={() => {
+        const isCurrentlySelected = form.selectedPlatforms.includes(p.enumName);
+        let newSelected: string[];
+
+        if (p.enumName === "ANY") {
+          newSelected = isCurrentlySelected 
+            ? [] 
+            : platformList.map((platform: any) => platform.enumName);
+        } else {
+          if (isCurrentlySelected) {
+            newSelected = form.selectedPlatforms.filter(
+              (x: string) => x !== p.enumName && x !== "ANY"
+            );
+          } else {
+            const added = [...form.selectedPlatforms, p.enumName];
+            const allOthersSelected = platformList
+              .filter((pl: any) => pl.enumName !== "ANY")
+              .every((pl: any) => added.includes(pl.enumName));
+              
+            newSelected = allOthersSelected 
+              ? platformList.map((pl: any) => pl.enumName) 
+              : added;
+          }
+        }
+
+        setForm({ ...form, selectedPlatforms: newSelected });
+      }}
+      className="gap-2"
+    >
+      <Layout className="h-4 w-4" /> {p.displayName}
+    </Button>
+  ))}
+</div>
+
+                <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
+                <Tabs defaultValue="manual" className="w-full">
+                  <TabsList className="grid w-full max-w-md grid-cols-2">
+                    <TabsTrigger value="manual">Manual Selection</TabsTrigger>
+                    <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="manual" className="mt-6 space-y-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <Tabs
+                        value={activePlatform}
+                        onValueChange={(val) => {
+                          setActivePlatform(val);
+                          setPage(1);
+                        }}
+                      >
+                        <TabsList className="bg-muted p-1 rounded-xl h-12">
+                          {(form.selectedPlatforms.includes("ANY") ||
+                            form.selectedPlatforms.some((p: string) =>
+                              p.startsWith("WINDOWS"),
+                            )) && (
+                            <TabsTrigger
+                              value="WINDOWS"
+                              className="px-6 rounded-lg gap-2"
+                            >
+                              <Monitor className="w-4 h-4" /> Windows
+                            </TabsTrigger>
+                          )}
+
+                          {(form.selectedPlatforms.includes("ANY") ||
+                            form.selectedPlatforms.some((p: string) =>
+                              p.startsWith("MAC"),
+                            )) && (
+                            <TabsTrigger
+                              value="MAC"
+                              className="px-6 rounded-lg gap-2"
+                            >
+                              <RotateCw className="w-4 h-4" /> macOS
+                            </TabsTrigger>
+                          )}
+
+                          {(form.selectedPlatforms.includes("ANY") ||
+                            form.selectedPlatforms.some((p: string) =>
+                              p.startsWith("LINUX"),
+                            )) && (
+                            <TabsTrigger
+                              value="LINUX"
+                              className="px-6 rounded-lg gap-2"
+                            >
+                              <HardDrive className="w-4 h-4" /> Linux
+                            </TabsTrigger>
+                          )}
+                        </TabsList>
+                      </Tabs>
+
+                      <div className="text-right">
+                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">
+                          Selected (Current View)
+                        </p>
+                        <p className="text-2xl font-black text-primary">
+                          {activePlatform === "WINDOWS"
+                            ? form.selectedWindowsSystems.length
+                            : activePlatform === "MAC"
+                              ? form.selectedMacSystems.length
+                              : form.selectedLinuxSystems.length}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="border rounded-2xl overflow-hidden bg-background">
+                      <DataTable
+                        rowData={sysTableData || []}
+                        colDefs={columnDefs}
+                        showCheckbox
+                        selectedRows={
+                          activePlatform === "WINDOWS"
+                            ? form.selectedWindowsSystems
+                            : activePlatform === "MAC"
+                              ? form.selectedMacSystems
+                              : form.selectedLinuxSystems
+                        }
+                     onRowSelection={(currentlySelectedRows: any[]) => {
+  const key =
+    activePlatform === "WINDOWS"
+      ? "selectedWindowsSystems"
+      : activePlatform === "MAC"
+        ? "selectedMacSystems"
+        : "selectedLinuxSystems";
+
+  // map rows → payload-ready format
+  const mappedCurrentPageSelection = currentlySelectedRows.map((row) => ({
+    serialNo: row.serialNo,
+    hostname: row.hostName,
+  }));
+
+  setForm((prev: any) => {
+    // keep selections from other pages
+    const otherPagesSelection = prev[key].filter(
+      (savedRow: any) =>
+        !sysTableData.some(
+          (currentPageRow: any) =>
+            currentPageRow.serialNo === savedRow.serialNo
+        )
+    );
+
+    return {
+      ...prev,
+      [key]: [...otherPagesSelection, ...mappedCurrentPageSelection],
+    };
+  });
+}}
+
+                        isLoading={loading}
+                        showActions={false}
+                        pagination={false}
+                        showPagination
+                        page={page}
+                        totalPages={totalPages}
+                        setPage={setPage}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={setRowsPerPage}
+                        onFilterChange={handleGroupSearch}
+                           fileName="targetSysten"
+        allData={allSystemsForExport}
+                        rowIdField="serialNo"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="bulk" className="mt-6 space-y-6">
+                    {isUploading && (
+                      <Progress value={uploadProgress} className="h-2" />
+                    )}
+
+                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 text-center">
+                      <Upload className="h-10 w-10 text-muted-foreground mb-4" />
+                      <h3 className="font-semibold mb-2">Upload System List</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Excel must contain a column named <b>Serial Number</b>
+                      </p>
+
+                      <label>
+                        <Input
+                          type="file"
+                          accept=".xlsx,.xls,.csv"
+                          className="hidden"
+                          onChange={(e) =>
+                            e.target.files?.[0] &&
+                            handleExcelUpload(e.target.files[0])
+                          }
+                        />
+                        <Button asChild>
+                          <span>Choose File</span>
+                        </Button>
+                      </label>
+                    </div>
+
                     <Button
-                      key={p.enumName}
-                      variant={
-                        form.selectedPlatforms.includes(p.enumName)
-                          ? "default"
-                          : "outline"
-                      }
-                      onClick={() => {
-                        const active = form.selectedPlatforms.includes(
-                          p.enumName
-                        );
-                        const selected = active
-                          ? form.selectedPlatforms.filter(
-                              (x: any) => x !== p.enumName
-                            )
-                          : [...form.selectedPlatforms, p.enumName];
-                        setForm({ ...form, selectedPlatforms: selected });
-                      }}
-                      className="gap-2"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleDownloadTemplate}
                     >
-                      <Layout className="h-4 w-4" /> {p.displayName}
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Template
                     </Button>
-                  ))}
-                </div>
+
+                    {uploadedSerialNumbers.length > 0 && (
+                      <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/40">
+                        <span className="text-sm font-semibold">
+                          {uploadedSerialNumbers.length} serial numbers uploaded
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowSerialListModal(true)}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </div>
-
-              <Tabs defaultValue="windows" className="border rounded-xl">
-                <TabsList className="w-full justify-start h-12 bg-muted/20 border-b rounded-none px-4">
-                  <TabsTrigger value="windows" className="gap-2 px-6">
-                    <Monitor className="h-4 w-4" /> Windows
-                    <Badge variant="secondary" className="ml-1">
-                      {form.selectedWindowsSystems.length}
-                    </Badge>
-                  </TabsTrigger>
-
-                  <TabsTrigger value="mac" className="gap-2 px-6">
-                    <RotateCw className="h-4 w-4" /> macOS
-                    <Badge variant="secondary" className="ml-1">
-                      {form.selectedMacSystems.length}
-                    </Badge>
-                  </TabsTrigger>
-                  <TabsTrigger value="linux" className="gap-2 px-6">
-                    <HardDrive className="h-4 w-4" /> Linux
-                    <Badge variant="secondary" className="ml-1">
-                      {form.selectedLinuxSystems.length}
-                    </Badge>
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="windows" className="p-0">
-                  <DataTable
-                    rowData={systems.windows}
-                    colDefs={[
-                      { field: "serialNo", headerName: "Serial" },
-                      { field: "installedAt", headerName: "Date" },
-                    ]}
-                    showCheckbox={true}
-                    pagination={true}
-                    onRowSelection={(ids: any) =>
-                      setForm((prev: any) => ({
-                        ...prev,
-                        selectedWindowsSystems: ids,
-                      }))
-                    }
-                    isLoading={false}
-                    showActions={false}
-                    showExportButton={false}
-                    showFilter={false}
-                    showHideColumns={false}
-                    showRowsPerPage={false}
-                    onRowsPerPageChange={undefined}
-                  />
-                </TabsContent>
-
-                <TabsContent value="mac" className="p-0">
-                  <DataTable
-                    rowData={systems.mac}
-                    colDefs={[
-                      { field: "serialNo", headerName: "Serial" },
-                      { field: "installedAt", headerName: "Date" },
-                    ]}
-                    showCheckbox={true}
-                    pagination={true}
-                    onRowSelection={(ids: any) =>
-                      setForm((prev: any) => ({
-                        ...prev,
-                        selectedMacSystems: ids,
-                      }))
-                    }
-                    isLoading={false}
-                    showActions={false}
-                    showExportButton={false}
-                    showFilter={false}
-                    showHideColumns={false}
-                    showRowsPerPage={false}
-                    onRowsPerPageChange={undefined}
-                  />
-                </TabsContent>
-
-                <TabsContent value="linux" className="p-0">
-                  <DataTable
-                    rowData={systems.linux}
-                    colDefs={[
-                      { field: "serialNo", headerName: "Serial" },
-                      { field: "installedAt", headerName: "Date" },
-                    ]}
-                    showCheckbox={true}
-                    pagination={true}
-                    onRowSelection={(ids: any) =>
-                      setForm((prev: any) => ({
-                        ...prev,
-                        selectedLinuxSystems: ids,
-                      }))
-                    }
-                    isLoading={false}
-                    showActions={false}
-                    showExportButton={false}
-                    showFilter={false}
-                    showHideColumns={false}
-                    showRowsPerPage={false}
-                    onRowsPerPageChange={undefined}
-                  />
-                </TabsContent>
-              </Tabs>
             </div>
           )}
 
@@ -796,6 +1130,59 @@ export default function ScriptRunner() {
           </div>
         </div>
       </Card>
+</>
+        ):(
+  <div className="flex flex-col items-center justify-center py-20 space-y-6 animate-in fade-in">
+    <div className="rounded-full bg-green-100 p-6">
+      <Check className="h-10 w-10 text-green-600" />
+    </div>
+
+    <h2 className="text-2xl font-bold text-green-700">
+      Script Scheduled Successfully
+    </h2>
+
+    <p className="text-sm text-muted-foreground text-center max-w-md">
+      Your script has been scheduled and will run based on the selected configuration.
+    </p>
+
+    <div className="flex gap-3">
+      <Button
+        variant="default"
+        onClick={() => {
+          setShowSuccess(false);
+          setActiveStep(0);
+        }}
+      >
+        Schedule Another Script
+      </Button>
+
+    </div>
+  </div>
+)}
+
+
+         <CustomModal
+              isOpen={showSerialListModal}
+              onClose={() => setShowSerialListModal(false)}
+              dialogTitle="Uploaded Serial Numbers"
+              width="w-230!"
+            >
+              <DataTable
+                 rowData={uploadedSerialNumbers}
+            colDefs={[{ field: "serialNo", headerName: "Serial Number" },{ field: "hostName", headerName: "Host Name" }]}
+                pagination
+                showFilter={false}
+                showCheckbox={false}
+                showActions={false}
+                showRowsPerPage={false}
+                showExportButton={false}
+                isLoading={false}
+                onRowsPerPageChange={undefined}
+              />
+            </CustomModal>
+
+
+
     </div>
   );
 }

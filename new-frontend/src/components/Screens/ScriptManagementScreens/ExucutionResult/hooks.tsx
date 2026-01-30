@@ -2,26 +2,56 @@ import { fetchData } from "@/serviceAPI/serviceApi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 
+
+
+export const useGetScripts = () => {
+  return useQuery({
+    queryKey: ["scripts"],
+    queryFn: () => fetchData("/api/scripts"),
+  });
+};
+
 export const useGetExecutionResults = (
-  page: number, 
-  size: number, 
-  filters: { srNumber: string; startDate: string; endDate: string }
+  page: number,
+  size: number,
+  filters: {
+    serialNumber: string;
+    scriptId: string;
+    hostName: string;
+    finishedAfter: string;
+    finishedBefore: string;
+  }
 ) => {
   return useQuery({
     queryKey: ["execution-results", page, size, filters],
     queryFn: () => {
       const params = new URLSearchParams();
-      if (filters.srNumber) params.append("serialNumber", filters.srNumber);
-      if (filters.startDate) params.append("finishedAfter", `${filters.startDate}T00:00:00.508Z`);
-      if (filters.endDate) params.append("finishedBefore", `${filters.endDate}T23:59:59.508Z`);
-      
-      params.append("page", page.toString());
-      params.append("size", size.toString());
+
+      if (filters.serialNumber) params.append("serialNumberOrHostName", filters.serialNumber);
+      if (filters.scriptId) params.append("scriptId", filters.scriptId);
+      if (filters.hostName) params.append("hostName", filters.hostName);
+      if (filters.finishedAfter) params.append("finishedAfter",  `${filters.finishedAfter}T00:00:00.508Z`);
+      if (filters.finishedBefore) params.append("finishedBefore",  `${filters.finishedBefore}T23:59:59.508Z`);
+
+      params.append("page", String(page));
+      params.append("size", String(size));
 
       return fetchData(`/api/execution-results?${params.toString()}`);
     },
   });
 };
+
+
+
+export const useGetExecutionsByScriptId = (scriptId: number | null) => {
+  return useQuery({
+    queryKey: ["useGetExecutionsByScriptId", scriptId],
+    queryFn: () => fetchData(`/api/execution-results/getAllByScriptId?scriptId=${scriptId}`),
+    enabled: !!scriptId,
+  });
+};
+
+
 
 export const useGetExecutionByGroupSearch = () => {
   return useMutation({

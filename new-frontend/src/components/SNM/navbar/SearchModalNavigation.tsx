@@ -1,7 +1,4 @@
-
-
-import { useAuth } from "@/components/context/auth-context";
-import { useGetPermissionsAndActionsByRole } from "@/components/Screens/Configuration/rolepermission/hook";
+import { usePermissions } from "@/components/context/permission-context";
 import {
   Command,
   CommandEmpty,
@@ -12,9 +9,9 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ArrowRight } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { ArrowRight, Folder } from "lucide-react";
+import { useEffect, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface Props {
   open: boolean;
@@ -23,99 +20,170 @@ interface Props {
 
 type NavItem = {
   name: string;
-  href: string;
+  href?: string;
   section: string;
+  isModule?: boolean;
+  moduleName?: string;
 };
 
 const SearchCommandDialog = ({ open, setOpen }: Props) => {
   const navigate = useNavigate();
-  const [roleId, setRoleId] = useState<string | null>(null);
-  const { user } = useAuth();
-  const { data } = useGetPermissionsAndActionsByRole(roleId);
+  const location = useLocation();
+  const { routes } = usePermissions();
+
+  const normalize = (name: string) =>
+    name.toLowerCase().replace(/\s+/g, "").replace(/-/g, "");
+
+  const moduleKeyFromUrl = location.pathname
+    .split("/")
+    .filter(Boolean)[0]
+    ?.toLowerCase();
+
+ 
+  const activeModuleName = useMemo(() => {
+    if (!routes?.modules || !moduleKeyFromUrl) return null;
+
+    for (const moduleName of Object.keys(routes.modules)) {
+      if (normalize(moduleName) === moduleKeyFromUrl) {
+        return moduleName;
+      }
+    }
+    return null;
+  }, [routes, moduleKeyFromUrl]);
+
 
   useEffect(() => {
-    if (user) setRoleId(user.role?.role_id || null);
-  }, [user]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const isK = e.key.toLowerCase() === "k";
-
-      if ((isMac && e.metaKey && isK) || (!isMac && e.ctrlKey && isK)) {
+    const handler = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.includes("Mac");
+      if ((isMac && e.metaKey && e.key === "k") || (!isMac && e.ctrlKey && e.key === "k")) {
         e.preventDefault();
         setOpen(true);
-      } else if (e.key === "Escape") {
-        setOpen(false);
       }
+      if (e.key === "Escape") setOpen(false);
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [setOpen]);
 
-  const links: NavItem[] = useMemo(() => {
-    if (!data) return [];
 
-    const sections = [
-      "dashboardPermission",
-      "machinemasterPermission",
-      "assetmasterPermission",
-      "emsmasterPermission",
-      "breakdownPermission",
-      "maintenanceofmachinePermission",
-      "transactionPermission",
-      "reportPermission",
-      "itreportPermission",
-      "emsreportPermission",
-      "configurationPermission",
-    ];
+  const getFirstRouteOfModule = (moduleData: any): string | null => {
+  if (!moduleData) return null;
 
-    const allPermissions = sections.flatMap((section) => data[section] || []);
+  for (const category of Object.values(moduleData)) {
+    for (const item of category as any[]) {
+      if (item.selected && item.navigationUrl) {
+        return item.navigationUrl;
+      }
+    }
+  }
 
-    return allPermissions
-      .filter((item: any) => item.selected)
-      .map((item: any) => ({
-        name: item.permissionsName,
-        href: item.navigationUrl,
-        section: item.category || "Other",
-      }));
-  }, [data]);
+  return null;
+};
 
-  const handleSelect = (href: string) => {
-    setOpen(false);
-    navigate(href);
-  };
 
-  const grouped = links.reduce<Record<string, NavItem[]>>((acc, item) => {
-    const section = item.section || "Pages";
-    acc[section] = acc[section] || [];
-    acc[section].push(item);
+  const items: NavItem[] = useMemo(() => {
+    if (!routes?.modules) return [];
+
+if (!activeModuleName) {
+  return Object.entries(routes.modules).map(([moduleName, moduleData]: any) => {
+    const firstRoute = getFirstRouteOfModule(moduleData);
+
+    return {
+      name: moduleName,
+      section: "Modules",
+      isModule: true,
+      moduleName,
+      href: firstRoute || "/",   // 👈 real working route
+    };
+  });
+}
+
+
+    const result: NavItem[] = [];
+  const categories = routes.modules[activeModuleName as keyof typeof routes.modules];
+
+
+    Object.values(categories).forEach((items: any) => {
+      items.forEach((item: any) => {
+        if (item.selected && item.navigationUrl) {
+          result.push({
+            name: item.permissionsName,
+            href: item.navigationUrl,
+            section: activeModuleName,
+          });
+        }
+      });
+    });
+
+    return result;
+  }, [routes, activeModuleName]);
+
+
+  const grouped = items.reduce<Record<string, NavItem[]>>((acc, item) => {
+    acc[item.section] = acc[item.section] || [];
+    acc[item.section].push(item);
     return acc;
   }, {});
 
+
+  const handleSelect = (item: NavItem) => {
+    setOpen(false);
+
+
+    if (item.isModule && item.moduleName) {
+      navigate(item.href || "/", {
+        state: {
+          moduleName: item.moduleName,
+          moduleData: routes.modules[item.moduleName as keyof typeof routes.modules]
+
+        },
+      });
+      return;
+    }
+
+    /* If page clicked */
+    if (item.href) {
+      navigate(item.href);
+    }
+  };
+
+  /* -----------------------------
+     UI
+  ------------------------------ */
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="p-0 max-w-xl w-full">
-        <DialogTitle className="sr-only">Search Permissions</DialogTitle>
+        <DialogTitle className="sr-only">Search</DialogTitle>
+
         <Command className="rounded-lg border shadow-md w-full">
-          <CommandInput placeholder="Type a command or search..." className="px-4 py-2" />
+          <CommandInput
+            placeholder={
+              activeModuleName
+                ? `Search in ${activeModuleName}...`
+                : "Search modules..."
+            }
+            className="px-4 py-2"
+          />
+
           <CommandList className="max-h-[70vh] overflow-y-auto">
             <CommandEmpty>No results found.</CommandEmpty>
+
             {Object.entries(grouped).map(([section, items], idx) => (
               <div key={section}>
                 {idx > 0 && <CommandSeparator />}
                 <CommandGroup heading={section}>
                   {items.map((item) => (
                     <CommandItem
-                      key={item.href}
-                      onSelect={() => handleSelect(item.href)}
-                      className="flex items-center justify-between gap-2 px-3 py-2 rounded-md hover:bg-accent/50"
+                      key={item.name}
+                      onSelect={() => handleSelect(item)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-accent/50"
                     >
-                      <div className="flex items-center gap-2">
+                      {item.isModule ? (
+                        <Folder className="h-4 w-4 text-primary" />
+                      ) : (
                         <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                        <span>{item.name}</span>
-                      </div>
+                      )}
+                      <span>{item.name}</span>
                     </CommandItem>
                   ))}
                 </CommandGroup>

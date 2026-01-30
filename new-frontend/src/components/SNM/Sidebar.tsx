@@ -341,6 +341,9 @@
 
 
 
+
+
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -357,11 +360,11 @@ import {
   FiActivity,
 } from "react-icons/fi";
 import { BiWindow } from "react-icons/bi";
-import { Apple, Bot, LayoutGrid, School, ShieldCheck } from "lucide-react";
+import { Apple, Bot, File, LayoutGrid, Replace, School, ShieldCheck } from "lucide-react";
 
 
 import {  Users, Activity, Layers } from "lucide-react";
-import { MdSupportAgent } from "react-icons/md";
+import { MdApproval, MdSupportAgent } from "react-icons/md";
 import { usePermissions } from "../context/permission-context";
 
 type SubLink = { label: string; path: string };
@@ -394,7 +397,6 @@ export const iconMap: Record<string, React.ReactNode> = {
   file: <FiFile />,
   activity: <FiActivity />,
 
-  // Agent Management
   "category": <School />,
   "actions": <Activity />,
   "agent update": <MdSupportAgent />,
@@ -404,12 +406,18 @@ export const iconMap: Record<string, React.ReactNode> = {
   "unregistered assets": <Apple />,
   "script management": <Bot />,
   "agent dashboard": <LayoutGrid />,
-"Access Dashboard": <LayoutGrid />,
+  "access dashboard": <LayoutGrid />,
   "role": <ShieldCheck />,
   "module": <Layers />,
   "role permission": <FiUsers />,
   "permission": <FiFile />,
   "permission action": <Activity />,
+  "script templates": <Activity />,
+  "script dashboard": <LayoutGrid />,
+ "script wise dashboard": <FiHome />,
+  "parsed result": <File />,
+    "execution result": <Replace />,
+     "script approval": <MdApproval />,
 };
 
 
@@ -433,8 +441,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
  const normalizeModuleName = (name: string) =>
   name
     .toLowerCase()
-    .replace(/\s+/g, "")     // remove spaces
-    .replace(/-/g, "");     // remove dashes if any
+    .replace(/\s+/g, "")   
+    .replace(/-/g, "");   
 
 
   //  const pathSegments = location.pathname.split("/").filter(Boolean);

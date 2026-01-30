@@ -91,6 +91,7 @@ export default function RootRoute() {
               <div className="mx-auto p-4">
                 <Outlet />
               </div>
+              
               <Customization />
               
             </ScrollArea>
