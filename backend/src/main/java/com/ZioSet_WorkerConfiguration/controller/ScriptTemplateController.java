@@ -42,5 +42,10 @@ public class ScriptTemplateController {
         return ResponseGenerator.generate("Template List", HttpStatus.OK, scriptTemplateService.countTemplate());
     }
 
+    @GetMapping("/param-type")
+    public ResponseEntity<?> getParamType() {
+        return ResponseGenerator.generate("ParamType List", HttpStatus.OK, scriptTemplateService.getParamType());
+    }
+
 
 }
