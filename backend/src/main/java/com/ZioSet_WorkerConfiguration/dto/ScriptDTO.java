@@ -12,10 +12,9 @@ import java.util.Map;
 
 @Data
 public class ScriptDTO {
-    private Long id;
     private String name;
     private ScriptType scriptType;
-//    private String scriptText;
+    private String scriptText;
     private Long scriptFileId;
     private Long templateId;
     private Boolean isActive;
