@@ -7,6 +7,8 @@ import com.ZioSet_WorkerConfiguration.exception.ResourceNotFoundException;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.placholder.service.ScriptParserService;
 import com.ZioSet_WorkerConfiguration.repo.*;
+import com.ZioSet_WorkerConfiguration.utils.scriptsecurity.ApprovalDigestService;
+import com.ZioSet_WorkerConfiguration.utils.scriptsecurity.SignedApproval;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,8 +16,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,6 +35,7 @@ public class ScriptService {
     private final ScriptTargetSystemRepository targetSystemRepository;
     private final ScriptTemplateRepository scriptTemplateRepository;
     private final ScriptParserService parserService;
+    private final ApprovalDigestService approvalDigestService;
 
     private ScriptTemplateEntity getTemplate(Long id){
         return scriptTemplateRepository.findById(id)
@@ -40,8 +45,7 @@ public class ScriptService {
     @Transactional
     public ScriptEntity createOrUpdateScriptExecution(ScriptDTO dto) {
 
-        ScriptEntity execution = (dto.getId() != null) ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
-                : new ScriptEntity();
+        ScriptEntity execution = new ScriptEntity();
 
         ScriptTemplateEntity template = (dto.getTemplateId() != null) ? getTemplate(dto.getTemplateId()) : null;
 
@@ -91,11 +95,12 @@ public class ScriptService {
 
             Map<String, String> scriptArgs = parserService.extractScriptArguments(template.getParameters(), dto.getParams());
             execution.setScriptArgument(scriptArgs);
+        }else{
+            execution.setScriptText(dto.getScriptText());
         }
 
         execution = scriptRepository.save(execution);
 
-        targetSystemRepository.deleteByScriptId(execution.getId());
         if (dto.getSerialNoHostName() != null) {
             for ( Map<String,String> systems : dto.getSerialNoHostName()) {
                 ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
@@ -106,7 +111,6 @@ public class ScriptService {
             }
         }
 
-        dependencyRepository.deleteByScriptId(execution.getId());
         if (dto.getDependencyFileIds() != null) {
             for (Long fileId : dto.getDependencyFileIds()) {
                 ScriptFileEntity file = scriptFileRepository.findById(fileId)
@@ -282,6 +286,7 @@ public class ScriptService {
         return scriptRepository.findById(id);
     }
 
+    //TODO("Implement soft delete")
     public void deleteScript(Long id) {
         scriptRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ScriptEntity not found"));
@@ -410,12 +415,12 @@ public class ScriptService {
         );
     }
 
-    public void approveScript(Long scriptId) {
-        ScriptEntity script = scriptRepository.findById(scriptId)
-                .orElseThrow(()->new ResourceNotFoundException("Script not found."));
-        script.setApprovalStatus(ScriptApprovalStatus.APPROVED);
-        scriptRepository.save(script);
-    }
+//    public void approveScript(Long scriptId) {
+//        ScriptEntity script = scriptRepository.findById(scriptId)
+//                .orElseThrow(()->new ResourceNotFoundException("Script not found."));
+//        script.setApprovalStatus(ScriptApprovalStatus.APPROVED);
+//        scriptRepository.save(script);
+//    }
 
     public void rejectScript(Long scriptId) {
        ScriptEntity script = scriptRepository.findById(scriptId)
@@ -428,6 +433,31 @@ public class ScriptService {
 
         return scriptRepository.findScriptsWithParsingRules(pageable);
 
+    }
+
+    @Transactional
+    public void approveScript(Long scriptId) {
+
+        ScriptEntity script = scriptRepository.findById(scriptId)
+                .orElseThrow(() -> new ResourceNotFoundException("Script not found"));
+
+        if (script.getApprovalStatus() == ScriptApprovalStatus.APPROVED) {
+            throw new IllegalStateException("Script already approved");
+        }
+
+        var deps = dependencyRepository.findAllByScriptId(scriptId);
+
+        SignedApproval signed = approvalDigestService.buildAndSign(script, deps);
+
+        script.setApprovalDigestJson(signed.getDigestJson());
+        script.setApprovalSignature(signed.getSignatureBase64());
+        script.setApprovalStatus(ScriptApprovalStatus.APPROVED);
+        script.setApprovedAt(Instant.now());
+
+        //TODO("Find admin user from current session")
+        //script.setApprovedBy(adminUserId);
+
+        scriptRepository.save(script);
     }
 
 }

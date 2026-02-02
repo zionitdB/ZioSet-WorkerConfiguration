@@ -94,11 +94,11 @@ export function ThemeCustomizer() {
       <Sheet open={open} onOpenChange={setOpen} modal={false}>
    {/* Trigger Button (FAB) */}
         <SheetTrigger asChild onClick={() => setOpen(true)}>
-        <div className='cursor-pointer' aria-label='Theme customizer' data-tour='theme-customizer'>
+        <div className='cursor-pointer'  aria-label='Theme customizer' data-tour='theme-customizer'>
          <IconSettings className="w-5 h-5" />
         </div>
       </SheetTrigger>
-      <SheetContent className='h-full w-full gap-0 sm:max-w-[400px] [&>button]:hidden'>
+      <SheetContent className='h-full w-full gap-0 sm:max-w-100 [&>button]:hidden'>
         <SheetHeader className='min-h-(--header-height) flex-row items-center justify-between border-b border-dashed px-6'>
           <SheetTitle>Theme Customizer</SheetTitle>
           <SheetClose

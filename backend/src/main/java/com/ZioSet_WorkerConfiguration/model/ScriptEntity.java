@@ -97,8 +97,6 @@ public class ScriptEntity {
 
     private Long addedBy;
 
-    private String hostName;
-
     @PreUpdate
     public void setUpdatedAt() {
         this.updatedAt = Instant.now();
@@ -110,4 +108,20 @@ public class ScriptEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status", nullable = false)
     private ScriptApprovalStatus approvalStatus = ScriptApprovalStatus.PENDING;
+
+
+    // for security purpose
+    @Column(name = "approval_digest_json", columnDefinition = "TEXT")
+    private String approvalDigestJson;
+
+    @Lob
+    @Column(name = "approval_signature")
+    private String approvalSignature;
+
+    @Column(name = "approved_at")
+    private Instant approvedAt;
+
+    @Column(name = "approved_by")
+    private Long approvedBy;
+
 }

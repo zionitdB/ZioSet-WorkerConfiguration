@@ -29,6 +29,19 @@ import AccessControlDashboard from "../Screens/Configuration/dashboard";
 import ModuleRoute from "../Screens/Configuration/module";
 import ExecutionResultRoute from "../Screens/ScriptManagementScreens/ExucutionResult";
 import StandaloneAppRoute from "../Screens/StandaloneApplications";
+import ScriptTemplateList from "../Screens/ScriptManagementScreens/ScriptTemplet";
+import ScriptTemplateForm from "../Screens/ScriptManagementScreens/ScriptTemplet/scriptTempletForm";
+import ScriptTemplateRun from "../Screens/ScriptManagementScreens/ScriptTemplet/runTemplateForm";
+import ScriptDashboard from "../Screens/ScriptManagementScreens/ScriptDashboard/TotalDashboard";
+import ScriptWiseDashboard from "../Screens/ScriptManagementScreens/ScriptDashboard/ScriptWiseDashboard";
+import TotalEndPointsRoute from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/TotalEndPoints";
+import ActiveEndPointsRoute from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/ActiveEndPoints";
+import InActiveEndPointsRoute from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/InActiveEndPoints.tsx";
+import ScriptCardList from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/ScriptViewScreen.tsx";
+import ScriptExecutionReport from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/ScriptExecutionReport.tsx";
+import ParsedReport from "../Screens/ScriptManagementScreens/ParsedReport/index.tsx";
+import ParsedExecutionDetails from "../Screens/ScriptManagementScreens/ParsedReport/ExecutionReportByScript.tsx";
+import ScriptApprovalScreen from "../Screens/ScriptManagementScreens/ScriptApproval/index.tsx";
 
 // Define the type for authenticated route objects
 interface AuthenticatedRoute {
@@ -148,12 +161,44 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
       <HelmetedRoute title="unregisteredAssets" element={<UnregisteredAssetsRoute />} />
     ),
   },
+    {
+    path: "/scriptRunner/scriptDashboard",
+    element: (
+      <HelmetedRoute title="Dashboard" element={<ScriptDashboard />} />
+    ),
+  },
+      {
+    path: "/scriptRunner/scriptWiseDashboard",
+    element: (
+      <HelmetedRoute title="Dashboard" element={<ScriptWiseDashboard />} />
+    ),
+  },
+  
   {
     path: "/scriptRunner/scriptRunner",
     element: (
       <HelmetedRoute title="ScriptRunner" element={<ScriptManagementScreen />} />
     ),
   },
+ {
+    path: "/scriptRunner/scriptTemplate",
+    element: (
+      <HelmetedRoute title="scriptTemplate" element={<ScriptTemplateList />} />
+    ),
+  },
+   {
+    path: "/scriptRunner/scriptTemplateForm",
+    element: (
+      <HelmetedRoute title="scriptTemplate" element={<ScriptTemplateForm />} />
+    ),
+  },
+ {
+    path: "/scriptRunner/scriptTemplateRun",
+    element: (
+      <HelmetedRoute title="scriptTemplate" element={<ScriptTemplateRun />} />
+    ),
+  },
+  
   {
     path: "/scriptRunner/executionResult",
     element: (
@@ -184,6 +229,54 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
     path: "/scriptRunner/scriptTargetSystems",
     element: (
       <HelmetedRoute title="targetSystems" element={<ScriptTargetSystemsRoute />} />
+    ),
+  },
+     {
+    path: "/scriptRunner/totalEndPoints",
+    element: (
+      <HelmetedRoute title="totalEndPoints" element={<TotalEndPointsRoute />} />
+    ),
+  },
+     {
+    path: "/scriptRunner/activeEndPoints",
+    element: (
+      <HelmetedRoute title="ActiveEndPoints" element={<ActiveEndPointsRoute />} />
+    ),
+  },
+     {
+    path: "/scriptRunner/inActiveEndPoints",
+    element: (
+      <HelmetedRoute title="InActiveEndPoints" element={<InActiveEndPointsRoute />} />
+    ),
+  },
+  {
+    path: "/scriptRunner/scriptCardList",
+    element: (
+      <HelmetedRoute title="ScriptCardList" element={<ScriptCardList />} />
+    ),
+  },
+  {
+    path: "/scriptRunner/executionReport",
+    element: (
+      <HelmetedRoute title="executionReport" element={<ScriptExecutionReport />} />
+    ),
+  },
+    {
+    path: "/scriptRunner/parsedReport",
+    element: (
+      <HelmetedRoute title="parsedReport" element={<ParsedReport />} />
+    ),
+  },
+    {
+    path: "/scriptRunner/parsedExecution",
+    element: (
+      <HelmetedRoute title="parsedExecution" element={<ParsedExecutionDetails />} />
+    ),
+  },
+     {
+    path: "/scriptRunner/scriptApproval",
+    element: (
+      <HelmetedRoute title="scriptApproval" element={<ScriptApprovalScreen />} />
     ),
   },
   

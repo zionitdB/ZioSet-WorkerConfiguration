@@ -1,40 +1,10 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { AgGridReact } from "ag-grid-react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { FaChartColumn } from "react-icons/fa6";
@@ -69,10 +39,6 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 
-
-
-
-
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface DataTableProps {
@@ -106,6 +72,8 @@ interface DataTableProps {
   allData?: () => Promise<any[]>;
   fileName?: string;
   handleCustomExportWithColumns?: () => void;
+  selectedRows?: any[];
+  rowIdField?: string;
 }
 
 // const lightTheme = themeAlpine.withParams({
@@ -134,7 +102,7 @@ interface DataTableProps {
 //   fontSize: "14px",
 //   borderColor: "var(--border)",
 //   rowBorder: true,
-  
+
 //   headerFontWeight: 600,
 // });
 
@@ -151,15 +119,13 @@ interface DataTableProps {
 //   headerFontWeight: 600,
 // });
 
-
-
 const lightTheme = themeAlpine.withParams({
-  backgroundColor: "var(--background)",       
-  foregroundColor: "var(--foreground)",        
-  headerTextColor: "var(--foreground)",        
-  headerBackgroundColor: "var(--muted)",       
-  oddRowBackgroundColor: "var(--muted-muted)",    
-  headerColumnResizeHandleColor: "var(--muted-foreground)", 
+  backgroundColor: "var(--background)",
+  foregroundColor: "var(--foreground)",
+  headerTextColor: "var(--foreground)",
+  headerBackgroundColor: "var(--muted)",
+  oddRowBackgroundColor: "var(--muted-muted)",
+  headerColumnResizeHandleColor: "var(--muted-foreground)",
   fontSize: "15px",
 });
 
@@ -172,7 +138,6 @@ const darkTheme = themeAlpine.withParams({
   headerColumnResizeHandleColor: "var(--muted-foreground)",
   fontSize: "15px",
 });
-
 
 const DataTable: React.FC<DataTableProps> = ({
   rowData,
@@ -205,25 +170,27 @@ const DataTable: React.FC<DataTableProps> = ({
   allData,
   fileName,
   handleCustomExportWithColumns,
+  selectedRows = [],
+  rowIdField = "serialNo",
 }) => {
   const { theme } = useTheme();
   const gridRef = useRef<AgGridReact<any>>(null);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(
-    new Set(colDefs.map((col) => col.field))
+    new Set(colDefs.map((col) => col.field)),
   );
   const [isFilterEnabled, setIsFilterEnabled] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
   const [exportStatus, setExportStatus] = useState("");
 
-const exportCancelledRef = useRef(false);
+  const exportCancelledRef = useRef(false);
 
-const cancelExport = () => {
-  exportCancelledRef.current = true;
-  setIsExporting(false);
-  setExportProgress(0);
-  setExportStatus("");
-};
+  const cancelExport = () => {
+    exportCancelledRef.current = true;
+    setIsExporting(false);
+    setExportProgress(0);
+    setExportStatus("");
+  };
 
   useEffect(() => {
     const root = document.documentElement;
@@ -243,7 +210,7 @@ const cancelExport = () => {
       flex: 1,
       floatingFilter: showFilter ? isFilterEnabled : false,
     }),
-    [isFilterEnabled, showFilter]
+    [isFilterEnabled, showFilter],
   );
 
   useEffect(() => {
@@ -270,14 +237,21 @@ const cancelExport = () => {
       <div className="flex items-center justify-center h-full w-full">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-accent"
+            >
               <MdMoreVert className="text-lg" />
             </Button>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="w-48">
             {showEdit && (
-              <DropdownMenuItem onClick={() => onEditClick?.(params.data)} className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => onEditClick?.(params.data)}
+                className="cursor-pointer"
+              >
                 <FaEdit className="mr-2 h-4 w-4" /> Edit
               </DropdownMenuItem>
             )}
@@ -323,7 +297,14 @@ const cancelExport = () => {
     }
 
     return visibleColumns;
-  }, [colDefs, showCheckbox, checkboxColumn, selectedKeys, showActions, checkboxPosition]);
+  }, [
+    colDefs,
+    showCheckbox,
+    checkboxColumn,
+    selectedKeys,
+    showActions,
+    checkboxPosition,
+  ]);
 
   const toggleSelection = (field: string, checked: boolean) => {
     setSelectedKeys((prevKeys) => {
@@ -337,6 +318,26 @@ const cancelExport = () => {
     });
   };
 
+  const applySelection = useCallback(() => {
+    if (gridRef.current?.api && selectedRows.length > 0) {
+      gridRef.current.api.forEachNode((node) => {
+        const isSelected = selectedRows.some(
+          (item) => item[rowIdField] === node.data?.[rowIdField],
+        );
+        node.setSelected(isSelected, false);
+      });
+    }
+  }, [selectedRows, rowIdField]);
+
+
+  useEffect(() => {
+    if (!isLoading) {
+      applySelection();
+    }
+  }, [rowData, isLoading, applySelection]);
+
+
+  
   const handleSelectionChanged = () => {
     if (gridRef.current) {
       const selectedNodes = gridRef.current.api.getSelectedNodes();
@@ -346,7 +347,7 @@ const cancelExport = () => {
   };
 
   const handleDefaultExportWithColumns = async () => {
-      exportCancelledRef.current = false;
+    exportCancelledRef.current = false;
 
     setIsExporting(true);
     setExportProgress(0);
@@ -359,7 +360,8 @@ const cancelExport = () => {
       if (!gridRef.current?.api) return;
 
       const selectedColumns = colDefs.filter(
-        (col) => col.field && selectedKeys.has(col.field) && col.field !== "actions"
+        (col) =>
+          col.field && selectedKeys.has(col.field) && col.field !== "actions",
       );
 
       setExportStatus("Collecting data...");
@@ -386,13 +388,21 @@ const cancelExport = () => {
 
         if (col.valueGetter) {
           try {
-            value = col.valueGetter({ data: row, node: { rowIndex: index }, colDef: col });
+            value = col.valueGetter({
+              data: row,
+              node: { rowIndex: index },
+              colDef: col,
+            });
           } catch {
             value = "-";
           }
         } else if (col.field) {
           const path = col.field.split(".");
-          value = path.reduce((acc: any, key: string) => (acc && acc[key] !== undefined ? acc[key] : "-"), row);
+          value = path.reduce(
+            (acc: any, key: string) =>
+              acc && acc[key] !== undefined ? acc[key] : "-",
+            row,
+          );
         }
 
         if (typeof value === "string" && !isNaN(Date.parse(value))) {
@@ -431,7 +441,7 @@ const cancelExport = () => {
       setExportProgress(100);
       setExportStatus("Export completed!");
       await new Promise((resolve) => setTimeout(resolve, 800));
-      
+
       setIsExporting(false);
       setExportProgress(0);
       setExportStatus("");
@@ -447,7 +457,9 @@ const cancelExport = () => {
     (handleCustomExportWithColumns ?? handleDefaultExportWithColumns)();
   };
 
-  const [selectedRowKeys, setSelectedRowKeys] = useState(new Set([`${rowsPerPage}`]));
+  const [selectedRowKeys, setSelectedRowKeys] = useState(
+    new Set([`${rowsPerPage}`]),
+  );
 
   const selectedValue = useMemo(() => {
     return `${Array.from(selectedRowKeys)[0]} Rows`;
@@ -462,19 +474,17 @@ const cancelExport = () => {
     }
   }, [onFilterChange]);
 
-const FancyLoader = () => (
-  <div className="flex items-center gap-3">
-    <div className="relative h-5 w-5">
-      <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
-      <div className="absolute inset-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+  const FancyLoader = () => (
+    <div className="flex items-center gap-3">
+      <div className="relative h-5 w-5">
+        <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
+        <div className="absolute inset-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+      </div>
+      <span className="text-sm font-medium text-muted-foreground">
+        Processing...
+      </span>
     </div>
-    <span className="text-sm font-medium text-muted-foreground">
-      Processing...
-    </span>
-  </div>
-);
-
-
+  );
 
 
   return (
@@ -490,14 +500,13 @@ const FancyLoader = () => (
             <div className="flex gap-3">
               {onAddClick && (
                 <Button
-  variant="default"
-  onClick={onAddClick}
-  className="shadow-lg shadow-primary/40 hover:shadow-primary/60 transition-shadow"
->
-  <MdAddCircleOutline className="mr-2 h-4 w-4" />
-  {addLabel}
-</Button>
-
+                  variant="default"
+                  onClick={onAddClick}
+                  className="shadow-lg shadow-primary/40 hover:shadow-primary/60 transition-shadow"
+                >
+                  <MdAddCircleOutline className="mr-2 h-4 w-4" />
+                  {addLabel}
+                </Button>
               )}
               {addComponent && <div>{addComponent}</div>}
             </div>
@@ -505,7 +514,9 @@ const FancyLoader = () => (
             <div className="flex gap-2 items-center">
               {showFilter && (
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-background/50">
-                  <span className="text-sm text-muted-foreground font-medium">Filter</span>
+                  <span className="text-sm text-muted-foreground font-medium">
+                    Filter
+                  </span>
                   <Switch
                     checked={isFilterEnabled}
                     onCheckedChange={(val) => setIsFilterEnabled(val)}
@@ -545,7 +556,9 @@ const FancyLoader = () => (
                       <DropdownMenuCheckboxItem
                         key={col.field}
                         checked={selectedKeys.has(col.field)}
-                        onCheckedChange={(checked: boolean) => toggleSelection(col.field, checked)}
+                        onCheckedChange={(checked: boolean) =>
+                          toggleSelection(col.field, checked)
+                        }
                       >
                         {col.headerName}
                       </DropdownMenuCheckboxItem>
@@ -584,9 +597,6 @@ const FancyLoader = () => (
           </div>
         </div>
 
-
-
-        {/* Table Section with Loading Overlay */}
         <div className="flex-1 relative">
           {isLoading && (
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -595,7 +605,9 @@ const FancyLoader = () => (
                   <Loader2 className="h-12 w-12 animate-spin text-primary" />
                   <div className="absolute inset-0 h-12 w-12 animate-ping rounded-full bg-primary/20" />
                 </div>
-                <p className="text-sm font-medium text-foreground">Loading data...</p>
+                <p className="text-sm font-medium text-foreground">
+                  Loading data...
+                </p>
               </div>
             </div>
           )}
@@ -603,8 +615,7 @@ const FancyLoader = () => (
           <AgGridReact
             theme={theme === "dark" ? darkTheme : lightTheme}
             ref={gridRef}
-  rowHeight={64}
-
+            rowHeight={64}
             rowData={rowData}
             loading={false}
             columnDefs={extendedColDefs}
@@ -618,7 +629,7 @@ const FancyLoader = () => (
             onFilterChanged={updateFilterValues}
             ensureDomOrder={true}
             enableCellTextSelection={true}
-
+            // getRowId={(params) => params.data[rowIdField]}
           />
         </div>
 
@@ -637,9 +648,12 @@ const FancyLoader = () => (
       </div>
 
       {/* Export Progress Modal */}
-      <Dialog open={isExporting}  onOpenChange={(open) => {
-    if (!open) cancelExport();
-  }}>
+      <Dialog
+        open={isExporting}
+        onOpenChange={(open) => {
+          if (!open) cancelExport();
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -655,7 +669,9 @@ const FancyLoader = () => (
             <div className="space-y-2">
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-muted-foreground">{exportStatus}</span>
-                <span className="font-semibold text-foreground">{exportProgress}%</span>
+                <span className="font-semibold text-foreground">
+                  {exportProgress}%
+                </span>
               </div>
               <Progress value={exportProgress} className="h-2" />
             </div>
@@ -663,27 +679,24 @@ const FancyLoader = () => (
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               {exportProgress < 100 ? (
                 <>
-
-                <FancyLoader/>
+                  <FancyLoader />
                   {/* <Loader2 className="h-4 w-4 animate-spin" />
                   <span>Processing...</span> */}
                 </>
               ) : (
                 <>
-                
-
-                   <div className="relative">
-                   <CheckCircle2 className="h-16 w-16 text-green-500 animate-in zoom-in-50 duration-300" />
-                   <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
-                 </div>
-                 <div className="text-center space-y-2">
-                   <h3 className="text-lg font-semibold animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
-                     File is Ready!
-                   </h3>
-                   <p className="text-sm text-muted-foreground animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-100">
-                     Your Excel file has been downloaded successfully.
-                   </p>
-                 </div>
+                  <div className="relative">
+                    <CheckCircle2 className="h-16 w-16 text-green-500 animate-in zoom-in-50 duration-300" />
+                    <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping" />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <h3 className="text-lg font-semibold animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+                      File is Ready!
+                    </h3>
+                    <p className="text-sm text-muted-foreground animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-100">
+                      Your Excel file has been downloaded successfully.
+                    </p>
+                  </div>
                 </>
               )}
             </div>
@@ -695,6 +708,28 @@ const FancyLoader = () => (
 };
 
 export default DataTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1330,6 +1365,3 @@ export default DataTable;
 // };
 
 // export default DataTable;
-
-
-

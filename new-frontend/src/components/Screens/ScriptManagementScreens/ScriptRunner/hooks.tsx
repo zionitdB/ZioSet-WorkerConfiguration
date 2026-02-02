@@ -1,6 +1,9 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { fetchData } from "@/serviceAPI/serviceApi";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchData, fetchDataSam } from "@/serviceAPI/serviceApi";
 import toast from "react-hot-toast";
+
+
+
 
 export const useGetScriptTypes = () => {
   return useQuery({
@@ -19,16 +22,18 @@ export const useGetPlatforms = () => {
 export const useGetSystemList = (endpoint: string) => {
   return useQuery({
     queryKey: ["systems", endpoint],
-    queryFn: () => fetchData(endpoint),
-    select: (data) => data?.map((item: any) => ({
-      id: item.systemSerialNo,
-      serialNo: item.systemSerialNo,
-      installed: item.installed,
-      installedAt: item.installedAt,
-      installReqAt: item.installReqAt,
-    })) || [],
+    queryFn: () => fetchDataSam(endpoint),
   });
 };
+
+export const useGetSystemListCount = (activePlatform:any) => {
+  return useQuery({
+    queryKey: ["useGetSystemListCount",activePlatform],
+    queryFn: () => fetchDataSam(`/api/sam/getAssetCount?osType=${activePlatform}`),
+    enabled:!!activePlatform,
+  });
+};
+
 
 export const useUploadFile = () => {
   return useMutation({
@@ -54,3 +59,64 @@ export const useSubmitScript = () => {
     onError: (err: any) => toast.error(err?.message || "Failed to create script"),
   });
 };
+
+
+
+
+export const useGetScriptTemplatesList = (page:any,pageSize:any) => {
+  return useQuery({
+    queryKey: ["useGetScriptTemplatesList",page,pageSize],
+    queryFn: () => fetchData(`/script-template?page=${page}&size=${pageSize}`),
+  });
+};
+
+
+export const useSubmitScriptTemplate = () => {
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetchData("/script-template", { method: "POST", body: JSON.stringify(payload) }),
+    onSuccess: () => toast.success("Script Template created successfully!"),
+    onError: (err: any) => toast.error(err?.message || "Failed to create script"),
+  });
+};
+
+
+export const useDeleteScriptTemplate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (Id:any) =>
+      fetchData(`/script-template/${Id}`, { method: "DELETE" }),
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["useGetScriptTemplatesList"] });
+    toast.success(data?.message || "Script Template Deleted Successfully!!")
+      
+    },
+   onError: (err: any) => toast.error(err?.message || "Failed to delete script"),
+  });
+};
+
+
+
+export const useGetAllAssetByLimitAndGroupSearch= () => {
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetchDataSam("/api/sam/getAllAssetByLimitAndGroupSearch", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+ onError: (err: any) => toast.error(err?.message || "Failed to search system"),
+  });
+};
+
+export const useGetCountAllAssetByLimitAndGroupSearch = () => {
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetchDataSam("/api/sam/getCountAllAssetByLimitAndGroupSearch", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+  onError: (err: any) => toast.error(err?.message || "Failed to search system"),
+  });
+};
+

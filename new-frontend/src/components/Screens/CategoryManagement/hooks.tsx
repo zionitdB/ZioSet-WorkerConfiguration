@@ -14,7 +14,7 @@ export const useGetCategories = (page: number, size: number) => {
   });
 };
 
-export const useGetChildCategories = (id: number) => {
+export const useGetChildCategories = (id: number, p0: { enabled: boolean; }) => {
   return useQuery({
     queryKey: ["useGetChildCategories", id ],
     queryFn: () =>
