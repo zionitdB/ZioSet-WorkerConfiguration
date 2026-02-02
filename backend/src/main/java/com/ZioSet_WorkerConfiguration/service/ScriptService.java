@@ -140,6 +140,7 @@ public class ScriptService {
         script.setScriptId(generateNextCode());
         script.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
         script.setScriptArgument(dto.getParams());
+        script.setParsingFormat(dto.getFormat());
 
         if (dto.getScriptFileId() != null) {
             ScriptFileEntity file = scriptFileRepository.findById(dto.getScriptFileId())

@@ -33,4 +33,5 @@ public class SimpleScriptDto {
     private LocalTime timeOfDay;
 
     private Map<String,String> params;
+    private String format;
 }
