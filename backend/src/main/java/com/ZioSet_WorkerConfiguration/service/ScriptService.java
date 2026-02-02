@@ -2,6 +2,7 @@ package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.enums.ScriptApprovalStatus;
+import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.exception.ResourceNotFoundException;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.placholder.service.ScriptParserService;
@@ -52,7 +53,6 @@ public class ScriptService {
         execution.setScriptType(dto.getScriptType());
         execution.setScriptId(generateNextCode());
         execution.setParsingFormat(dto.getFormat());
-//        execution.setHostName(dto.getHostName());
 
         //target-platforms ,in case to run simple script for systems without needing template
         if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
@@ -122,6 +122,81 @@ public class ScriptService {
         return execution;
     }
 
+
+    @Transactional
+    public ScriptEntity createSimpleScriptDto(SimpleScriptDto dto){
+        ScriptEntity script = (dto.getId() != null)
+                ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
+                : new ScriptEntity();
+
+        script.setName(dto.getName());
+        script.setDescription(dto.getDescription());
+        script.setScriptType(dto.getScriptType());
+        script.setScriptText(dto.getScriptText());
+        script.setScriptId(generateNextCode());
+        script.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
+
+        if (dto.getScriptFileId() != null) {
+            ScriptFileEntity file = scriptFileRepository.findById(dto.getScriptFileId())
+                    .orElseThrow(() -> new RuntimeException("Script file not found"));
+            script.setScriptFile(file);
+        }
+
+        if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
+            for (ScriptTargetPlatform p : dto.getTargetPlatforms()) {
+                if (p == null) throw new RuntimeException("Invalid platform");
+            }
+            script.setTargetPlatformsCsv(
+                    dto.getTargetPlatforms().stream()
+                            .map(Enum::name)
+                            .collect(Collectors.joining(","))
+            );
+        } else {
+            script.setTargetPlatformsCsv(null);
+        }
+
+        // Scheduling fields
+        script.setScheduleType(dto.getScheduleType());
+        script.setStartDateTime(dto.getStartDateTime());
+        script.setRepeatEverySeconds(dto.getRepeatEverySeconds());
+
+        if (dto.getWeekDays() != null && !dto.getWeekDays().isEmpty()) {
+            script.setWeekDaysCsv(String.join(",", dto.getWeekDays()));
+        } else {
+            script.setWeekDaysCsv(null);
+        }
+
+        script.setMonthDay(dto.getMonthDay());
+        script.setTimeOfDay(dto.getTimeOfDay());
+
+        script = scriptRepository.save(script);
+
+        // Save dependencies
+        dependencyRepository.deleteByScriptId(script.getId());
+        if (dto.getDependencyFileIds() != null) {
+            for (Long fileId : dto.getDependencyFileIds()) {
+                ScriptFileEntity file = scriptFileRepository.findById(fileId)
+                        .orElseThrow(() -> new RuntimeException("Dependency file not found"));
+                ScriptDependencyEntity dep = new ScriptDependencyEntity();
+                dep.setScript(script);
+                dep.setScriptFile(file);
+                dependencyRepository.save(dep);
+            }
+        }
+
+        // Save targets
+        targetSystemRepository.deleteByScriptId(script.getId());
+        if (dto.getTargetSystemSerials() != null) {
+            for (String serial : dto.getTargetSystemSerials()) {
+                ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
+                target.setScript(script);
+                target.setSystemSerialNumber(serial);
+                targetSystemRepository.save(target);
+            }
+        }
+
+        return script;
+    }
 
     @Transactional
     public ScriptEntity createScriptArgDto(CreateScriptArgDto dto) {

@@ -35,6 +35,11 @@ public class ScriptController {
         return scriptService.createScriptArgDto(dto);
     }
 
+    @PostMapping("/simple-create")
+    public ScriptEntity createSimpleScript(@RequestBody SimpleScriptDto dto) {
+        return scriptService.createSimpleScriptDto(dto);
+    }
+
     @GetMapping
     public List<ScriptEntity> getAll() {
         return scriptService.getAllScripts();
