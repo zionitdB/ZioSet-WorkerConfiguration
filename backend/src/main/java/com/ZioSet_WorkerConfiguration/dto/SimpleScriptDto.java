@@ -8,6 +8,7 @@ import lombok.Data;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class SimpleScriptDto {
@@ -30,4 +31,6 @@ public class SimpleScriptDto {
     private List<String> weekDays;
     private Integer monthDay;
     private LocalTime timeOfDay;
+
+    private Map<String,String> params;
 }
