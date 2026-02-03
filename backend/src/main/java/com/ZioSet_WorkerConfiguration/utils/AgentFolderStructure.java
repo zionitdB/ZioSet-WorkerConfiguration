@@ -23,7 +23,7 @@ public class AgentFolderStructure {
         list.add(new FolderResponse("system", "contains file/executabels for communication with server like api_comm_grt_process, api_comm_standalone, getstandalone_plugin etc"));
         list.add(new FolderResponse("plugins", "contains plugins to execute specific type of command like api_powershell, api_chrome_extension_installer, api_cmd etc"));
         list.add(new FolderResponse("tmp", "contains json files , can include actual command to run by plugins"));
-
+        list.add(new FolderResponse("certs", "contains public certificates"));
         return list;
     }
 
@@ -32,6 +32,7 @@ public class AgentFolderStructure {
         list.add(new FolderResponse("system", "root folder of agent, contains files required to run agent like process_control, communication files, services etc"));
         list.add(new FolderResponse("plugins", "contains plugins to execute specific type of command like api_powershell, api_chrome_extension_installer, api_cmd etc"));
         list.add(new FolderResponse("tmp", "contains json files , can include actual command to run by plugins"));
+        list.add(new FolderResponse("certs", "contains public certificates"));
         return list;
     }
 }

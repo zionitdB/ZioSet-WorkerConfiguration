@@ -12,7 +12,6 @@ import java.util.Map;
 
 @Data
 public class SimpleScriptDto {
-    private Long id;
     private String name;
     private String description;
     private ScriptType scriptType;
@@ -21,7 +20,7 @@ public class SimpleScriptDto {
     private Boolean isActive;
 
     private List<Long> dependencyFileIds;
-    private List<String> targetSystemSerials;
+    private List<TargetSystemDto> serialNoHostName;
     private List<ScriptTargetPlatform> targetPlatforms;
 
     // Schedule fields
@@ -30,6 +29,8 @@ public class SimpleScriptDto {
     private Long repeatEverySeconds;
     private List<String> weekDays;
     private Integer monthDay;
+
+    //TODO("check in python backend if it is used")
     private LocalTime timeOfDay;
 
     private Map<String,String> params;
