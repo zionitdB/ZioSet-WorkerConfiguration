@@ -1,6 +1,7 @@
 package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.CreateScriptTemplateRequest;
+import com.ZioSet_WorkerConfiguration.enums.ParamType;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.model.ScriptDependencyEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptFileEntity;
@@ -15,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,6 +94,10 @@ public class ScriptTemplateService {
 
     public long countTemplate(){
         return templateRepository.findAll().stream().count();
+    }
+
+    public List<ParamType> getParamType(){
+        return Arrays.stream(ParamType.values()).toList();
     }
 
 

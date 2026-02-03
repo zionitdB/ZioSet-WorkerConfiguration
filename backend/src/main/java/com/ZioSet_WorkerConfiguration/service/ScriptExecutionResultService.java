@@ -270,7 +270,7 @@ public class ScriptExecutionResultService {
         return null;
     }
 
-    public DashboardSlotCountsDto getLast24HourExecutionCountsSlotted() {
+    public DashboardSlotCountsDto getLast24HourExecutionCountsSlotted(Long scriptId) {
 
         Instant overallTo = Instant.now();
         Instant overallFrom = overallTo.minus(24, ChronoUnit.HOURS);
@@ -286,7 +286,7 @@ public class ScriptExecutionResultService {
             Instant slotEnd = slotStart.plus(slotHours, ChronoUnit.HOURS);
 
             DashboardCountsView v =
-                    repo.dashboardCounts(null, null, null, slotStart, slotEnd);
+                    repo.dashboardCounts(scriptId, null, null, slotStart, slotEnd);
 
             long success = v.getSuccess() == null ? 0 : v.getSuccess();
             long failed  = v.getFailed()  == null ? 0 : v.getFailed();

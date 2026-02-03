@@ -83,11 +83,11 @@ public class ScriptExecutionResultController {
     }
 
     @GetMapping("/last-24-hours-count")
-    public ResponseEntity<?> getLast24HourSlotCounts() {
+    public ResponseEntity<?> getLast24HourSlotCounts(@RequestParam(required = false) Long scriptId) {
 
         return ResponseEntity.ok(
                 Map.of(
-                        "data", service.getLast24HourExecutionCountsSlotted(),
+                        "data", service.getLast24HourExecutionCountsSlotted(scriptId),
                         "message", "Last 24 hours execution counts"
                 )
         );
