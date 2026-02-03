@@ -32,4 +32,14 @@ public interface ScriptTargetSystemRepository extends JpaRepository<ScriptTarget
             @Param("scriptId") Long scriptId,
             Pageable pageable
     );
+
+    @Query("""
+            select t from ScriptTargetSystemEntity t
+            left join ScriptExecutionResultEntity r
+            on t.script.id=r.script.id
+            AND t.systemSerialNumber=r.systemSerialNumber
+            where t.script.id=r.script.id""")
+    List<ScriptTargetSystemEntity> findPendingTargets(
+            @Param("scriptId") Long scriptId
+    );
 }

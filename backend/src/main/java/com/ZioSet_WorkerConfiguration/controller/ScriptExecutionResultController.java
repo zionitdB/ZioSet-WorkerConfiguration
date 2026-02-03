@@ -1,9 +1,6 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
-import com.ZioSet_WorkerConfiguration.dto.DashboardCountsDto;
-import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
-import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
-import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
+import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.service.ScriptExecutionResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -60,9 +57,14 @@ public class ScriptExecutionResultController {
         return service.dashboardCounts(scriptId);
     }
 
+    @GetMapping("/location-wise")
+    public List<LocationWiseDto> dashboardCounts(@RequestParam Long scriptId, @RequestParam String status) {
+        return service.locationWiseCounts(scriptId,status);
+    }
+
     @GetMapping("/dashboard-statuswise")
     public ResponseEntity<Object> dashboardStatusList(@ModelAttribute ExecutionResultFilterDTO filter,
-                                                  @RequestParam String status,
+                                                      @RequestParam String status,
                                                       @RequestParam(defaultValue = "1") int page,
                                                       @RequestParam(defaultValue = "10") int pageSize) {
         Pageable pageable = PageRequest.of(page-1,pageSize);

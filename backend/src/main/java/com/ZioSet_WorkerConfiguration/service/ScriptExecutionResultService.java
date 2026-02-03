@@ -1,11 +1,13 @@
 package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.*;
+import com.ZioSet_WorkerConfiguration.model.Asset;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.parsing.JsonExecutionResultParsingEngine;
 import com.ZioSet_WorkerConfiguration.parsing.ParsedExecutionResult;
 import com.ZioSet_WorkerConfiguration.parsing.RawExecutionResult;
+import com.ZioSet_WorkerConfiguration.repo.AssetRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptExecutionResultRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptTargetSystemRepository;
@@ -28,6 +30,7 @@ public class ScriptExecutionResultService {
     private final JsonExecutionResultParsingEngine parsingEngine;
     private final ScriptTargetSystemRepository targetRepo;
     private final ScriptRepository scriptRepository;
+    private final AssetRepository assetRepository;
 
     public PagedResponse<ScriptExecutionResultSummaryDTO> parse(ExecutionResultFilterDTO filter, int page, int size) {
 
@@ -190,6 +193,38 @@ public class ScriptExecutionResultService {
                 .toList();
     }
 
+    public List<LocationWiseDto> locationWiseCounts(Long scriptId, String status){
+        Set<String> serialNumbers = fetchSerialNumbersByStatus(scriptId,status);
+        if (serialNumbers.isEmpty()){
+           return Collections.emptyList();
+        }
+        List<Asset> assets = assetRepository.findBySerialNoIn(serialNumbers);
+        return getLocationWiseData(assets);
+    }
+
+    private Set<String> fetchSerialNumbersByStatus(Long scriptId, String status) {
+        Integer code = getCode(status);
+
+        if (code == null) {
+            return targetRepo.findPendingTargets(scriptId)
+                    .stream()
+                    .map(ScriptTargetSystemEntity::getSystemSerialNumber)
+                    .collect(Collectors.toSet());
+        }
+
+        return repo.findSerialNumbersByScriptIdAndReturnCode(scriptId, code);
+    }
+
+    private List<LocationWiseDto> getLocationWiseData(List<Asset> assets){
+        return assets.stream()
+                .collect(Collectors.groupingBy(Asset::getLocationName, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .map(entry -> new LocationWiseDto(entry.getValue().intValue(), entry.getKey()))
+                .toList();
+    }
+
+
     public DashboardCountsDto dashboardCounts(Long scriptId) {
         DashboardCountsView v = repo.dashboardCounts(scriptId, null, null, null, null);
 
@@ -202,7 +237,7 @@ public class ScriptExecutionResultService {
     }
 
     public long countPendingSystems(Long scriptId){
-        return repo.findPendingSystems(scriptId).size();
+        return targetRepo.findPendingTargets(scriptId).size();
     }
 
 

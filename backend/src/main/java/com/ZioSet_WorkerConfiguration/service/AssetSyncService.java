@@ -30,8 +30,8 @@ public class AssetSyncService {
 
     public void syncAssets(){
         LocalDate syncDate = LocalDate.now();
-//        long totalCount = assetCountApi(syncDate);
-        long totalCount = 100;
+        long totalCount = assetCountApi(syncDate);
+//        long totalCount = 100;
         log.info("Total count={}",totalCount);
 
         int pageSize = 1000;
@@ -80,7 +80,7 @@ public class AssetSyncService {
                 boolean changed = mapIfChanged(dto, asset);
 
                 if (isNew || changed) {
-                    asset.setSyncId(UUID.randomUUID().toString());
+                    asset.setSyncId(dto.getAssetId());
                     assetsToSave.add(asset);
                 }
 
