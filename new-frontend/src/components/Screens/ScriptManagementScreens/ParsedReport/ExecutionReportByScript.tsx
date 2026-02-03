@@ -101,7 +101,7 @@ console.log("fieldKeys",fieldKeys);
     },
     cellClass: "font-mono text-xs",
   }));
-}, [rowData]);
+}, [flattenedRowData]);
 
 
 const columnDefs = useMemo(() => [
@@ -135,24 +135,7 @@ const columnDefs = useMemo(() => [
 
 
 
-const flattenParsedFields = (rows: any[]) => {
-  return rows.map((row) => {
-    const fields = row?.parsedData?.fields;
-    let flatFields: Record<string, any> = {};
 
-    if (Array.isArray(fields)) {
-      flatFields = fields[0] || {};
-    } else if (typeof fields === "object" && fields !== null) {
-      flatFields = fields;
-    }
-    const { parsedData, ...topLevelFields } = row;
-
-    return {
-      ...topLevelFields,
-      ...flatFields,
-    };
-  });
-};
 
   const { refetch: fetchAllData } = useGetParsedExecutionReport(1, totalItems || 10, {
     scriptId,
@@ -162,12 +145,14 @@ const flattenParsedFields = (rows: any[]) => {
     finishedBefore: endDate,
   });
 
-  
- const allDataForExport = async () => {
+
+
+const allDataForExport = async () => {
   const res = await fetchAllData();
   const rows = res?.data?.content || [];
-  return flattenParsedFields(rows);
+  return rows;
 };
+
 
     const resetFilters = () => {
     setSearchQuery("");
