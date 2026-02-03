@@ -40,7 +40,7 @@ public class ScriptEntity {
     @Column(name = "script_type")
     private ScriptType scriptType;
 
-    @Lob
+    @Column(name = "script_text", columnDefinition = "TEXT")
     private String scriptText; // For inline scripts
 
     @ManyToOne(fetch = FetchType.LAZY)
