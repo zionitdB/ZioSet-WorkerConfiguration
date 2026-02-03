@@ -129,9 +129,7 @@ public class ScriptService {
 
     @Transactional
     public ScriptEntity createSimpleScriptDto(SimpleScriptDto dto){
-        ScriptEntity script = (dto.getId() != null)
-                ? scriptRepository.findById(dto.getId()).orElse(new ScriptEntity())
-                : new ScriptEntity();
+        ScriptEntity script = new ScriptEntity();
 
         script.setName(dto.getName());
         script.setDescription(dto.getDescription());
@@ -192,11 +190,12 @@ public class ScriptService {
 
         // Save targets
         targetSystemRepository.deleteByScriptId(script.getId());
-        if (dto.getTargetSystemSerials() != null) {
-            for (String serial : dto.getTargetSystemSerials()) {
+        if (dto.getSerialNoHostName() != null) {
+            for (TargetSystemDto host : dto.getSerialNoHostName()) {
                 ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
                 target.setScript(script);
-                target.setSystemSerialNumber(serial);
+                target.setSystemSerialNumber(host.getSerialNo());
+                target.setHostName(host.getHostname());
                 targetSystemRepository.save(target);
             }
         }
