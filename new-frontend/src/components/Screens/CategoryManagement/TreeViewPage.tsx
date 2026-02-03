@@ -41,15 +41,15 @@ export const TreeViewPage = () => {
             Visualize parent and child relationships
           </p>
         </div>
-
-        <Button
+<div></div>
+        {/* <Button
           variant="outline"
           onClick={() => navigate("/agentConfiguration/category")}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
           Go Back
-        </Button>
+        </Button> */}
       </div>
 
       {/* Selected Category */}

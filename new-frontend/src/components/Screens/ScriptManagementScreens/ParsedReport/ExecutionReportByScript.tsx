@@ -6,13 +6,33 @@ import {
   FileJson,
   FilterX
 } from "lucide-react";
-import { format } from "date-fns";
 import DataTable from "@/components/common/DataTable";
 import Breadcrumb from "@/components/common/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useGetExecutionReport } from "../ScriptDashboard/CardScreen/hooks";
+import { useGetParsedExecutionReport } from "./hooks";
+
+
+const extractFieldKeys = (rows: any[]) => {
+  const keys = new Set<string>();
+
+  rows.forEach((row) => {
+    const fields = row?.parsedData?.fields;
+    if (!fields) return;
+
+    if (Array.isArray(fields)) {
+      fields.forEach((obj) =>
+        Object.keys(obj || {}).forEach((k) => keys.add(k))
+      );
+    } else if (typeof fields === "object") {
+      Object.keys(fields).forEach((k) => keys.add(k));
+    }
+  });
+
+  return Array.from(keys);
+};
+
 
 const ParsedExecutionDetails = () => {
   const location = useLocation();
@@ -25,7 +45,7 @@ const ParsedExecutionDetails = () => {
   const [endDate, setEndDate] = useState('');
   
 
-  const { data: response, isLoading, refetch, isFetching } = useGetExecutionReport(
+  const { data: response, isLoading, refetch, isFetching } = useGetParsedExecutionReport(
     page,
     rowsPerPage,
     {
@@ -37,52 +57,104 @@ const ParsedExecutionDetails = () => {
     }
   );
 
-  const rowData = response?.data?.content || [];
-  const totalItems = response?.data?.totalElements || 0;
-  const totalPages = response?.data?.totalPages || 0;
+  const rowData = response?.content || [];
+  const totalItems = response?.totalElements || 0;
+  const totalPages = response?.totalPages || 0;
 
-  const columnDefs = useMemo(() => [
-    {
-      headerName: "Sr No",
-      valueGetter: (p: any) => (page - 1) * rowsPerPage + (p.node.rowIndex + 1),
-      width: 70,
-    },
-    { field: "hostName", headerName: "Host / Endpoint", flex: 1, cellClass: "font-medium" },
-    { field: "systemSerialNumber", headerName: "Serial No", flex: 1 },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 110,
-      cellRenderer: (p: any) => (
-        <Badge variant="outline" className={
-          p.value === "SUCCESS" ? "border-emerald-500 text-emerald-600 bg-emerald-50" : 
-          "border-rose-500 text-rose-600 bg-rose-50"
-        }>
-          {p.value}
-        </Badge>
-      ),
-    },
-    {
-      field: "parsedData",
-      headerName: "Parsed Result Preview",
-      flex: 1.5,
-      cellRenderer: (p: any) => {
-        const data = p.data.parsedData;
-        if (!data) return <span className="text-muted-foreground italic text-xs">No parsed data</span>;
-        // Show first 2 keys as a preview
-        const preview = Object.entries(data).slice(0, 2).map(([k, v]) => `${k}: ${v}`).join(", ");
-        return <span className="text-xs font-mono truncate block">{preview}...</span>;
+const toCamelCase = (str: string) =>
+  str
+    .replace(/[-_ ]+(\w)/g, (_, c) => c.toUpperCase())
+    .replace(/^./, (c) => c.toUpperCase());
+
+
+    const flattenedRowData = rowData.map((row: any) => {
+  const fields = row?.parsedData?.fields;
+  let flatFields = {};
+
+  if (Array.isArray(fields)) flatFields = fields[0] || {};
+  else if (fields && typeof fields === "object") flatFields = fields;
+
+  return {
+    ...row,
+    ...flatFields,
+  };
+});
+
+const dynamicFieldColumns = useMemo(() => {
+  const fieldKeys = extractFieldKeys(flattenedRowData);
+console.log("fieldKeys",fieldKeys);
+
+  return fieldKeys.map((key) => ({
+    
+   headerName: toCamelCase(key),
+    field: key, 
+    flex: 1,
+    valueGetter: (p: any) => {
+      const fields = p.data?.parsedData?.fields;
+      if (!fields) return "-";
+
+      if (Array.isArray(fields)) {
+        return fields[0]?.[key] ?? "-";
       }
-    },
-    {
-      field: "finishedAt",
-      headerName: "Processed At",
-      flex: 1,
-      cellRenderer: (p: any) => p.value ? format(new Date(p.value), "dd MMM yyyy HH:mm") : "-",
-    }
-  ], [page, rowsPerPage]);
 
-  const { refetch: fetchAllData } = useGetExecutionReport(1, totalItems || 10, {
+      return fields[key] ?? "-";
+    },
+    cellClass: "font-mono text-xs",
+  }));
+}, [rowData]);
+
+
+const columnDefs = useMemo(() => [
+  {
+    headerName: "Sr No",
+    valueGetter: (p: any) =>
+      (page - 1) * rowsPerPage + (p.node.rowIndex + 1),
+    width: 70,
+  },
+  {
+    field: "status",
+    headerName: "Status",
+    width: 110,
+    cellRenderer: (p: any) => (
+      <Badge
+        variant="outline"
+        className={
+          p.value === "SUCCESS"
+            ? "border-emerald-500 text-emerald-600 bg-emerald-50"
+            : "border-rose-500 text-rose-600 bg-rose-50"
+        }
+      >
+        {p.value}
+      </Badge>
+    ),
+  },
+
+  ...dynamicFieldColumns,
+
+], [page, rowsPerPage, dynamicFieldColumns]);
+
+
+
+const flattenParsedFields = (rows: any[]) => {
+  return rows.map((row) => {
+    const fields = row?.parsedData?.fields;
+    let flatFields: Record<string, any> = {};
+
+    if (Array.isArray(fields)) {
+      flatFields = fields[0] || {};
+    } else if (typeof fields === "object" && fields !== null) {
+      flatFields = fields;
+    }
+    const { parsedData, ...topLevelFields } = row;
+
+    return {
+      ...topLevelFields,
+      ...flatFields,
+    };
+  });
+};
+
+  const { refetch: fetchAllData } = useGetParsedExecutionReport(1, totalItems || 10, {
     scriptId,
     status: initialStatus,
     serialNumberOrHostName: searchQuery,
@@ -90,10 +162,12 @@ const ParsedExecutionDetails = () => {
     finishedBefore: endDate,
   });
 
-  const allDataForExport = async () => {
-    const res = await fetchAllData();
-    return res.data?.data?.content || [];
-  };
+  
+ const allDataForExport = async () => {
+  const res = await fetchAllData();
+  const rows = res?.data?.content || [];
+  return flattenParsedFields(rows);
+};
 
     const resetFilters = () => {
     setSearchQuery("");
@@ -176,57 +250,7 @@ const ParsedExecutionDetails = () => {
             showActions={false}
           />
      
-{/* 
 
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-        <SheetContent className="sm:max-w-xl">
-          <SheetHeader className="mb-6">
-            <div className="flex items-center gap-3">
-                <div className="p-2 bg-primary/10 rounded-lg"><Terminal className="h-5 w-5 text-primary" /></div>
-                <div>
-                    <SheetTitle>Execution Details</SheetTitle>
-                    <SheetDescription>Host: {selectedResult?.hostName}</SheetDescription>
-                </div>
-            </div>
-          </SheetHeader>
-          
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 rounded-xl bg-muted/50 border">
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Serial Number</p>
-                    <p className="text-sm font-mono">{selectedResult?.systemSerialNumber}</p>
-                </div>
-                <div className="p-3 rounded-xl bg-muted/50 border">
-                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Status</p>
-                    <Badge className="mt-1">{selectedResult?.status}</Badge>
-                </div>
-            </div>
-
-            <div>
-                <h4 className="text-sm font-bold mb-3 flex items-center gap-2">
-                    <FileJson className="h-4 w-4 text-primary" /> Parsed Data Output
-                </h4>
-                <div className="bg-slate-950 text-slate-50 p-4 rounded-2xl overflow-auto max-h-100 font-mono text-xs leading-relaxed shadow-inner">
-                    {selectedResult?.parsedData ? (
-                        <pre>{JSON.stringify(selectedResult.parsedData, null, 2)}</pre>
-                    ) : (
-                        <p className="text-slate-500 italic">No structured data found for this execution.</p>
-                    )}
-                </div>
-            </div>
-
-            <Button className="w-full rounded-xl gap-2" variant="secondary" onClick={() => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(selectedResult?.parsedData));
-                const downloadAnchorNode = document.createElement('a');
-                downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", `result_${selectedResult?.hostName}.json`);
-                downloadAnchorNode.click();
-            }}>
-                <Download className="h-4 w-4" /> Download Result JSON
-            </Button>
-          </div>
-        </SheetContent>
-      </Sheet> */}
     </div>
   );
 };

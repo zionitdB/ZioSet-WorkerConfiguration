@@ -40,7 +40,7 @@ const MacStandaloneAppRoute = () => {
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const { data: rowData, isLoading, refetch, isFetching } = useGetStandaloneApps(page, rowsPerPage);
-  const { data: totalCount } = useGetStandaloneAppCount();
+  const { data: totalCount,refetch:refetchCount } = useGetStandaloneAppCount();
 
   const addMutation = useAddStandaloneApp();
   const updateMutation = useUpdateStandaloneApp();
@@ -262,7 +262,7 @@ const MacStandaloneAppRoute = () => {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => {
-              deleteMutation.mutate(deleteTarget, { onSuccess: () => { refetch(); setDeleteDialogOpen(false); } });
+              deleteMutation.mutate(deleteTarget, { onSuccess: () => { refetch(); refetchCount(); setDeleteDialogOpen(false); } });
             }} className="bg-destructive text-white hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

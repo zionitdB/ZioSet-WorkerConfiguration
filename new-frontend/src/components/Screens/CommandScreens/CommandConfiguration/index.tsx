@@ -67,7 +67,7 @@ const CommandRoute = () => {
 
   const { data, isLoading, refetch, isFetching } =
     useGetCommands(page, rowsPerPage);
-  const { data: count } = useGetCommandCount();
+  const { data: count, refetch: refetchCount } = useGetCommandCount();
   const { data: actions = [] } = useGetActions();
 
   const addMutation = useAddCommand();
@@ -204,7 +204,8 @@ const totalItems = useMemo(() => {
     if (deleteTarget) {
       deleteMutation.mutate(deleteTarget.id, {
         onSuccess: () => {
-          refetch();
+         refetch();
+        refetchCount();
           setDeleteDialogOpen(false);
           setDeleteTarget(null);
         },
@@ -298,8 +299,6 @@ const totalItems = useMemo(() => {
 
 
  const handleSubmit = (data: any) => {
-  console.log("FORM SUBMITTED");
-
   if (editData) {
     updateMutation.mutate(
       {
