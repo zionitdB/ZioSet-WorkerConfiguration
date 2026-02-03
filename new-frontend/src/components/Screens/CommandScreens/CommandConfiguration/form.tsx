@@ -33,17 +33,18 @@ const CommandForm: React.FC<CommandFormProps> = ({
   const { data: actions = [] } = useGetActions();
   const { data: newCommandId } = useGetNewCommandId();
 
-  const [actionId, setActionId] = useState<string>("");
-  const [commandId, setCommandId] = useState<number | null>(null);
+  const [actionId, setActionId] = useState<string>(defaultValues?.action?.id?.toString());
+  const [commandId, setCommandId] = useState<number | null>(newCommandId);
 
   const [commands, setCommands] = useState<any[]>([emptyCommand]);
-
+  console.log("defaultValues?.action?.id",defaultValues?.action?.id);
+    console.log("actionId",actionId);
   /* ---------------- SYNC ADD / EDIT MODE ---------------- */
   useEffect(() => {
     // EDIT MODE
-    if (defaultValues && defaultValues.commandId) {
+    if (defaultValues?.id) {
       setCommandId(defaultValues.commandId);
-      setActionId(defaultValues?.action?.id?.toString() || "");
+      // setActionId(defaultValues?.action?.id?.toString() || "");
 
       setCommands([
         {
@@ -65,7 +66,7 @@ const CommandForm: React.FC<CommandFormProps> = ({
         },
       ]);
     }
-  }, [defaultValues, newCommandId]);
+  }, [defaultValues?.id, newCommandId]);
 
   /* ---------------- ROW HANDLERS ---------------- */
   const addCommand = () => {
@@ -129,6 +130,8 @@ const CommandForm: React.FC<CommandFormProps> = ({
     onSubmit(payload);
   };
 
+
+  
   return (
     <form id={formId} onSubmit={handleSubmit} className="space-y-6 p-3">
    

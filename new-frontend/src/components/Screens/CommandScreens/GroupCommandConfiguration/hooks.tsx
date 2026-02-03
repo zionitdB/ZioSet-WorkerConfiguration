@@ -50,7 +50,7 @@ export const useAddCommandConfig = () => {
 
   return useMutation({
     mutationFn: (data: any) =>
-      fetchData("/configuration/createCommandConfig", { 
+      fetchData("/configuration/addNewCommandConfiguration", { 
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -67,7 +67,7 @@ export const useUpdateCommandConfig = () => {
 
   return useMutation({
     mutationFn: (data: any) =>
-      fetchData("/configuration/editCommandConfig", { 
+      fetchData("/configuration/updateCommandConfiguration", { 
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -83,8 +83,8 @@ export const useDeleteCommandConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) =>
-      fetchData(`/configuration/deleteCommandConfig/${id}`, { method: "DELETE" }),
+    mutationFn: (data: any) =>
+      fetchData(`/configuration/delteCommandConfiguration`, { method: "POST" ,body: JSON.stringify(data),}),
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["useGetCommandsByCommandId"] });
       onSuccess(data);

@@ -12,6 +12,15 @@ export const useGetScriptTypes = () => {
   });
 };
 
+
+export const useGetParamTypes = () => {
+  return useQuery({
+    queryKey: ["paramTypes"],
+    queryFn: () => fetchData("/script-template/param-type"),
+  });
+};
+
+
 export const useGetPlatforms = () => {
   return useQuery({
     queryKey: ["platforms"],
@@ -54,7 +63,7 @@ export const useUploadFile = () => {
 export const useSubmitScript = () => {
   return useMutation({
     mutationFn: (payload: any) =>
-      fetchData("/api/scripts", { method: "POST", body: JSON.stringify(payload) }),
+      fetchData("/api/scripts/simple-create", { method: "POST", body: JSON.stringify(payload) }),
     onSuccess: () => toast.success("Script created successfully!"),
     onError: (err: any) => toast.error(err?.message || "Failed to create script"),
   });

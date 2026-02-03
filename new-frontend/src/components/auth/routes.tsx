@@ -42,6 +42,8 @@ import ScriptExecutionReport from "../Screens/ScriptManagementScreens/ScriptDash
 import ParsedReport from "../Screens/ScriptManagementScreens/ParsedReport/index.tsx";
 import ParsedExecutionDetails from "../Screens/ScriptManagementScreens/ParsedReport/ExecutionReportByScript.tsx";
 import ScriptApprovalScreen from "../Screens/ScriptManagementScreens/ScriptApproval/index.tsx";
+import ScriptExecutionReportAll from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/ScriptExecutionReportAll.tsx";
+import ScriptExecutionDrillReport from "../Screens/ScriptManagementScreens/ScriptExecutionDrillReport/index.tsx";
 
 // Define the type for authenticated route objects
 interface AuthenticatedRoute {
@@ -261,6 +263,21 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
       <HelmetedRoute title="executionReport" element={<ScriptExecutionReport />} />
     ),
   },
+    {
+    path: "/scriptRunner/executionReportAll",
+    element: (
+      <HelmetedRoute title="executionReport" element={<ScriptExecutionReportAll />} />
+    ),
+  },
+
+  {
+    path: "/scriptRunner/scriptExecutionDrillReport",
+    element: (
+      <HelmetedRoute title="executionReport" element={<ScriptExecutionDrillReport />} />
+    ),
+  },
+  
+  
     {
     path: "/scriptRunner/parsedReport",
     element: (

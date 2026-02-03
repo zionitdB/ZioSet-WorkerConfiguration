@@ -1,168 +1,154 @@
-import React, { useState, useMemo } from "react";
+
+
+
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus } from "lucide-react";
 
-interface CommandConfigFormProps {
-  formId: string;
-  onSubmit: (data: any) => void;
-  defaultValues?: any;
-  isEdit: boolean;
-}
-
-// Type for the dynamic command/schema fields
-interface CommandField {
-  id: number;
+interface CommandRow {
   commandstr: string;
   schemastr: string;
 }
 
-const CommandConfigForm: React.FC<CommandConfigFormProps> = ({
+interface Props {
+  selectedData?: any;
+  selectedAction: any;
+  selectedCommandId: string;
+  isEditMode: boolean;
+  onSubmit: (payload: any) => void;
+   formId:any;
+}
+
+const CommandConfigForm: React.FC<Props> = ({
+  selectedData,
+  selectedAction,
+  selectedCommandId,
+  isEditMode,
   onSubmit,
   formId,
-  defaultValues = {},
-  isEdit,
 }) => {
-  // Initialize with default values for edit, or one empty field for add
-  const initialFields: CommandField[] = useMemo(() => {
-    if (isEdit && defaultValues.id) {
-      return [{
-        id: defaultValues.id,
-        commandstr: defaultValues.commandstr || "",
-        schemastr: defaultValues.schemastr || "",
-      }];
+  const [action, setAction] = useState<any>(null);
+  const [commandId, setCommandId] = useState("");
+  const [rows, setRows] = useState<CommandRow[]>([
+    { commandstr: "", schemastr: "" },
+  ]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isEditMode && selectedData) {
+      setAction(selectedData.action);
+      setCommandId(selectedData.commandId);
+      setRows([
+        {
+          commandstr: selectedData.commandstr,
+          schemastr: selectedData.schemastr,
+        },
+      ]);
+    } else {
+      setAction(selectedAction);
+      setCommandId(selectedCommandId);
+      setRows([{ commandstr: "", schemastr: "" }]);
     }
-    return [{ id: Date.now(), commandstr: "", schemastr: "" }];
-  }, [isEdit, defaultValues]);
+  }, [isEditMode, selectedData]);
 
-  const [commandFields, setCommandFields] = useState<CommandField[]>(initialFields);
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const validate = (): boolean => {
-    const newErrors: { [key: string]: string } = {};
-    let isValid = true;
-
-    commandFields.forEach((field, index) => {
-      if (!field.commandstr.trim()) {
-        newErrors[`commandstr_${index}`] = "Command String is required";
-        isValid = false;
-      }
-      if (!field.schemastr.trim()) {
-        newErrors[`schemastr_${index}`] = "Schema String is required";
-        isValid = false;
-      }
-    });
-
-    setErrors(newErrors);
-    return isValid;
+  const handleChange = (
+    index: number,
+    field: keyof CommandRow,
+    value: string
+  ) => {
+    const copy = [...rows];
+    copy[index][field] = value;
+    setRows(copy);
   };
 
-  const handleChange = (id: number, fieldName: keyof CommandField, value: string) => {
-    setCommandFields((prevFields) =>
-      prevFields.map((field) =>
-        field.id === id ? { ...field, [fieldName]: value } : field
-      )
-    );
-    // Clear specific error on change
-    const index = commandFields.findIndex(f => f.id === id);
-    setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[`${fieldName}_${index}`];
-        return newErrors;
-    });
+  const addRow = () => {
+    setRows([...rows, { commandstr: "", schemastr: "" }]);
   };
 
-  const handleAddField = () => {
-    setCommandFields((prevFields) => [
-      ...prevFields,
-      { id: Date.now(), commandstr: "", schemastr: "" },
-    ]);
+  const deleteRow = (index: number) => {
+    setRows(rows.filter((_, i) => i !== index));
   };
 
-  const handleRemoveField = (id: number) => {
-    if (commandFields.length > 1 && !isEdit) {
-      setCommandFields((prevFields) => prevFields.filter((field) => field.id !== id));
+  const validate = () => {
+    if (!action) return setError("Select Action"), false;
+    for (const r of rows) {
+      if (!r.commandstr.trim()) return setError("Enter Command String"), false;
+      if (!r.schemastr.trim()) return setError("Enter Schema String"), false;
     }
-    // Cannot remove the single field in edit mode
+    setError("");
+    return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) {
-      // For Edit: submit the single modified object
-      if (isEdit) {
-        const payload = {
-          id: defaultValues.id,
-          commandId: defaultValues.commandId,
-          commandstr: commandFields[0].commandstr,
-          schemastr: commandFields[0].schemastr,
-        };
-        onSubmit(payload);
-      } else {
-        // For Add: submit an array of new objects, including the parent commandId
-        const payload = commandFields.map(f => ({
-          commandstr: f.commandstr,
-          schemastr: f.schemastr,
-        }));
-        // The parent component will add the commandId field
-        onSubmit(payload);
-      }
-    }
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault(); 
+    if (!validate()) return;
+
+    const payload = {
+      ...(selectedData?.id ? { id: selectedData.id } : {}),
+      action: { id: action.id },
+      list: rows.map((r) => ({
+        ...r,
+        commandId,
+      })),
+    };
+
+    onSubmit(payload);
   };
 
   return (
-    <form id={formId} onSubmit={handleSubmit} className="space-y-4 p-2">
-      {/* Read-only Action/Command ID for context */}
-      <div className="flex gap-4">
-        <div className="space-y-1 w-1/2">
-            <Label className="text-sm text-muted-foreground">Action Name</Label>
-            <Input value={defaultValues?.action?.actionName || defaultValues?.actionName||'N/A'} disabled className="bg-gray-50 dark:bg-gray-800" />
+      <form id={formId} onSubmit={handleSubmit} className="space-y-6 p-3">
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label>Action</Label>
+          <Input value={action?.actionName || ""} disabled />
         </div>
-        <div className="space-y-1 w-1/2">
-            <Label className="text-sm text-muted-foreground">Command Group ID</Label>
-            <Input value={defaultValues.commandId || defaultValues.commandGroupId || 'N/A'} disabled className="bg-gray-50 dark:bg-gray-800" />
+        <div className="space-y-2"> 
+          <Label>Command Group ID</Label>
+          <Input
+            value={commandId}
+            onChange={(e) => setCommandId(e.target.value)}
+            disabled={isEditMode}
+          />
         </div>
       </div>
-      
-      <div className="h-0 border-t border-border mt-4 mb-4"></div>
 
-      {commandFields.map((field, index) => (
+      <div className="border-t my-4" />
+
+      {rows.map((row, index) => (
         <div
-          key={field.id}
-          className="grid grid-cols-1 md:grid-cols-12 gap-3 p-4 border rounded-lg bg-secondary/10 relative"
+          key={index}
+          className="grid grid-cols-12 gap-3 p-4  border rounded-lg relative"
         >
-          <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor={`commandstr-${field.id}`}>Command String *</Label>
+          <div className="col-span-6 space-y-2">
+            <Label>Command String *</Label>
             <Input
-              id={`commandstr-${field.id}`}
-              placeholder="Enter Command String"
-              value={field.commandstr}
-              onChange={(e) => handleChange(field.id, "commandstr", e.target.value)}
-              disabled={isEdit} // Prevent changing the command string itself in edit mode if it's the primary key
+              value={row.commandstr}
+              onChange={(e) =>
+                handleChange(index, "commandstr", e.target.value)
+              }
+              disabled={isEditMode}
             />
-            {errors[`commandstr_${index}`] && <p className="text-sm text-red-500">{errors[`commandstr_${index}`]}</p>}
           </div>
 
-          <div className="col-span-12 md:col-span-6 space-y-2">
-            <Label htmlFor={`schemastr-${field.id}`}>Schema String *</Label>
+          <div className="col-span-6 space-y-2">
+            <Label>Schema String *</Label>
             <Input
-              id={`schemastr-${field.id}`}
-              placeholder="Enter Schema String"
-              value={field.schemastr}
-              onChange={(e) => handleChange(field.id, "schemastr", e.target.value)}
+              value={row.schemastr}
+              onChange={(e) =>
+                handleChange(index, "schemastr", e.target.value)
+              }
             />
-            {errors[`schemastr_${index}`] && <p className="text-sm text-red-500">{errors[`schemastr_${index}`]}</p>}
           </div>
 
-          {/* Remove Button (only visible for multiple fields in Add mode) */}
-          {!isEdit && commandFields.length > 1 && (
+          {!isEditMode && rows.length > 1 && (
             <Button
-              type="button"
               variant="ghost"
               size="icon"
-              onClick={() => handleRemoveField(field.id)}
-              className="absolute top-2 right-2 text-destructive hover:bg-destructive/10"
+              onClick={() => deleteRow(index)}
+              className="absolute top-2 right-2 mb-4 text-destructive"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -170,11 +156,11 @@ const CommandConfigForm: React.FC<CommandConfigFormProps> = ({
         </div>
       ))}
 
-      {/* Add New Button (only visible in Add mode) */}
-      {!isEdit && (
+
+            {!isEditMode && (
         <Button
           type="button"
-          onClick={handleAddField}
+          onClick={addRow}
           variant="outline"
           className="w-full border-dashed border-2 text-primary hover:bg-primary/5"
         >
@@ -183,7 +169,10 @@ const CommandConfigForm: React.FC<CommandConfigFormProps> = ({
         </Button>
       )}
 
-      {/* Submit button is handled by the CustomModal footer in the parent */}
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+
+    
+    </div>
     </form>
   );
 };

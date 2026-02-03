@@ -122,7 +122,7 @@ const InfoItem: React.FC<InfoItemProps> = ({ label, value, isBoolean }) => {
     displayValue = <span className="text-muted-foreground">-</span>;
   } else {
     displayValue = (
-      <span className="text-foreground font-medium break-words">
+      <span className="text-foreground font-medium wrap-break-word">
         {String(value)}
       </span>
     );

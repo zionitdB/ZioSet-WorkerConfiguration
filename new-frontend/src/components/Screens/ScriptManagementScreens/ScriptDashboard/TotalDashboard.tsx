@@ -212,7 +212,7 @@ const platforms: PlatformConfig[] = [
 
           <div className="group relative">
             <div className="absolute inset-0 bg-linear-to-r from-green-500/30 to-emerald-500/30 blur-xl group-hover:blur-xl transition-all duration-300 rounded-3xl"></div>
-            <Card className="relative shadow-md hover:shadow-green-500/20 transition-all duration-300 hover:scale-105 overflow-hidden">
+            <Card className="relative shadow-md hover:shadow-green-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={() => navigate('/scriptRunner/executionReportAll', { state: {scriptId:null,  status: 'success' } })}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -mr-16 -mt-16"></div>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -236,7 +236,7 @@ const platforms: PlatformConfig[] = [
         
           <div className="group relative">
             <div className="absolute inset-0 bg-linear-to-r from-amber-500/30 to-orange-500/30 blur-xl group-hover:blur-xl transition-all duration-300 rounded-3xl"></div>
-            <Card className="relative shadow-md hover:shadow-amber-500/20 transition-all duration-300 hover:scale-105 overflow-hidden">
+            <Card className="relative shadow-md hover:shadow-amber-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={() => navigate('/scriptRunner/executionReportAll', { state: {scriptId:null, status: 'failed' } })}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full -mr-16 -mt-16"></div>
               <CardHeader >
                 <div className="flex items-center justify-between">
