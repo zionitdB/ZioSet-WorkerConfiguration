@@ -114,7 +114,11 @@ export const CategoryJson = {
       navigationUrl: "/scriptRunner/parsedReport",
       actions: ["View",  "Export"],
     },
-
+   {
+      permissionsName: "LocationWise Execution",
+      navigationUrl: "/scriptRunner/locationWiseExecutionReport",
+      actions: ["View",  "Export"],
+    },
     
   ],
 

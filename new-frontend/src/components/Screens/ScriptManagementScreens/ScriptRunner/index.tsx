@@ -224,6 +224,7 @@ case 3:
             ...form.selectedWindowsSystems,
             ...form.selectedMacSystems,
             ...form.selectedLinuxSystems,
+           ... uploadedSerialNumbers,
           ].length > 0;
         return hasPlatform && hasSystems;
 

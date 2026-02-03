@@ -271,7 +271,7 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
   },
 
   {
-    path: "/scriptRunner/scriptExecutionDrillReport",
+    path: "/scriptRunner/locationWiseExecutionReport",
     element: (
       <HelmetedRoute title="executionReport" element={<ScriptExecutionDrillReport />} />
     ),
