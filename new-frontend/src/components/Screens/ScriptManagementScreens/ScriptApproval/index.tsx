@@ -1,10 +1,15 @@
+
+
+
+
+
+
 import { useState } from "react";
 import { 
   CheckCircle2, XCircle, Clock, ShieldCheck, 
   LayoutGrid, List, Search, ChevronRight, 
-  AlertCircle, Terminal, Calendar, Sparkles,
   ChevronLeft, ChevronsLeft, ChevronsRight,
-  FileCode, User, Zap
+  FileCode, Sparkles, Zap
 } from "lucide-react";
 import { format } from "date-fns";
 import { useGetScriptsByStatus, useScriptActions } from "./hooks";
@@ -14,16 +19,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -34,6 +29,9 @@ import {
 } from "@/components/ui/select";
 import toast from "react-hot-toast";
 
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import Breadcrumb from "@/components/common/breadcrumb";
+
 export default function ScriptApprovalScreen() {
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -43,9 +41,10 @@ export default function ScriptApprovalScreen() {
   const [pageSize, setPageSize] = useState(5);
   const [search, setSearch] = useState("");
 
-  const [confirmData, setConfirmData] = useState<{ id: number; name: string; type: 'approve' | 'reject' } | null>(null);
+  // Dialog State
+  const [dialogData, setDialogData] = useState<{ id: number; type: 'pending' | 'preview' } | null>(null);
 
-  // Note: Passing page - 1 because most backends use 0-based indexing for pages
+  // API Hooks
   const { data: response, isLoading } = useGetScriptsByStatus(activeTab, page, pageSize);
   const { approve, reject } = useScriptActions();
 
@@ -56,20 +55,6 @@ export default function ScriptApprovalScreen() {
   const filteredScripts = scripts.filter((s: any) => 
     s.name.toLowerCase().includes(search.toLowerCase())
   );
-
-  const handleAction = async () => {
-    if (!confirmData) return;
-    
-    const promise = confirmData.type === 'approve' 
-      ? approve.mutateAsync(confirmData.id) 
-      : reject.mutateAsync(confirmData.id);
-
-    toast.promise(promise, {
-      loading: `${confirmData.type === 'approve' ? 'Approving' : 'Rejecting'}...`,
-    });
-
-    setConfirmData(null);
-  };
 
   const handleTabChange = (val: any) => {
     setActiveTab(val);
@@ -109,9 +94,19 @@ export default function ScriptApprovalScreen() {
 
   return (
     <div className="h-screen flex flex-col bg-linear-to-br from-background via-background to-muted/20">
-      {/* Enhanced Header with Gradient */}
+        <div className="mb-4">
+               <Breadcrumb
+        items={[
+          { label: "Module Dashboard", path: "/dashboard" },
+          { label: "Script Approval", path: "/scriptRunner/scriptApproval" },
+        ]}
+      />
+
+        </div>
+
+      {/* Header */}
       <div className="relative px-8 py-8 border-b bg-linear-to-r from-background via-card to-background backdrop-blur-xl shrink-0">
-        <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
+        <div className="absolute inset-0 bg-grid-white/[0.02] bg-size-[20px_20px]" />
         <div className="relative flex justify-between items-center max-w-7xl mx-auto w-full">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
@@ -161,7 +156,7 @@ export default function ScriptApprovalScreen() {
         </div>
       </div>
 
-      {/* Enhanced Toolbar */}
+      {/* Toolbar */}
       <div className="px-8 py-4 border-b bg-card/30 backdrop-blur-sm shrink-0">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="relative max-w-md flex-1">
@@ -205,9 +200,9 @@ export default function ScriptApprovalScreen() {
         </div>
       </div>
 
-      {/* Content Area */}
+      {/* Content */}
       <main className="flex-1 overflow-hidden relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent pointer-events-none" />
         <ScrollArea className="h-full">
           <div className="max-w-7xl mx-auto p-8">
             {isLoading ? (
@@ -221,7 +216,7 @@ export default function ScriptApprovalScreen() {
             ) : filteredScripts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-32 text-center">
                 <div className={`h-24 w-24 rounded-3xl ${statusConfig.bg} flex items-center justify-center mb-6`}>
-                  <Terminal className={`h-12 w-12 ${statusConfig.color} opacity-40`} />
+                  <FileCode className={`h-12 w-12 ${statusConfig.color} opacity-40`} />
                 </div>
                 <h3 className="text-2xl font-bold mb-2">No Scripts Found</h3>
                 <p className="text-muted-foreground max-w-md">
@@ -233,85 +228,52 @@ export default function ScriptApprovalScreen() {
               </div>
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-  {filteredScripts.map((script: any) => (
-    <Card 
-      key={script.id} 
-      className="group border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm relative"
-    >
-      {/* Visual Accent Line */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
-      
-      <CardHeader className="p-4 pb-2">
-        <div className="flex justify-between items-start mb-2">
-          <div className="relative">
-            {/* Smaller Icon Container */}
-            <div className="relative p-2 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-              <FileCode className="h-4 w-4" />
-            </div>
-          </div>
-          <Badge variant="outline" className="text-[9px] font-bold px-2 py-0 h-5 bg-background/50 uppercase">
-            {script.scheduleType}
-          </Badge>
-        </div>
+                {filteredScripts.map((script: any) => (
+                  <Card 
+                    key={script.id} 
+                    className="group border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-xl rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm relative"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-linear-to-r from-primary/50 via-primary to-primary/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardHeader className="p-4 pb-2">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="relative">
+                          <div className="relative p-2 bg-primary/10 rounded-xl text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <FileCode className="h-4 w-4" />
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-[9px] font-bold px-2 py-0 h-5 bg-background/50 uppercase">
+                          {script.scheduleType}
+                        </Badge>
+                      </div>
+                      <CardTitle className="text-sm font-bold truncate group-hover:text-primary transition-colors">
+                        {script.name}
+                      </CardTitle>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <Sparkles className="h-3 w-3 text-muted-foreground/60" />
+                        <p className="text-[10px] text-muted-foreground font-medium truncate">
+                          {script.template?.name || 'Standard'}
+                        </p>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-1">
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground line-clamp-2 italic leading-snug min-h-8">
+                          {script.description || 'No description provided'}
+                        </p>
+                      </div>
 
-        {/* Smaller Title */}
-        <CardTitle className="text-sm font-bold truncate group-hover:text-primary transition-colors">
-          {script.name}
-        </CardTitle>
-        
-        <div className="flex items-center gap-1.5 mt-1">
-          <Sparkles className="h-3 w-3 text-muted-foreground/60" />
-          <p className="text-[10px] text-muted-foreground font-medium truncate">
-            {script.template?.name || 'Standard'}
-          </p>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="p-4 pt-1">
-        {/* Reduced Description height and text size */}
-        <div className="mb-4">
-          <p className="text-xs text-muted-foreground line-clamp-2 italic leading-snug min-h-[32px]">
-            {script.description || 'No description provided'}
-          </p>
-        </div>
-        
-        {activeTab === 'pending' && (
-          <div className="flex gap-2 pt-3 border-t border-border/40">
-            <Button 
-              size="sm"
-              className="flex-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 h-8 text-[11px] font-bold shadow-sm"
-              onClick={() => setConfirmData({ id: script.id, name: script.name, type: 'approve' })}
-            >
-              Approve
-            </Button>
-            <Button 
-              size="sm"
-              variant="outline" 
-              className="flex-1 rounded-lg border-rose-200 text-rose-600 hover:bg-rose-50 h-8 text-[11px] font-bold"
-              onClick={() => setConfirmData({ id: script.id, name: script.name, type: 'reject' })}
-            >
-              Reject
-            </Button>
-          </div>
-        )}
-
-        {activeTab === 'approved' && (
-          <div className="flex items-center gap-1.5 text-emerald-600 pt-2 border-t border-border/40">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Active</span>
-          </div>
-        )}
-
-        {activeTab === 'rejected' && (
-          <div className="flex items-center gap-1.5 text-rose-600 pt-2 border-t border-border/40">
-            <XCircle className="h-3.5 w-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Rejected</span>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  ))}
-</div>
+                      {/* Action Buttons */}
+                      <Button
+                        size="sm"
+                        className="w-full rounded-lg bg-primary hover:bg-primary/90 h-8 text-[11px] font-bold shadow-sm"
+                        onClick={() => setDialogData({ id: script.id, type: activeTab === 'pending' ? 'pending' : 'preview' })}
+                      >
+                        {activeTab === 'pending' ? 'Action' : 'Preview'}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             ) : (
               <div className="space-y-3">
                 {filteredScripts.map((script: any) => (
@@ -319,7 +281,6 @@ export default function ScriptApprovalScreen() {
                     key={script.id} 
                     className="group flex items-center justify-between p-5 bg-card/50 backdrop-blur-sm border border-primary/10 rounded-2xl hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300"
                   >
-                    
                     <div className="flex items-center gap-5 flex-1 min-w-0">
                       <div className="relative shrink-0">
                         <div className="absolute inset-0 bg-primary/20 blur-md rounded-xl group-hover:blur-lg transition-all" />
@@ -327,7 +288,6 @@ export default function ScriptApprovalScreen() {
                           <FileCode className="h-7 w-7" />
                         </div>
                       </div>
-                      
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-base mb-1 group-hover:text-primary transition-colors truncate">
                           {script.name}
@@ -337,7 +297,6 @@ export default function ScriptApprovalScreen() {
                         </p>
                       </div>
                     </div>
-                    
                     <div className="flex items-center gap-4 shrink-0">
                       <div className="flex items-center gap-3">
                         <Badge variant="secondary" className="text-xs font-semibold px-3 py-1.5">
@@ -347,42 +306,13 @@ export default function ScriptApprovalScreen() {
                           {script.scheduleType}
                         </Badge>
                       </div>
-                      
-                      {activeTab === 'pending' && (
-                        <div className="flex gap-2 border-l border-border/50 pl-4 ml-2">
-                          <Button 
-                            size="sm" 
-                            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 rounded-lg h-9 px-4 font-semibold shadow-md" 
-                            onClick={() => setConfirmData({ id: script.id, name: script.name, type: 'approve' })}
-                          >
-                            <CheckCircle2 className="h-4 w-4 mr-1.5" />
-                            Approve
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg h-9 px-4 font-semibold" 
-                            onClick={() => setConfirmData({ id: script.id, name: script.name, type: 'reject' })}
-                          >
-                            <XCircle className="h-4 w-4 mr-1.5" />
-                            Reject
-                          </Button>
-                        </div>
-                      )}
-
-                      {activeTab === 'approved' && (
-                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 pl-4 border-l border-border/50">
-                          <CheckCircle2 className="h-5 w-5" />
-                          <span className="text-sm font-semibold">Active</span>
-                        </div>
-                      )}
-
-                      {activeTab === 'rejected' && (
-                        <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 pl-4 border-l border-border/50">
-                          <XCircle className="h-5 w-5" />
-                          <span className="text-sm font-semibold">Rejected</span>
-                        </div>
-                      )}
+                      <Button
+                        size="sm"
+                        className="rounded-lg bg-primary hover:bg-primary/90 h-9 px-4 font-semibold"
+                        onClick={() => setDialogData({ id: script.id, type: activeTab === 'pending' ? 'pending' : 'preview' })}
+                      >
+                        {activeTab === 'pending' ? 'Action' : 'Preview'}
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -392,7 +322,7 @@ export default function ScriptApprovalScreen() {
         </ScrollArea>
       </main>
 
-      {/* Enhanced Pagination Footer */}
+      {/* Pagination Footer */}
       <footer className="h-20 border-t bg-card/80 backdrop-blur-xl px-8 flex items-center justify-between shrink-0 shadow-[0_-8px_30px_-10px_rgba(0,0,0,0.15)]">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
@@ -411,9 +341,7 @@ export default function ScriptApprovalScreen() {
               </SelectContent>
             </Select>
           </div>
-          
           <div className="h-10 w-px bg-border" />
-          
           <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/50">
             <Zap className="h-4 w-4 text-primary" />
             <span className="text-sm font-semibold">
@@ -421,103 +349,203 @@ export default function ScriptApprovalScreen() {
             </span>
           </div>
         </div>
-
         <div className="flex items-center gap-6">
           <p className="text-sm font-semibold text-muted-foreground">
             Page <span className="text-foreground font-bold">{page}</span> 
             <span className="mx-2 text-border">of</span> 
             <span className="text-foreground font-bold">{totalPages || 1}</span>
           </p>
-          
           <div className="flex items-center gap-1.5">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" 
-              onClick={() => setPage(1)} 
-              disabled={page === 1}
-            >
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" onClick={() => setPage(1)} disabled={page === 1}>
               <ChevronsLeft className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" 
-              onClick={() => setPage(p => p - 1)} 
-              disabled={page === 1}
-            >
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" onClick={() => setPage(p => Math.max(p-1, 1))} disabled={page === 1}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" 
-              onClick={() => setPage(p => p + 1)} 
-              disabled={page === totalPages || totalPages === 0}
-            >
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" onClick={() => setPage(p => Math.min(p+1, totalPages))} disabled={page === totalPages}>
               <ChevronRight className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" 
-              onClick={() => setPage(totalPages)} 
-              disabled={page === totalPages || totalPages === 0}
-            >
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-xl border-border/50 hover:bg-primary hover:text-white hover:border-primary transition-all" onClick={() => setPage(totalPages)} disabled={page === totalPages}>
               <ChevronsRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </footer>
 
-      {/* Enhanced Confirmation Dialog */}
-      <AlertDialog open={!!confirmData} onOpenChange={() => setConfirmData(null)}>
-        <AlertDialogContent className="rounded-3xl border-none shadow-2xl max-w-md">
-          <AlertDialogHeader>
-            <div className={`h-16 w-16 rounded-2xl mb-6 flex items-center justify-center relative ${
-              confirmData?.type === 'approve' 
-                ? 'bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-950 dark:to-emerald-900' 
-                : 'bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-950 dark:to-rose-900'
-            }`}>
-              <div className={`absolute inset-0 ${confirmData?.type === 'approve' ? 'bg-emerald-500' : 'bg-rose-500'} blur-xl opacity-20 rounded-2xl`} />
-              {confirmData?.type === 'approve' ? (
-                <CheckCircle2 className="relative h-9 w-9 text-emerald-600 dark:text-emerald-400" />
-              ) : (
-                <XCircle className="relative h-9 w-9 text-rose-600 dark:text-rose-400" />
-              )}
+      {/* Script Details Dialog */}
+   <Dialog open={!!dialogData} onOpenChange={() => setDialogData(null)}>
+  <DialogContent className="max-w-5xl w-full h-[85vh] p-0 rounded-3xl overflow-hidden">
+
+    {/* Header */}
+   <DialogHeader className="
+      relative px-6 py-4 border-b 
+      bg-linear-to-r from-background via-muted/40 to-background
+      backdrop-blur top-0 z-10
+    ">
+      <DialogTitle className="text-2xl font-bold bg-linear-to-r from-primary to-emerald-500 bg-clip-text text-transparent">
+        {dialogData?.type === 'pending' ? 'Script Action' : 'Script Details'}
+      </DialogTitle>
+      <DialogDescription className="text-sm text-muted-foreground">
+        Review and manage all details of this script
+      </DialogDescription>
+
+      {/* TOP RIGHT CLOSE BUTTON */}
+      <button
+        onClick={() => setDialogData(null)}
+        className="
+          absolute top-4 right-4
+          h-9 w-9 rounded-full
+          flex items-center justify-center
+          bg-muted/40 hover:bg-rose-500/10
+          text-muted-foreground hover:text-rose-600
+          transition-all duration-200
+        "
+      >
+        ✕
+      </button>
+    </DialogHeader>
+
+    {/* Body */}
+    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+      {dialogData && (() => {
+        const script = scripts.find((s: { id: number }) => s.id === dialogData.id);
+        if (!script) return <p className="text-center text-muted-foreground">Script not found</p>;
+
+        return (
+          <>
+            {/* Top Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <InfoCard title="General Info">
+                <Info label="Name" value={script.name} />
+                <Info label="Description" value={script.description || 'N/A'} />
+                <Info label="Script Type" value={script.scriptType} />
+                <Info label="Schedule Type" value={script.scheduleType} />
+                <Info label="Start Date" value={script.startDateTime ? format(new Date(script.startDateTime), 'PPpp') : 'N/A'} />
+                <Info label="Repeat Every (Seconds)" value={script.repeatEverySeconds || 0} />
+                <Info label="Week Days" value={script.weekDaysCsv || 'N/A'} />
+                <Info label="Month Day" value={script.monthDay || 'N/A'} />
+              </InfoCard>
+
+              <InfoCard title="Template Info">
+                <Info label="Template Name" value={script.template?.name || 'N/A'} />
+                <Info label="Command" value={script.template?.command || 'N/A'} />
+                <Info label="Script Type" value={script.template?.scriptType || 'N/A'} />
+                <Info label="Version" value={script.template?.version || 'N/A'} />
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="font-semibold">Active:</span>
+                  {script.template?.isActive
+                    ? <Badge className="bg-emerald-100 text-emerald-700">Yes</Badge>
+                    : <Badge className="bg-rose-100 text-rose-700">No</Badge>}
+                </div>
+
+                <div className="text-sm">
+                  <span className="font-semibold">Parameters:</span>
+                  {script.template?.parameters?.length ? (
+                    <ul className="list-disc ml-5 mt-1 space-y-1">
+                      {script.template.parameters.map((p: any, idx: number) => (
+                        <li key={idx}>
+                          {p.paramName} ({p.paramType})
+                          {p.required && <span className="text-red-500 font-semibold ml-1">*</span>}
+                          <span className="text-muted-foreground ml-1">
+                            Default: {p.defaultValue || 'N/A'}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-muted-foreground">No parameters</p>
+                  )}
+                </div>
+              </InfoCard>
             </div>
-            <AlertDialogTitle className="text-2xl font-bold">
-              {confirmData?.type === 'approve' ? 'Approve Script?' : 'Reject Script?'}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-base py-3 leading-relaxed">
-              {confirmData?.type === 'approve' 
-                ? 'This script will be authorized and made available for execution.' 
-                : 'This script will be rejected and removed from the approval queue.'
-              }
-              <div className="mt-4 p-4 rounded-xl bg-muted/50 border border-border/50">
-                <p className="text-foreground font-semibold">
-                  {confirmData?.name}
-                </p>
+
+            {/* Targets */}
+            <InfoCard title="Execution Targets">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Info label="Platforms" value={script.targetPlatformsCsv || 'N/A'} />
+                <Info label="Added By" value={script.addedBy || 'N/A'} />
+                <Info label="Host Name" value={script.hostName || 'N/A'} />
+                <Info label="Dependencies" value={script.dependencies.length ? script.dependencies.join(', ') : 'None'} />
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3 mt-2">
-            <AlertDialogCancel className="rounded-xl h-12 border-border/50 hover:bg-muted font-semibold">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleAction}
-              className={`rounded-xl h-12 px-8 font-semibold shadow-lg transition-all ${
-                confirmData?.type === 'approve' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 shadow-emerald-500/30' 
-                  : 'bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 shadow-rose-500/30'
-              }`}
-            >
-              {confirmData?.type === 'approve' ? 'Approve Script' : 'Reject Script'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </InfoCard>
+
+            {/* Script */}
+            <InfoCard title="Script Content & Arguments">
+              <pre className="bg-muted/40 p-3 rounded-lg text-xs overflow-x-auto">
+                {script.scriptText || 'No script content'}
+              </pre>
+
+              {Object.keys(script.scriptArgument || {}).length > 0 && (
+                <div className="mt-3 text-sm">
+                  <h5 className="font-semibold mb-1">Arguments</h5>
+                  <pre className="bg-muted/40 p-3 rounded-lg overflow-x-auto">
+                    {JSON.stringify(script.scriptArgument, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </InfoCard>
+          </>
+        );
+      })()}
     </div>
+
+    {/* Footer */}
+    <DialogFooter className="px-6 py-4 border-t bg-background/80 backdrop-blur sticky bottom-0">
+      {activeTab === 'pending' && dialogData?.type === 'pending' ? (
+        <div className="flex gap-3 w-full">
+          <Button
+            onClick={async () => {
+              const promise = approve.mutateAsync(dialogData.id);
+              toast.promise(promise, { loading: 'Approving...', });
+              setDialogData(null);
+            }}
+            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 font-semibold"
+          >
+            Approve
+          </Button>
+
+          <Button
+            onClick={async () => {
+              const promise = reject.mutateAsync(dialogData.id);
+              toast.promise(promise, { loading: 'Rejecting...', });
+              setDialogData(null);
+            }}
+            className="flex-1 bg-rose-600 hover:bg-rose-700 text-white rounded-xl h-11 font-semibold"
+          >
+            Reject
+          </Button>
+        </div>
+      ) : (
+        <Button
+          onClick={() => setDialogData(null)}
+          className="rounded-xl h-11 border border-border/50 hover:bg-muted font-semibold"
+        >
+          Close
+        </Button>
+      )}
+    </DialogFooter>
+
+  </DialogContent>
+</Dialog>
+
+
+
+    </div>
+
+    
   );
 }
+
+const InfoCard = ({ title, children }: any) => (
+  <Card className="p-4 bg-card/60 backdrop-blur border border-border/20 shadow-sm space-y-2">
+    <h4 className="text-lg font-semibold">{title}</h4>
+    {children}
+  </Card>
+);
+
+const Info = ({ label, value }: any) => (
+  <p className="text-sm">
+    <span className="font-semibold">{label}:</span>{' '}
+    <span className="text-muted-foreground">{value}</span>
+  </p>
+);

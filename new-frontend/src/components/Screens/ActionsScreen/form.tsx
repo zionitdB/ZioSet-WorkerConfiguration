@@ -43,7 +43,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
   });
 
   const [category, setCategory] = useState<string>(
-    defaultValues?.category?.id.toString() || "none"
+    defaultValues?.category?.id.toString() || ""
   );
   const [subCategory, setSubCategory] = useState<string>(
     defaultValues?.subCategory?.id.toString() || "none"

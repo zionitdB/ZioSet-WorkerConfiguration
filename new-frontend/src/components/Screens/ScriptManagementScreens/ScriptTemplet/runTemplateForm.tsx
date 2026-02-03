@@ -46,8 +46,9 @@ import {
 import CustomModal from "@/components/common/Modal/DialogModal";
 import { Progress } from "@/components/ui/progress";
 import Breadcrumb from "@/components/common/breadcrumb";
+import { Textarea } from "@/components/ui/textarea";
 
-const STEPS = ["Configuration", "Scheduling", "Targeting", "Finalize"];
+const STEPS = ["Configuration", "Scheduling","Format", "Targeting", "Finalize"];
 
 const WEEK_DAYS = [
   { label: "Mon", value: "MONDAY" },
@@ -63,7 +64,6 @@ export default function ScriptTemplateRun() {
   const location = useLocation();
   const template = location.state?.template;
   const [activeStep, setActiveStep] = useState(0);
-  console.log("template", template);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterColumns, setFilterColumns] = useState<any[]>([]);
@@ -96,6 +96,7 @@ export default function ScriptTemplateRun() {
         }),
         {},
       ) || {},
+      
     scheduleType: "ONE_TIME",
     startDateTime: "",
     repeatIntervalSeconds: "",
@@ -106,6 +107,7 @@ export default function ScriptTemplateRun() {
     selectedWindowsSystems: [],
     selectedMacSystems: [],
     selectedLinuxSystems: [],
+        parsingFormat:'',
   });
 
   const uploadMutation = useUploadFile();
@@ -272,7 +274,7 @@ export default function ScriptTemplateRun() {
   ...uploadedSerialNumbers,
 ],
 
-
+format:form.parsingFormat,
       scriptType: form.scriptType,
       params: form.params,
       scheduleType: form.scheduleType,
@@ -480,6 +482,12 @@ const isStep1Valid = () => {
 };
 
 const isStep2Valid = () => {
+
+  return true;
+};
+
+
+const isStep3Valid = () => {
   const totalTargets =
     form.selectedWindowsSystems.length +
     form.selectedMacSystems.length +
@@ -496,8 +504,10 @@ const isCurrentStepValid = () => {
       return isStep0Valid();
     case 1:
       return isStep1Valid();
-    case 2:
+         case 2:
       return isStep2Valid();
+    case 3:
+      return isStep3Valid();
     default:
       return true;
   }
@@ -987,8 +997,38 @@ const isSuccess = submitMutation.isSuccess;
                 )}
               </div>
             )}
+{activeStep === 2 && (
+  <div className="space-y-8 animate-in fade-in">
 
-            {activeStep === 2 && (
+  
+    {/* FORMAT */}
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-primary">
+        Output / Parsing Format
+      </h3>
+
+   <Textarea
+  className="font-mono text-sm bg-slate-900 text-green-400 min-h-100"
+  placeholder={`Example:
+{
+  "status": "success",
+  "data": []
+}`}
+  value={form.parsingFormat}
+  onChange={(e) =>
+    setForm({ ...form, parsingFormat: e.target.value })
+  }
+/>
+
+
+      <p className="text-xs text-muted-foreground">
+        Supports JSON or any custom parsing format
+      </p>
+    </div>
+  </div>
+)}
+
+            {activeStep === 3 && (
               <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
                 <Tabs defaultValue="manual" className="w-full">
                   <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -1172,7 +1212,7 @@ const isSuccess = submitMutation.isSuccess;
               </div>
             )}
 
-            {activeStep === 3 && (
+            {activeStep === 4 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in zoom-in-95 duration-500">
                 <div className="p-6 bg-primary/5 rounded-3xl border border-primary/10 relative overflow-hidden">
                   <div className="absolute top-0 right-0 p-4 opacity-10">
@@ -1311,7 +1351,7 @@ const isSuccess = submitMutation.isSuccess;
              disabled={
     (activeStep === 0 && !isStep0Valid()) ||
     (activeStep === 1 && !isStep1Valid()) ||
-    (activeStep === 2 && !isStep2Valid())
+    (activeStep === 2 && !isStep2Valid())||(activeStep === 3 && !isStep3Valid())
   }
   onClick={() => {
     if (!isCurrentStepValid()) return;

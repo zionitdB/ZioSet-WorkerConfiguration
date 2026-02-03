@@ -153,6 +153,12 @@ export const useGetExecutionReport = (
 
       return fetchData(`/api/execution-results/dashboard-statuswise?${params.toString()}`);
     },
-    enabled: !!filters.scriptId,
   });
 };
+
+
+
+
+
+
+

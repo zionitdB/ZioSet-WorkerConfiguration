@@ -52,6 +52,7 @@ const STEPS = [
   "Script Info",
   "Dependencies",
   "Scheduler",
+  "Arguments & Format",
   "Target Systems",
   "Review",
 ];
@@ -68,176 +69,124 @@ const WEEK_DAYS = [
 
 export default function ScriptRunner() {
   const [activeStep, setActiveStep] = useState(0);
-const [page, setPage] = useState(1);
+  const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [filterColumns, setFilterColumns] = useState<any[]>([]);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchDataCount, setSearchDataCount] = useState(0);
   const [filteredData, setFilteredData] = useState<any[]>([]);
-const [showSuccess, setShowSuccess] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-const initialFormState = {
-  scriptName: "",
-  scriptDescription: "",
-  scriptType: "",
-  scriptCategory: "",
-  allowedExtensions: [],
-  commandText: "",
-  scriptFile: null,
-  scriptFileId: null,
-  dependencyFiles: [],
-  dependencyFileIds: [],
-  scheduleType: "ONE_TIME",
-  startDateTime: "",
-  repeatIntervalSeconds: "",
-  repeatType: "seconds",
-  selectedWeekDays: [],
-  selectedMonthDay: null,
-  selectedPlatforms: [],
-  selectedWindowsSystems: [],
-  selectedMacSystems: [],
-  selectedLinuxSystems: [],
-  isActive: true,
-};
+  const initialFormState = {
+    scriptName: "",
+    scriptDescription: "",
+    scriptType: "",
+    scriptCategory: "",
+    allowedExtensions: [],
+    commandText: "",
+    scriptFile: null,
+    scriptFileId: null,
+    dependencyFiles: [],
+    dependencyFileIds: [],
+    scheduleType: "ONE_TIME",
+    startDateTime: "",
+    repeatIntervalSeconds: "",
+    repeatType: "seconds",
+    selectedWeekDays: [],
+    selectedMonthDay: null,
+    selectedPlatforms: [],
+    selectedWindowsSystems: [],
+    selectedMacSystems: [],
+    selectedLinuxSystems: [],
+    isActive: true,
+  arguments: [{ key: "", value: "" }],
+    parsingFormat: "",
+  };
 
-const [form, setForm] = useState<any>(initialFormState);
-
+  const [form, setForm] = useState<any>(initialFormState);
 
   const { data: scriptTypes } = useGetScriptTypes();
   const { data: platformList } = useGetPlatforms();
   const uploadMutation = useUploadFile();
   const submitMutation = useSubmitScript();
 
- 
- 
-   const [activePlatform, setActivePlatform] = useState<string>(
-   "",
-   );
- 
-   const { data: systems, isLoading: loading } = useGetSystemList(
-     `/api/sam/getAssetsByLimit?pageNo=${page}&perPage=${rowsPerPage}&osType=${activePlatform}`,
-   );
- 
-   const { data: systemCount } = useGetSystemListCount(activePlatform);
- 
-   const sysTableData = useMemo(
-     () => (filteredData.length ? filteredData : systems || []),
-     [filteredData, systems],
-   );
- 
-   const totalItems = isSearchActive
-     ? searchDataCount
-     : systemCount || sysTableData.length;
-   const totalPages = Math.ceil(totalItems / rowsPerPage);
+  const [activePlatform, setActivePlatform] = useState<string>("");
 
-   
+  const { data: systems, isLoading: loading } = useGetSystemList(
+    `/api/sam/getAssetsByLimit?pageNo=${page}&perPage=${rowsPerPage}&osType=${activePlatform}`,
+  );
 
-     const [uploadedSerialNumbers, setUploadedSerialNumbers] = useState<any[]>(
-       [],
-     );
-     const [uploadProgress, setUploadProgress] = useState(0);
-     const [isUploading, setIsUploading] = useState(false);
-     const [showSerialListModal, setShowSerialListModal] = useState(false);
-   
-    //  const handleExcelUpload = (file: File) => {
-    //    setIsUploading(true);
-    //    setUploadProgress(0);
-   
-    //    const reader = new FileReader();
-    //    reader.onload = (e) => {
-    //      const data = e.target?.result;
-    //      if (!data) return;
-   
-    //      let progressVal = 0;
-    //      const interval = setInterval(() => {
-    //        progressVal += 20;
-    //        if (progressVal >= 80) clearInterval(interval);
-    //        setUploadProgress(progressVal);
-    //      }, 300);
-   
-    //      const workbook = XLSX.read(data, { type: "binary" });
-    //      const sheetName = workbook.SheetNames[0];
-    //      const worksheet = workbook.Sheets[sheetName];
-    //      const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
-   
-    //      const serials = jsonData
-    //        .map((row) => row["Serial Number"]?.toString().trim())
-    //        .filter(Boolean);
-   
-    //      setUploadedSerialNumbers(serials);
-   
-    //      setUploadProgress(100);
-    //      setTimeout(() => {
-    //        setIsUploading(false);
-    //      }, 300);
-    //    };
-    //    reader.readAsBinaryString(file);
-    //  };
-   
-    //  const handleDownloadTemplate = () => {
-    //    const ws = XLSX.utils.json_to_sheet([{ "Serial Number": "" }]);
-    //    const wb = XLSX.utils.book_new();
-    //    XLSX.utils.book_append_sheet(wb, ws, "Template");
-    //    XLSX.writeFile(wb, "serial_numbers_template.xlsx");
-    //  };
+  const { data: systemCount } = useGetSystemListCount(activePlatform);
 
+  const sysTableData = useMemo(
+    () => (filteredData.length ? filteredData : systems || []),
+    [filteredData, systems],
+  );
 
-    const handleExcelUpload = (file: File) => {
-  setIsUploading(true);
-  setUploadProgress(0);
+  const totalItems = isSearchActive
+    ? searchDataCount
+    : systemCount || sysTableData.length;
+  const totalPages = Math.ceil(totalItems / rowsPerPage);
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const data = e.target?.result;
-    if (!data) return;
+  const [uploadedSerialNumbers, setUploadedSerialNumbers] = useState<any[]>([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [showSerialListModal, setShowSerialListModal] = useState(false);
 
-    let progressVal = 0;
-    const interval = setInterval(() => {
-      progressVal += 20;
-      if (progressVal >= 80) clearInterval(interval);
-      setUploadProgress(progressVal);
-    }, 300);
+  const handleExcelUpload = (file: File) => {
+    setIsUploading(true);
+    setUploadProgress(0);
 
-    const workbook = XLSX.read(data, { type: "binary" });
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
-    const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      if (!data) return;
 
-    // ✅ Extract Serial Number + Host Name
-    const devices = jsonData
-      .map((row) => ({
-        serialNo: row["Serial Number"]?.toString().trim(),
-        hostName: row["Host Name"]?.toString().trim(),
-      }))
-      .filter(item => item.serialNo || item.hostName);
+      let progressVal = 0;
+      const interval = setInterval(() => {
+        progressVal += 20;
+        if (progressVal >= 80) clearInterval(interval);
+        setUploadProgress(progressVal);
+      }, 300);
 
-    setUploadedSerialNumbers(devices); 
-    // example output:
-    // [{ serialNo: "ABC123", hostName: "HOST-01" }]
+      const workbook = XLSX.read(data, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const jsonData = XLSX.utils.sheet_to_json<any>(worksheet);
 
-    setUploadProgress(100);
-    setTimeout(() => {
-      setIsUploading(false);
-    }, 300);
+      // ✅ Extract Serial Number + Host Name
+      const devices = jsonData
+        .map((row) => ({
+          serialNo: row["Serial Number"]?.toString().trim(),
+          hostName: row["Host Name"]?.toString().trim(),
+        }))
+        .filter((item) => item.serialNo || item.hostName);
+
+      setUploadedSerialNumbers(devices);
+      // example output:
+      // [{ serialNo: "ABC123", hostName: "HOST-01" }]
+
+      setUploadProgress(100);
+      setTimeout(() => {
+        setIsUploading(false);
+      }, 300);
+    };
+
+    reader.readAsBinaryString(file);
   };
 
-  reader.readAsBinaryString(file);
-};
+  const handleDownloadTemplate = () => {
+    const ws = XLSX.utils.json_to_sheet([
+      {
+        "Serial Number": "",
+        "Host Name": "",
+      },
+    ]);
 
-
-const handleDownloadTemplate = () => {
-  const ws = XLSX.utils.json_to_sheet([
-    {
-      "Serial Number": "",
-      "Host Name": ""
-    }
-  ]);
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Template");
-  XLSX.writeFile(wb, "serial_and_host_template.xlsx");
-};
-
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Template");
+    XLSX.writeFile(wb, "serial_and_host_template.xlsx");
+  };
 
   const validateStep = (step: number) => {
     switch (step) {
@@ -266,8 +215,9 @@ const handleDownloadTemplate = () => {
           return hasStart && hasSchedule && form.selectedMonthDay !== null;
         }
         return hasStart && hasSchedule;
-
-      case 3:
+case 3:
+  return true; 
+      case 4:
         const hasPlatform = form.selectedPlatforms.length > 0;
         const hasSystems =
           [
@@ -302,11 +252,11 @@ const handleDownloadTemplate = () => {
 
     if (target === "main" && form.allowedExtensions.length > 0) {
       const isValid = form.allowedExtensions.some((ext: string) =>
-        file.name.endsWith(ext)
+        file.name.endsWith(ext),
       );
       if (!isValid)
         return alert(
-          `Allowed extensions: ${form.allowedExtensions.join(", ")}`
+          `Allowed extensions: ${form.allowedExtensions.join(", ")}`,
         );
     }
 
@@ -321,9 +271,6 @@ const handleDownloadTemplate = () => {
       });
     }
   };
-
-
-
 
   const handleSubmit = () => {
     let repeatSeconds = 0;
@@ -344,12 +291,20 @@ const handleDownloadTemplate = () => {
       isActive: form.isActive,
       dependencyFileIds: form.dependencyFileIds,
       targetPlatforms: form.selectedPlatforms,
-   serialNoHostName: [
-  ...form.selectedWindowsSystems,
-  ...form.selectedMacSystems,
-  ...form.selectedLinuxSystems,
-  ...uploadedSerialNumbers,
-],
+      serialNoHostName: [
+        ...form.selectedWindowsSystems,
+        ...form.selectedMacSystems,
+        ...form.selectedLinuxSystems,
+        ...uploadedSerialNumbers,
+      ],
+   params: form.arguments.reduce((acc: Record<string, string>, arg: any) => {
+  if (arg.key && arg.value) {
+    acc[arg.key] = arg.value;
+  }
+  return acc;
+}, {}),
+
+      format: form.parsingFormat,
 
       scheduleType: form.scheduleType,
       startDateTime: form.startDateTime
@@ -362,17 +317,15 @@ const handleDownloadTemplate = () => {
     submitMutation.mutate(payload);
   };
 
-
   useEffect(() => {
-  if (submitMutation.isSuccess) {
-    setShowSuccess(true);
+    if (submitMutation.isSuccess) {
+      setShowSuccess(true);
 
-    setForm(initialFormState);
+      setForm(initialFormState);
 
-    setActiveStep(0);
-  }
-}, [submitMutation.isSuccess]);
-
+      setActiveStep(0);
+    }
+  }, [submitMutation.isSuccess]);
 
   const getUsersByGroupSearch = useGetAllAssetByLimitAndGroupSearch();
   const getUserCountByGroupSearch = useGetCountAllAssetByLimitAndGroupSearch();
@@ -453,51 +406,55 @@ const handleDownloadTemplate = () => {
   );
 
   const transformSystemData = (data: any[]) =>
-  data.map((item) => ({
-    ...item,
-    serialNo: item.serialNo || "-",
-    hostName: item.hostName || "-",
-    employeeName: item.employeeName || "-",
-    employeeNo: item.employeeNo || "-",
-    assetId: item.assetId || "-",
-    projectName: item.projectName || "-",
-    make: item.make || "-",
-    model: item.model || "-",
-  }));
-
+    data.map((item) => ({
+      ...item,
+      serialNo: item.serialNo || "-",
+      hostName: item.hostName || "-",
+      employeeName: item.employeeName || "-",
+      employeeNo: item.employeeNo || "-",
+      assetId: item.assetId || "-",
+      projectName: item.projectName || "-",
+      make: item.make || "-",
+      model: item.model || "-",
+    }));
 
   const exportPayload = useMemo(
-  () => ({
-    columns: filterColumns,
-    osType: activePlatform,
-    pageNo: 1,
-    perPage: isSearchActive ? searchDataCount : totalItems,
-  }),
-  [filterColumns, activePlatform, isSearchActive, searchDataCount, totalItems||10000],
-);
+    () => ({
+      columns: filterColumns,
+      osType: activePlatform,
+      pageNo: 1,
+      perPage: isSearchActive ? searchDataCount : totalItems,
+    }),
+    [
+      filterColumns,
+      activePlatform,
+      isSearchActive,
+      searchDataCount,
+      totalItems || 10000,
+    ],
+  );
 
+  const getAllSystems = useGetSystemList(
+    `/api/sam/getAssetsByLimit?pageNo=1&perPage=${exportPayload.perPage}&osType=${activePlatform}`,
+  );
 
-const getAllSystems = useGetSystemList(
-  `/api/sam/getAssetsByLimit?pageNo=1&perPage=${exportPayload.perPage}&osType=${activePlatform}`
-);
-
-const allSystemsForExport = async (): Promise<any[]> => {
-  if (isSearchActive) {
-    return new Promise<any[]>((resolve, reject) => {
-      getUsersByGroupSearch.mutate(exportPayload, {
-        onSuccess: (data) => resolve(transformSystemData(data)),
-        onError: reject,
+  const allSystemsForExport = async (): Promise<any[]> => {
+    if (isSearchActive) {
+      return new Promise<any[]>((resolve, reject) => {
+        getUsersByGroupSearch.mutate(exportPayload, {
+          onSuccess: (data) => resolve(transformSystemData(data)),
+          onError: reject,
+        });
       });
-    });
-  } else {
-    return new Promise<any[]>((resolve, reject) => {
-      getAllSystems
-        .refetch()
-        .then((res: any) => resolve(transformSystemData(res.data || [])))
-        .catch(reject);
-    });
-  }
-};
+    } else {
+      return new Promise<any[]>((resolve, reject) => {
+        getAllSystems
+          .refetch()
+          .then((res: any) => resolve(transformSystemData(res.data || [])))
+          .catch(reject);
+      });
+    }
+  };
 
   return (
     <div className=" mx-auto  px-4 space-y-8">
@@ -516,673 +473,805 @@ const allSystemsForExport = async (): Promise<any[]> => {
           </div>
         </div>
       </div>
-  {!showSuccess ? ( 
-    <>
-      <div className="flex flex-col items-center space-y-8">
-        
-        <div className="flex w-full items-center justify-between relative max-w-5xl mx-auto px-4">
-        
-          <div className="absolute top-5 left-5 right-5 h-0.5 bg-muted z-0" />
+      {!showSuccess ? (
+        <>
+          <div className="flex flex-col items-center space-y-8">
+            <div className="flex w-full items-center justify-between relative max-w-5xl mx-auto px-4">
+              <div className="absolute top-5 left-5 right-5 h-0.5 bg-muted z-0" />
 
-          <div
-            className="absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500 ease-in-out -z-10 px-10"
-            style={{
-              width: `${(activeStep / (STEPS.length - 1)) * 100}%`,
-              marginLeft: "0px",
-            }}
-          />
-
-          {STEPS.map((label, idx) => (
-            <div
-              key={label}
-              className="flex flex-col items-center gap-3 bg-background px-4 relative z-10"
-            >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
-                  activeStep >= idx
-                    ? "bg-primary border-primary text-white shadow-[0_0_10px_rgba(var(--primary),0.3)] scale-110"
-                    : "bg-background border-muted text-muted-foreground"
-                }`}
-              >
-                {activeStep > idx ? (
-                  <Check className="w-5 h-5 stroke-[3px] animate-in zoom-in" />
-                ) : (
-                  <span className="text-sm font-bold">{idx + 1}</span>
-                )}
-              </div>
-              <span
-                className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${
-                  activeStep >= idx
-                    ? "text-primary"
-                    : "text-muted-foreground/60"
-                }`}
-              >
-                {label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
- 
-      <Card className="shadow-xl border-t-4 border-t-primary min-h-137.5 flex flex-col">
-        <CardContent className="p-8 grow">
-          {/* STEP 0: SCRIPT INFO */}
-          {activeStep === 0 && (
-            <div className="grid gap-6 animate-in fade-in duration-500">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label>Script Name</Label>
-                  <Input
-                    value={form.scriptName}
-                    onChange={(e) =>
-                      setForm({ ...form, scriptName: e.target.value })
-                    }
-                    placeholder="Maintenance Task"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Script Type</Label>
-                  <Select
-                    value={form.scriptType}
-                    onValueChange={handleScriptTypeChange}
+                className="absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500 ease-in-out -z-10 px-10"
+                style={{
+                  width: `${(activeStep / (STEPS.length - 1)) * 100}%`,
+                  marginLeft: "0px",
+                }}
+              />
+
+              {STEPS.map((label, idx) => (
+                <div
+                  key={label}
+                  className="flex flex-col items-center gap-3 bg-background px-4 relative z-10"
+                >
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
+                      activeStep >= idx
+                        ? "bg-primary border-primary text-white shadow-[0_0_10px_rgba(var(--primary),0.3)] scale-110"
+                        : "bg-background border-muted text-muted-foreground"
+                    }`}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {scriptTypes?.map((t: any) => (
-                        <SelectItem key={t.enumName} value={t.enumName}>
-                          {t.displayName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Description</Label>
-                <Textarea
-                  value={form.scriptDescription}
-                  onChange={(e) =>
-                    setForm({ ...form, scriptDescription: e.target.value })
-                  }
-                  placeholder="Describe script functionality..."
-                />
-              </div>
-              {form.scriptCategory === "TEXT" && (
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Terminal className="w-4 h-4" /> Script Command
-                  </Label>
-                  <Textarea
-                    className="font-mono bg-slate-900 text-green-400"
-                    rows={6}
-                    value={form.commandText}
-                    onChange={(e) =>
-                      setForm({ ...form, commandText: e.target.value })
-                    }
-                  />
-                </div>
-              )}
-              {form.scriptCategory === "FILE" && (
-                <div className="border-2 border-dashed rounded-xl p-8 text-center hover:bg-primary/5 cursor-pointer relative transition-all group">
-                  <input
-                    type="file"
-                    className="absolute inset-0 opacity-0 cursor-pointer"
-                    onChange={(e) => onFileUpload(e, "main")}
-                    accept={form.allowedExtensions.join(",")}
-                  />
-                  <CloudUpload className="mx-auto h-10 w-10 text-muted-foreground group-hover:text-primary" />
-                  <p className="mt-2 text-sm font-medium">Upload script file</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Allowed: {form.allowedExtensions.join(", ")}
-                  </p>
-                  {form.scriptFile && (
-                    <Badge className="mt-4" variant="secondary">
-                      {form.scriptFile.name}
-                    </Badge>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* STEP 1: DEPENDENCIES */}
-          {activeStep === 1 && (
-            <div className="space-y-6 animate-in fade-in">
-              <div className="border-2 border-dashed rounded-xl p-12 text-center hover:bg-secondary/50 cursor-pointer relative transition-all group">
-                <input
-                  type="file"
-                  multiple
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                  onChange={(e) => onFileUpload(e, "dependency")}
-                />
-                <Package className="mx-auto h-12 w-12 text-muted-foreground group-hover:text-primary" />
-                <p className="mt-2 text-lg font-semibold">
-                  Drop dependency files here
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Select multiple files if required
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {form.dependencyFiles.map((f: File, i: number) => (
-                  <Badge
-                    key={i}
-                    variant="outline"
-                    className="pl-3 pr-1 py-1 gap-2 flex items-center"
-                  >
-                    {f.name}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-5 w-5 rounded-full"
-                      onClick={() => {
-                        const newFiles = [...form.dependencyFiles];
-                        const newIds = [...form.dependencyFileIds];
-                        newFiles.splice(i, 1);
-                        newIds.splice(i, 1);
-                        setForm({
-                          ...form,
-                          dependencyFiles: newFiles,
-                          dependencyFileIds: newIds,
-                        });
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* STEP 2: SCHEDULER */}
-          {activeStep === 2 && (
-            <div className="grid grid-cols-2 gap-8 animate-in fade-in">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Schedule Type</Label>
-                  <Select
-                    value={form.scheduleType}
-                    onValueChange={(val) =>
-                      setForm({ ...form, scheduleType: val })
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ONE_TIME">One Time</SelectItem>
-                      <SelectItem value="REPEAT_EVERY">Repeat Every</SelectItem>
-                      <SelectItem value="WEEKLY">Weekly</SelectItem>
-                      <SelectItem value="MONTHLY">Monthly</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                {form.scheduleType === "REPEAT_EVERY" && (
-                  <div className="space-y-2">
-                    <Label>Repeat Unit</Label>
-                    <Select
-                      value={form.repeatType}
-                      onValueChange={(val) =>
-                        setForm({ ...form, repeatType: val })
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="seconds">Seconds</SelectItem>
-                        <SelectItem value="minutes">Minutes</SelectItem>
-                        <SelectItem value="hours">Hours</SelectItem>
-                        <SelectItem value="daily">Daily</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Start Date & Time</Label>
-                  <Input
-                    type="datetime-local"
-                    value={form.startDateTime}
-                    onChange={(e) =>
-                      setForm({ ...form, startDateTime: e.target.value })
-                    }
-                  />
-                </div>
-                {form.scheduleType === "REPEAT_EVERY" &&
-                  form.repeatType !== "daily" && (
-                    <div className="space-y-2">
-                      <Label>Interval ({form.repeatType})</Label>
-                      <Input
-                        type="number"
-                        value={form.repeatIntervalSeconds}
-                        placeholder="Enter number "
-                        onChange={(e) =>
-                          setForm({
-                            ...form,
-                            repeatIntervalSeconds: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  )}
-              </div>
-              {form.scheduleType === "WEEKLY" && (
-                <div className="space-y-3 p-4 bg-muted/20 rounded-xl border">
-                  <Label className="font-bold">Execution Days</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {WEEK_DAYS.map((day) => (
-                      <Button
-                        key={day.value}
-                        variant={
-                          form.selectedWeekDays.includes(day.value)
-                            ? "default"
-                            : "outline"
-                        }
-                        className="flex-1 min-w-17.5"
-                        onClick={() => {
-                          const days = form.selectedWeekDays.includes(day.value)
-                            ? form.selectedWeekDays.filter(
-                                (d: string) => d !== day.value
-                              )
-                            : [...form.selectedWeekDays, day.value];
-                          setForm({ ...form, selectedWeekDays: days });
-                        }}
-                      >
-                        {day.label}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {form.scheduleType === "MONTHLY" && (
-                <div className="space-y-3 p-4 bg-muted/20 rounded-xl border">
-                  <Label className="font-bold text-primary">Day of Month</Label>
-                  <div className="grid grid-cols-7 gap-1">
-                    {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                      <Button
-                        key={day}
-                        variant={
-                          form.selectedMonthDay === day ? "default" : "outline"
-                        }
-                        className="h-9 w-9 p-0 text-xs"
-                        onClick={() =>
-                          setForm({ ...form, selectedMonthDay: day })
-                        }
-                      >
-                        {day}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeStep === 3 && (
-            <div className="space-y-6 animate-in fade-in">
-             <div className="flex gap-3">
-  {platformList?.map((p: any) => (
-    <Button
-      key={p.enumName}
-      variant={
-        form.selectedPlatforms.includes(p.enumName)
-          ? "default"
-          : "outline"
-      }
-      onClick={() => {
-        const isCurrentlySelected = form.selectedPlatforms.includes(p.enumName);
-        let newSelected: string[];
-
-        if (p.enumName === "ANY") {
-          newSelected = isCurrentlySelected 
-            ? [] 
-            : platformList.map((platform: any) => platform.enumName);
-        } else {
-          if (isCurrentlySelected) {
-            newSelected = form.selectedPlatforms.filter(
-              (x: string) => x !== p.enumName && x !== "ANY"
-            );
-          } else {
-            const added = [...form.selectedPlatforms, p.enumName];
-            const allOthersSelected = platformList
-              .filter((pl: any) => pl.enumName !== "ANY")
-              .every((pl: any) => added.includes(pl.enumName));
-              
-            newSelected = allOthersSelected 
-              ? platformList.map((pl: any) => pl.enumName) 
-              : added;
-          }
-        }
-
-        setForm({ ...form, selectedPlatforms: newSelected });
-      }}
-      className="gap-2"
-    >
-      <Layout className="h-4 w-4" /> {p.displayName}
-    </Button>
-  ))}
-</div>
-
-                <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                <Tabs defaultValue="manual" className="w-full">
-                  <TabsList className="grid w-full max-w-md grid-cols-2">
-                    <TabsTrigger value="manual">Manual Selection</TabsTrigger>
-                    <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="manual" className="mt-6 space-y-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <Tabs
-                        value={activePlatform}
-                        onValueChange={(val) => {
-                          setActivePlatform(val);
-                          setPage(1);
-                        }}
-                      >
-                        <TabsList className="bg-muted p-1 rounded-xl h-12">
-                          {(form.selectedPlatforms.includes("ANY") ||
-                            form.selectedPlatforms.some((p: string) =>
-                              p.startsWith("WINDOWS"),
-                            )) && (
-                            <TabsTrigger
-                              value="WINDOWS"
-                              className="px-6 rounded-lg gap-2"
-                            >
-                              <Monitor className="w-4 h-4" /> Windows
-                            </TabsTrigger>
-                          )}
-
-                          {(form.selectedPlatforms.includes("ANY") ||
-                            form.selectedPlatforms.some((p: string) =>
-                              p.startsWith("MAC"),
-                            )) && (
-                            <TabsTrigger
-                              value="MAC"
-                              className="px-6 rounded-lg gap-2"
-                            >
-                              <RotateCw className="w-4 h-4" /> macOS
-                            </TabsTrigger>
-                          )}
-
-                          {(form.selectedPlatforms.includes("ANY") ||
-                            form.selectedPlatforms.some((p: string) =>
-                              p.startsWith("LINUX"),
-                            )) && (
-                            <TabsTrigger
-                              value="LINUX"
-                              className="px-6 rounded-lg gap-2"
-                            >
-                              <HardDrive className="w-4 h-4" /> Linux
-                            </TabsTrigger>
-                          )}
-                        </TabsList>
-                      </Tabs>
-
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">
-                          Selected (Current View)
-                        </p>
-                        <p className="text-2xl font-black text-primary">
-                          {activePlatform === "WINDOWS"
-                            ? form.selectedWindowsSystems.length
-                            : activePlatform === "MAC"
-                              ? form.selectedMacSystems.length
-                              : form.selectedLinuxSystems.length}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="border rounded-2xl overflow-hidden bg-background">
-                      <DataTable
-                        rowData={sysTableData || []}
-                        colDefs={columnDefs}
-                        showCheckbox
-                        selectedRows={
-                          activePlatform === "WINDOWS"
-                            ? form.selectedWindowsSystems
-                            : activePlatform === "MAC"
-                              ? form.selectedMacSystems
-                              : form.selectedLinuxSystems
-                        }
-                     onRowSelection={(currentlySelectedRows: any[]) => {
-  const key =
-    activePlatform === "WINDOWS"
-      ? "selectedWindowsSystems"
-      : activePlatform === "MAC"
-        ? "selectedMacSystems"
-        : "selectedLinuxSystems";
-
-  // map rows → payload-ready format
-  const mappedCurrentPageSelection = currentlySelectedRows.map((row) => ({
-    serialNo: row.serialNo,
-    hostname: row.hostName,
-  }));
-
-  setForm((prev: any) => {
-    // keep selections from other pages
-    const otherPagesSelection = prev[key].filter(
-      (savedRow: any) =>
-        !sysTableData.some(
-          (currentPageRow: any) =>
-            currentPageRow.serialNo === savedRow.serialNo
-        )
-    );
-
-    return {
-      ...prev,
-      [key]: [...otherPagesSelection, ...mappedCurrentPageSelection],
-    };
-  });
-}}
-
-                        isLoading={loading}
-                        showActions={false}
-                        pagination={false}
-                        showPagination
-                        page={page}
-                        totalPages={totalPages}
-                        setPage={setPage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={setRowsPerPage}
-                        onFilterChange={handleGroupSearch}
-                           fileName="targetSysten"
-        allData={allSystemsForExport}
-                        rowIdField="serialNo"
-                      />
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="bulk" className="mt-6 space-y-6">
-                    {isUploading && (
-                      <Progress value={uploadProgress} className="h-2" />
+                    {activeStep > idx ? (
+                      <Check className="w-5 h-5 stroke-[3px] animate-in zoom-in" />
+                    ) : (
+                      <span className="text-sm font-bold">{idx + 1}</span>
                     )}
-
-                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 text-center">
-                      <Upload className="h-10 w-10 text-muted-foreground mb-4" />
-                      <h3 className="font-semibold mb-2">Upload System List</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Excel must contain a column named <b>Serial Number</b>
-                      </p>
-
-                      <label>
-                        <Input
-                          type="file"
-                          accept=".xlsx,.xls,.csv"
-                          className="hidden"
-                          onChange={(e) =>
-                            e.target.files?.[0] &&
-                            handleExcelUpload(e.target.files[0])
-                          }
-                        />
-                        <Button asChild>
-                          <span>Choose File</span>
-                        </Button>
-                      </label>
-                    </div>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleDownloadTemplate}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download Template
-                    </Button>
-
-                    {uploadedSerialNumbers.length > 0 && (
-                      <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/40">
-                        <span className="text-sm font-semibold">
-                          {uploadedSerialNumbers.length} serial numbers uploaded
-                        </span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setShowSerialListModal(true)}
-                        >
-                          View
-                        </Button>
-                      </div>
-                    )}
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: REVIEW */}
-          {activeStep === 4 && (
-            <div className="grid grid-cols-2 gap-8 animate-in fade-in">
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold flex items-center gap-2 text-primary border-b pb-2">
-                  <Info className="h-5 w-5" /> Script Details
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <span className="text-muted-foreground">Name:</span>{" "}
-                    {form.scriptName}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Type:</span>{" "}
-                    {form.scriptType}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Platforms:</span>{" "}
-                    {form.selectedPlatforms.join(", ")}
-                  </p>
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-widest transition-colors duration-500 ${
+                      activeStep >= idx
+                        ? "text-primary"
+                        : "text-muted-foreground/60"
+                    }`}
+                  >
+                    {label}
+                  </span>
                 </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold flex items-center gap-2 text-primary border-b pb-2">
-                  <Calendar className="h-5 w-5" /> Execution Plan
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <span className="text-muted-foreground">Type:</span>{" "}
-                    {form.scheduleType}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Start:</span>{" "}
-                    {form.startDateTime}
-                  </p>
-                  <p>
-                    <span className="text-muted-foreground">Systems:</span>{" "}
-                    {form.selectedWindowsSystems.length +
-                      form.selectedMacSystems.length +
-                      form.selectedLinuxSystems.length}{" "}
-                    selected
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
-          )}
-        </CardContent>
-
-        <div className="p-6 border-t bg-muted/30 flex justify-between items-center rounded-b-xl">
-          <Button
-            variant="outline"
-            disabled={activeStep === 0}
-            onClick={() => setActiveStep(activeStep - 1)}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2" /> Previous
-          </Button>
-          <div className="flex gap-3">
-            {activeStep < STEPS.length - 1 ? (
-              <Button
-                onClick={() => setActiveStep(activeStep + 1)}
-                disabled={!isStepValid}
-              >
-                Next <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={submitMutation.isPending || !isStepValid}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                {submitMutation.isPending ? "Deploying..." : "Schedule Script"}
-              </Button>
-            )}
           </div>
-        </div>
-      </Card>
-</>
-        ):(
-  <div className="flex flex-col items-center justify-center py-20 space-y-6 animate-in fade-in">
-    <div className="rounded-full bg-green-100 p-6">
-      <Check className="h-10 w-10 text-green-600" />
-    </div>
 
-    <h2 className="text-2xl font-bold text-green-700">
-      Script Scheduled Successfully
-    </h2>
+          <Card className="shadow-xl border-t-4 border-t-primary min-h-137.5 flex flex-col">
+            <CardContent className="p-8 grow">
+              {/* STEP 0: SCRIPT INFO */}
+              {activeStep === 0 && (
+                <div className="grid gap-6 animate-in fade-in duration-500">
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Script Name</Label>
+                      <Input
+                        value={form.scriptName}
+                        onChange={(e) =>
+                          setForm({ ...form, scriptName: e.target.value })
+                        }
+                        placeholder="Maintenance Task"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Script Type</Label>
+                      <Select
+                        value={form.scriptType}
+                        onValueChange={handleScriptTypeChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {scriptTypes?.map((t: any) => (
+                            <SelectItem key={t.enumName} value={t.enumName}>
+                              {t.displayName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      value={form.scriptDescription}
+                      onChange={(e) =>
+                        setForm({ ...form, scriptDescription: e.target.value })
+                      }
+                      placeholder="Describe script functionality..."
+                    />
+                  </div>
+                  {form.scriptCategory === "TEXT" && (
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2">
+                        <Terminal className="w-4 h-4" /> Script Command
+                      </Label>
+                      <Textarea
+                        className="font-mono bg-slate-900 text-green-400"
+                        rows={6}
+                        value={form.commandText}
+                        onChange={(e) =>
+                          setForm({ ...form, commandText: e.target.value })
+                        }
+                      />
+                    </div>
+                  )}
+                  {form.scriptCategory === "FILE" && (
+                    <div className="border-2 border-dashed rounded-xl p-8 text-center hover:bg-primary/5 cursor-pointer relative transition-all group">
+                      <input
+                        type="file"
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                        onChange={(e) => onFileUpload(e, "main")}
+                        accept={form.allowedExtensions.join(",")}
+                      />
+                      <CloudUpload className="mx-auto h-10 w-10 text-muted-foreground group-hover:text-primary" />
+                      <p className="mt-2 text-sm font-medium">
+                        Upload script file
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Allowed: {form.allowedExtensions.join(", ")}
+                      </p>
+                      {form.scriptFile && (
+                        <Badge className="mt-4" variant="secondary">
+                          {form.scriptFile.name}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
 
-    <p className="text-sm text-muted-foreground text-center max-w-md">
-      Your script has been scheduled and will run based on the selected configuration.
-    </p>
+                    {/* ARGUMENTS */}
+   <div className="space-y-4">
+  <h3 className="text-lg font-bold text-primary">
+    Script Arguments
+  </h3>
+{form.arguments?.map((arg: any, index: number) => (
+    <div
+      key={index}
+      className="grid grid-cols-[1fr_1fr_auto] gap-3 items-center"
+    >
+      <Input
+        placeholder="Argument Key"
+        value={arg.key}
+        onChange={(e) => {
+          const args = [...form.arguments];
+          args[index].key = e.target.value;
+          setForm({ ...form, arguments: args });
+        }}
+      />
 
-    <div className="flex gap-3">
+      <Input
+        placeholder="Argument Value"
+        value={arg.value}
+        onChange={(e) => {
+          const args = [...form.arguments];
+          args[index].value = e.target.value;
+          setForm({ ...form, arguments: args });
+        }}
+      />
+
       <Button
-        variant="default"
+        variant="ghost"
+        size="icon"
+        disabled={form.arguments.length === 1}
         onClick={() => {
-          setShowSuccess(false);
-          setActiveStep(0);
+          const args = form.arguments.filter(
+            (_: any, i: number) => i !== index,
+          );
+          setForm({ ...form, arguments: args });
         }}
       >
-        Schedule Another Script
+        <Trash2 className="h-4 w-4 text-red-500" />
       </Button>
+    </div>
+  ))}
 
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={() =>
+      setForm({
+        ...form,
+        arguments: [...form.arguments, { key: "", value: "" }],
+      })
+    }
+  >
+    + Add Argument
+  </Button>
+</div>
+                </div>
+              )}
+
+              {/* STEP 1: DEPENDENCIES */}
+              {activeStep === 1 && (
+                <div className="space-y-6 animate-in fade-in">
+                  <div className="border-2 border-dashed rounded-xl p-12 text-center hover:bg-secondary/50 cursor-pointer relative transition-all group">
+                    <input
+                      type="file"
+                      multiple
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      onChange={(e) => onFileUpload(e, "dependency")}
+                    />
+                    <Package className="mx-auto h-12 w-12 text-muted-foreground group-hover:text-primary" />
+                    <p className="mt-2 text-lg font-semibold">
+                      Drop dependency files here
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Select multiple files if required
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {form.dependencyFiles.map((f: File, i: number) => (
+                      <Badge
+                        key={i}
+                        variant="outline"
+                        className="pl-3 pr-1 py-1 gap-2 flex items-center"
+                      >
+                        {f.name}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 rounded-full"
+                          onClick={() => {
+                            const newFiles = [...form.dependencyFiles];
+                            const newIds = [...form.dependencyFileIds];
+                            newFiles.splice(i, 1);
+                            newIds.splice(i, 1);
+                            setForm({
+                              ...form,
+                              dependencyFiles: newFiles,
+                              dependencyFileIds: newIds,
+                            });
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: SCHEDULER */}
+              {activeStep === 2 && (
+                <div className="grid grid-cols-2 gap-8 animate-in fade-in">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Schedule Type</Label>
+                      <Select
+                        value={form.scheduleType}
+                        onValueChange={(val) =>
+                          setForm({ ...form, scheduleType: val })
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ONE_TIME">One Time</SelectItem>
+                          <SelectItem value="REPEAT_EVERY">
+                            Repeat Every
+                          </SelectItem>
+                          <SelectItem value="WEEKLY">Weekly</SelectItem>
+                          <SelectItem value="MONTHLY">Monthly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {form.scheduleType === "REPEAT_EVERY" && (
+                      <div className="space-y-2">
+                        <Label>Repeat Unit</Label>
+                        <Select
+                          value={form.repeatType}
+                          onValueChange={(val) =>
+                            setForm({ ...form, repeatType: val })
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="seconds">Seconds</SelectItem>
+                            <SelectItem value="minutes">Minutes</SelectItem>
+                            <SelectItem value="hours">Hours</SelectItem>
+                            <SelectItem value="daily">Daily</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Start Date & Time</Label>
+                      <Input
+                        type="datetime-local"
+                        value={form.startDateTime}
+                        onChange={(e) =>
+                          setForm({ ...form, startDateTime: e.target.value })
+                        }
+                      />
+                    </div>
+                    {form.scheduleType === "REPEAT_EVERY" &&
+                      form.repeatType !== "daily" && (
+                        <div className="space-y-2">
+                          <Label>Interval ({form.repeatType})</Label>
+                          <Input
+                            type="number"
+                            value={form.repeatIntervalSeconds}
+                            placeholder="Enter number "
+                            onChange={(e) =>
+                              setForm({
+                                ...form,
+                                repeatIntervalSeconds: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      )}
+                  </div>
+                  {form.scheduleType === "WEEKLY" && (
+                    <div className="space-y-3 p-4 bg-muted/20 rounded-xl border">
+                      <Label className="font-bold">Execution Days</Label>
+                      <div className="flex flex-wrap gap-2">
+                        {WEEK_DAYS.map((day) => (
+                          <Button
+                            key={day.value}
+                            variant={
+                              form.selectedWeekDays.includes(day.value)
+                                ? "default"
+                                : "outline"
+                            }
+                            className="flex-1 min-w-17.5"
+                            onClick={() => {
+                              const days = form.selectedWeekDays.includes(
+                                day.value,
+                              )
+                                ? form.selectedWeekDays.filter(
+                                    (d: string) => d !== day.value,
+                                  )
+                                : [...form.selectedWeekDays, day.value];
+                              setForm({ ...form, selectedWeekDays: days });
+                            }}
+                          >
+                            {day.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {form.scheduleType === "MONTHLY" && (
+                    <div className="space-y-3 p-4 bg-muted/20 rounded-xl border">
+                      <Label className="font-bold text-primary">
+                        Day of Month
+                      </Label>
+                      <div className="grid grid-cols-7 gap-1">
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                          (day) => (
+                            <Button
+                              key={day}
+                              variant={
+                                form.selectedMonthDay === day
+                                  ? "default"
+                                  : "outline"
+                              }
+                              className="h-9 w-9 p-0 text-xs"
+                              onClick={() =>
+                                setForm({ ...form, selectedMonthDay: day })
+                              }
+                            >
+                              {day}
+                            </Button>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+{activeStep === 3 && (
+  <div className="space-y-8 animate-in fade-in">
+
+  
+    {/* FORMAT */}
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-primary">
+        Output / Parsing Format
+      </h3>
+
+      <Textarea
+     className="font-mono text-sm bg-slate-900 text-green-400 min-h-100"
+     placeholder={`Example:
+   {
+     "status": "success",
+     "data": []
+   }`}
+     value={form.parsingFormat}
+     onChange={(e) =>
+       setForm({ ...form, parsingFormat: e.target.value })
+     }
+   />
+
+      <p className="text-xs text-muted-foreground">
+        Supports JSON or any custom parsing format
+      </p>
     </div>
   </div>
 )}
 
+              {activeStep === 4 && (
+                <div className="space-y-6 animate-in fade-in">
+                  <div className="flex gap-3">
+                    {platformList?.map((p: any) => (
+                      <Button
+                        key={p.enumName}
+                        variant={
+                          form.selectedPlatforms.includes(p.enumName)
+                            ? "default"
+                            : "outline"
+                        }
+                        onClick={() => {
+                          const isCurrentlySelected =
+                            form.selectedPlatforms.includes(p.enumName);
+                          let newSelected: string[];
 
-         <CustomModal
-              isOpen={showSerialListModal}
-              onClose={() => setShowSerialListModal(false)}
-              dialogTitle="Uploaded Serial Numbers"
-              width="w-230!"
+                          if (p.enumName === "ANY") {
+                            newSelected = isCurrentlySelected
+                              ? []
+                              : platformList.map(
+                                  (platform: any) => platform.enumName,
+                                );
+                          } else {
+                            if (isCurrentlySelected) {
+                              newSelected = form.selectedPlatforms.filter(
+                                (x: string) => x !== p.enumName && x !== "ANY",
+                              );
+                            } else {
+                              const added = [
+                                ...form.selectedPlatforms,
+                                p.enumName,
+                              ];
+                              const allOthersSelected = platformList
+                                .filter((pl: any) => pl.enumName !== "ANY")
+                                .every((pl: any) =>
+                                  added.includes(pl.enumName),
+                                );
+
+                              newSelected = allOthersSelected
+                                ? platformList.map((pl: any) => pl.enumName)
+                                : added;
+                            }
+                          }
+
+                          setForm({ ...form, selectedPlatforms: newSelected });
+                        }}
+                        className="gap-2"
+                      >
+                        <Layout className="h-4 w-4" /> {p.displayName}
+                      </Button>
+                    ))}
+                  </div>
+
+                  <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
+                    <Tabs defaultValue="manual" className="w-full">
+                      <TabsList className="grid w-full max-w-md grid-cols-2">
+                        <TabsTrigger value="manual">
+                          Manual Selection
+                        </TabsTrigger>
+                        <TabsTrigger value="bulk">Bulk Upload</TabsTrigger>
+                      </TabsList>
+                      <TabsContent value="manual" className="mt-6 space-y-6">
+                        <div className="flex justify-between items-center mb-4">
+                          <Tabs
+                            value={activePlatform}
+                            onValueChange={(val) => {
+                              setActivePlatform(val);
+                              setPage(1);
+                            }}
+                          >
+                            <TabsList className="bg-muted p-1 rounded-xl h-12">
+                              {(form.selectedPlatforms.includes("ANY") ||
+                                form.selectedPlatforms.some((p: string) =>
+                                  p.startsWith("WINDOWS"),
+                                )) && (
+                                <TabsTrigger
+                                  value="WINDOWS"
+                                  className="px-6 rounded-lg gap-2"
+                                >
+                                  <Monitor className="w-4 h-4" /> Windows
+                                </TabsTrigger>
+                              )}
+
+                              {(form.selectedPlatforms.includes("ANY") ||
+                                form.selectedPlatforms.some((p: string) =>
+                                  p.startsWith("MAC"),
+                                )) && (
+                                <TabsTrigger
+                                  value="MAC"
+                                  className="px-6 rounded-lg gap-2"
+                                >
+                                  <RotateCw className="w-4 h-4" /> macOS
+                                </TabsTrigger>
+                              )}
+
+                              {(form.selectedPlatforms.includes("ANY") ||
+                                form.selectedPlatforms.some((p: string) =>
+                                  p.startsWith("LINUX"),
+                                )) && (
+                                <TabsTrigger
+                                  value="LINUX"
+                                  className="px-6 rounded-lg gap-2"
+                                >
+                                  <HardDrive className="w-4 h-4" /> Linux
+                                </TabsTrigger>
+                              )}
+                            </TabsList>
+                          </Tabs>
+
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">
+                              Selected (Current View)
+                            </p>
+                            <p className="text-2xl font-black text-primary">
+                              {activePlatform === "WINDOWS"
+                                ? form.selectedWindowsSystems.length
+                                : activePlatform === "MAC"
+                                  ? form.selectedMacSystems.length
+                                  : form.selectedLinuxSystems.length}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="border rounded-2xl overflow-hidden bg-background">
+                          <DataTable
+                            rowData={sysTableData || []}
+                            colDefs={columnDefs}
+                            showCheckbox
+                            selectedRows={
+                              activePlatform === "WINDOWS"
+                                ? form.selectedWindowsSystems
+                                : activePlatform === "MAC"
+                                  ? form.selectedMacSystems
+                                  : form.selectedLinuxSystems
+                            }
+                            onRowSelection={(currentlySelectedRows: any[]) => {
+                              const key =
+                                activePlatform === "WINDOWS"
+                                  ? "selectedWindowsSystems"
+                                  : activePlatform === "MAC"
+                                    ? "selectedMacSystems"
+                                    : "selectedLinuxSystems";
+
+                              // map rows → payload-ready format
+                              const mappedCurrentPageSelection =
+                                currentlySelectedRows.map((row) => ({
+                                  serialNo: row.serialNo,
+                                  hostname: row.hostName,
+                                }));
+
+                              setForm((prev: any) => {
+                                // keep selections from other pages
+                                const otherPagesSelection = prev[key].filter(
+                                  (savedRow: any) =>
+                                    !sysTableData.some(
+                                      (currentPageRow: any) =>
+                                        currentPageRow.serialNo ===
+                                        savedRow.serialNo,
+                                    ),
+                                );
+
+                                return {
+                                  ...prev,
+                                  [key]: [
+                                    ...otherPagesSelection,
+                                    ...mappedCurrentPageSelection,
+                                  ],
+                                };
+                              });
+                            }}
+                            isLoading={loading}
+                            showActions={false}
+                            pagination={false}
+                            showPagination
+                            page={page}
+                            totalPages={totalPages}
+                            setPage={setPage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={setRowsPerPage}
+                            onFilterChange={handleGroupSearch}
+                            fileName="targetSysten"
+                            allData={allSystemsForExport}
+                            rowIdField="serialNo"
+                          />
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="bulk" className="mt-6 space-y-6">
+                        {isUploading && (
+                          <Progress value={uploadProgress} className="h-2" />
+                        )}
+
+                        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-10 text-center">
+                          <Upload className="h-10 w-10 text-muted-foreground mb-4" />
+                          <h3 className="font-semibold mb-2">
+                            Upload System List
+                          </h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Excel must contain a column named{" "}
+                            <b>Serial Number</b>
+                          </p>
+
+                          <label>
+                            <Input
+                              type="file"
+                              accept=".xlsx,.xls,.csv"
+                              className="hidden"
+                              onChange={(e) =>
+                                e.target.files?.[0] &&
+                                handleExcelUpload(e.target.files[0])
+                              }
+                            />
+                            <Button asChild>
+                              <span>Choose File</span>
+                            </Button>
+                          </label>
+                        </div>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleDownloadTemplate}
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Download Template
+                        </Button>
+
+                        {uploadedSerialNumbers.length > 0 && (
+                          <div className="flex items-center justify-between rounded-lg border p-4 bg-muted/40">
+                            <span className="text-sm font-semibold">
+                              {uploadedSerialNumbers.length} serial numbers
+                              uploaded
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setShowSerialListModal(true)}
+                            >
+                              View
+                            </Button>
+                          </div>
+                        )}
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 5: REVIEW */}
+              {activeStep === 5 && (
+                <div className="grid grid-cols-2 gap-8 animate-in fade-in">
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-primary border-b pb-2">
+                      <Info className="h-5 w-5" /> Script Details
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <p>
+                        <span className="text-muted-foreground">Name:</span>{" "}
+                        {form.scriptName}
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Type:</span>{" "}
+                        {form.scriptType}
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">
+                          Platforms:
+                        </span>{" "}
+                        {form.selectedPlatforms.join(", ")}
+                      </p>
+                      <p>
+  <span className="text-muted-foreground">Arguments:</span>{" "}
+  {Object.entries(
+    form.arguments.reduce((acc: any, a: any) => {
+      if (a.key && a.value) acc[a.key] = a.value;
+      return acc;
+    }, {}),
+  )
+    .map(([k, v]) => `${k}=${v}`)
+    .join(", ") || "None"}
+</p>
+
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold flex items-center gap-2 text-primary border-b pb-2">
+                      <Calendar className="h-5 w-5" /> Execution Plan
+                    </h3>
+                    <div className="space-y-2 text-sm">
+                      <p>
+                        <span className="text-muted-foreground">Type:</span>{" "}
+                        {form.scheduleType}
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Start:</span>{" "}
+                        {form.startDateTime}
+                      </p>
+                      <p>
+                        <span className="text-muted-foreground">Systems:</span>{" "}
+                        {form.selectedWindowsSystems.length +
+                          form.selectedMacSystems.length +
+                          form.selectedLinuxSystems.length}{" "}
+                        selected
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+
+            <div className="p-6 border-t bg-muted/30 flex justify-between items-center rounded-b-xl">
+              <Button
+                variant="outline"
+                disabled={activeStep === 0}
+                onClick={() => setActiveStep(activeStep - 1)}
+              >
+                <ChevronLeft className="h-4 w-4 mr-2" /> Previous
+              </Button>
+              <div className="flex gap-3">
+                {activeStep < STEPS.length - 1 ? (
+                  <Button
+                    onClick={() => setActiveStep(activeStep + 1)}
+                    disabled={!isStepValid}
+                  >
+                    Next <ChevronRight className="h-4 w-4 ml-2" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={submitMutation.isPending || !isStepValid}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    {submitMutation.isPending
+                      ? "Deploying..."
+                      : "Schedule Script"}
+                  </Button>
+                )}
+              </div>
+            </div>
+          </Card>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-20 space-y-6 animate-in fade-in">
+          <div className="rounded-full bg-green-100 p-6">
+            <Check className="h-10 w-10 text-green-600" />
+          </div>
+
+          <h2 className="text-2xl font-bold text-green-700">
+            Script Scheduled Successfully
+          </h2>
+
+          <p className="text-sm text-muted-foreground text-center max-w-md">
+            Your script has been scheduled and will run based on the selected
+            configuration.
+          </p>
+
+          <div className="flex gap-3">
+            <Button
+              variant="default"
+              onClick={() => {
+                setShowSuccess(false);
+                setActiveStep(0);
+              }}
             >
-              <DataTable
-                 rowData={uploadedSerialNumbers}
-            colDefs={[{ field: "serialNo", headerName: "Serial Number" },{ field: "hostName", headerName: "Host Name" }]}
-                pagination
-                showFilter={false}
-                showCheckbox={false}
-                showActions={false}
-                showRowsPerPage={false}
-                showExportButton={false}
-                isLoading={false}
-                onRowsPerPageChange={undefined}
-              />
-            </CustomModal>
+              Schedule Another Script
+            </Button>
+          </div>
+        </div>
+      )}
 
-
-
+      <CustomModal
+        isOpen={showSerialListModal}
+        onClose={() => setShowSerialListModal(false)}
+        dialogTitle="Uploaded Serial Numbers"
+        width="w-230!"
+      >
+        <DataTable
+          rowData={uploadedSerialNumbers}
+          colDefs={[
+            { field: "serialNo", headerName: "Serial Number" },
+            { field: "hostName", headerName: "Host Name" },
+          ]}
+          pagination
+          showFilter={false}
+          showCheckbox={false}
+          showActions={false}
+          showRowsPerPage={false}
+          showExportButton={false}
+          isLoading={false}
+          onRowsPerPageChange={undefined}
+        />
+      </CustomModal>
     </div>
   );
 }

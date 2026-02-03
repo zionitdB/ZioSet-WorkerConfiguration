@@ -1,7 +1,11 @@
-"use client";
-
 import { useState, useMemo } from "react";
-import { Loader2, RefreshCw, Terminal, SlidersHorizontal, Settings, ListPlus } from "lucide-react";
+import {
+  Loader2,
+  RefreshCw,
+  Terminal,
+  SlidersHorizontal,
+  Settings,
+} from "lucide-react";
 import CustomModal from "@/components/common/Modal/DialogModal";
 import DataTable from "@/components/common/DataTable";
 import { Button } from "@/components/ui/button";
@@ -41,12 +45,18 @@ interface ActionSelectProps {
   isLoading: boolean;
 }
 
-const ActionSelect: React.FC<ActionSelectProps> = ({ actionId, setActionId, isLoading }) => {
+const ActionSelect: React.FC<ActionSelectProps> = ({
+  actionId,
+  setActionId,
+  isLoading,
+}) => {
   const { data: actions = [] } = useGetAllActions();
 
   return (
     <div className="space-y-1 w-full max-w-xs">
-      <label className="text-sm font-medium text-muted-foreground">Select Action</label>
+      <label className="text-sm font-medium text-muted-foreground">
+        Select Action
+      </label>
       <Select
         value={actionId || ""}
         onValueChange={(val) => setActionId(val)}
@@ -73,12 +83,19 @@ interface CommandIdSelectProps {
   setCommandId: (id: string | null) => void;
 }
 
-const CommandIdSelect: React.FC<CommandIdSelectProps> = ({ actionId, commandId, setCommandId }) => {
-  const { data: commandIds = [], isLoading: isLoadingIds } = useGetCommandIdListByAction(actionId);
+const CommandIdSelect: React.FC<CommandIdSelectProps> = ({
+  actionId,
+  commandId,
+  setCommandId,
+}) => {
+  const { data: commandIds = [], isLoading: isLoadingIds } =
+    useGetCommandIdListByAction(actionId);
 
   return (
     <div className="space-y-1 w-full max-w-xs">
-      <label className="text-sm font-medium text-muted-foreground">Select Command Group ID</label>
+      <label className="text-sm font-medium text-muted-foreground">
+        Select Command Group ID
+      </label>
       <Select
         value={commandId || ""}
         onValueChange={(val) => setCommandId(val)}
@@ -109,45 +126,26 @@ const CommandConfigRoute = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-
   const { data: actionsData, isLoading: isLoadingActions } = useGetAllActions();
   const {
-    data: rowData ,
+    data: rowData,
     isLoading: isLoadingCommands,
     refetch: refetchCommands,
     isFetching: isFetchingCommands,
-  } = useGetCommandsByCommandId(page,rowsPerPage,commandId);
+  } = useGetCommandsByCommandId(page, rowsPerPage, commandId);
 
+  const tableData = useMemo(() => rowData?.content || [], [rowData]);
 
- 
-    const tableData = useMemo(
-      () => ( rowData?.content || []),
-      [ rowData]
-    );
-  
-    const totalItems = rowData?.totalElements||0;
-    const totalPages = Math.ceil(totalItems / rowsPerPage)||rowData?.totalPages;
-
+  const totalItems = rowData?.totalElements || 0;
+  const totalPages = Math.ceil(totalItems / rowsPerPage) || rowData?.totalPages;
 
   const addMutation = useAddCommandConfig();
   const updateMutation = useUpdateCommandConfig();
   const deleteMutation = useDeleteCommandConfig();
 
-
-const handleGetList = () => {
-  if (!commandId) {
-    toast.error("Please select a Command Group ID to fetch the list.", {
-      id: 'selection-required', 
-      duration: 3000,
-    });
-    return;
-  }
-  refetchCommands();
-};
-
   const handleActionChange = (id: string | null) => {
     setActionId(id);
-    setCommandId(null); // Reset commandId when action changes
+    setCommandId(null);
   };
 
   const handleSubmit = (data: any) => {
@@ -158,53 +156,50 @@ const handleGetList = () => {
       setIsModalOpen(false);
     };
 
-    // Include the current commandId in the payload for Add operations
-    const payload = isEdit
-      ? data
-      : { ...data, commandId: commandId }; 
+    const payload = isEdit ? data : { ...data, commandId: commandId };
 
     if (isEdit) {
       updateMutation.mutate(payload, { onSuccess: onSuccessCallback });
     } else {
-     
       addMutation.mutate(payload, { onSuccess: onSuccessCallback });
     }
   };
 
-    // const transformData = (data: any[]) =>
-    // data.map((item) => ({
-    //   ...item,
-    //   department: item?.department?.departmentName || "-",
-    // }));
+  const transformData = (data: any[]) =>
+    data.map((item) => ({
+      ...item,
+    }));
 
+  const getAllData = useGetCommandsByCommandId(
+    1,
+    totalItems || 10000,
+    commandId,
+  );
 
-    // const getAllData = useGetUsers(1, exportPayload.perPage);
-  
-    // const allDataForExport = async (): Promise<any[]> => {
-     
-    //     return new Promise<any[]>((resolve, reject) => {
-    //       getAllData
-    //         .refetch()
-    //         .then((res: any) => resolve(transformData(res.data || [])))
-    //         .catch((err: any) => reject(err));
-    //     });
-    // };
+  const allDataForExport = async (): Promise<any[]> => {
+    return new Promise<any[]>((resolve, reject) => {
+      getAllData
+        .refetch()
+        .then((res: any) => resolve(transformData(res.data?.content || [])))
+        .catch((err: any) => reject(err));
+    });
+  };
 
   const handleAddClick = () => {
     if (!actionId || !commandId) {
-   
-
-       toast.error("Please select an Action and Command Group ID before adding a new configuration.", {
-      id: 'selection-required', 
-      duration: 3000,
-    });  
+      toast.error("Select Action and Command Group ID");
       return;
     }
 
-    const currentAction = actionsData?.find((a: any) => a.id.toString() === actionId);
-    console.log("currentAction",currentAction);
-    
-    setEditData({ actionName: currentAction?.actionName, commandGroupId: commandId });
+    const currentAction = actionsData.find(
+      (a: any) => a.id.toString() === actionId,
+    );
+
+    setEditData({
+      action: currentAction,
+      commandId: commandId,
+    });
+
     setIsModalOpen(true);
   };
 
@@ -220,17 +215,16 @@ const handleGetList = () => {
 
   const confirmDelete = () => {
     if (deleteTarget) {
-      deleteMutation.mutate(deleteTarget.id, {
+      deleteMutation.mutate(deleteTarget, {
         onSuccess: () => {
           refetchCommands();
+          
           setDeleteDialogOpen(false);
           setDeleteTarget(null);
         },
       });
     }
   };
-
-  // --- DataTable Config ---
 
   const columnDefs = useMemo(
     () => [
@@ -250,7 +244,7 @@ const handleGetList = () => {
         cellRenderer: (params: any) => params?.data?.action?.actionName || "-",
       },
     ],
-    []
+    [],
   );
 
   const addComponent = (
@@ -286,7 +280,9 @@ const handleGetList = () => {
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               <span className="text-primary"> Group Command</span> Configuration
             </h1>
-            <p className="text-sm text-muted-foreground">Manage command strings and schema definitions.</p>
+            <p className="text-sm text-muted-foreground">
+              Manage command strings and schema definitions.
+            </p>
           </div>
         </div>
       </div>
@@ -307,7 +303,7 @@ const handleGetList = () => {
             commandId={commandId}
             setCommandId={setCommandId}
           />
-          <Button
+          {/* <Button
             onClick={handleGetList}
             disabled={!commandId || isLoadingCommands}
             className="flex items-center gap-2 w-full md:w-auto bg-primary hover:bg-primary/90"
@@ -318,11 +314,11 @@ const handleGetList = () => {
               <ListPlus className="h-4 w-4" />
             )}
             Get List
-          </Button>
+          </Button> */}
         </div>
       </div>
 
-      {/* Data Table */}
+
       <DataTable
         rowData={tableData}
         colDefs={columnDefs}
@@ -334,22 +330,27 @@ const handleGetList = () => {
         showEdit
         showDelete
         showExportButton={true}
-        pagination={false}  
+        pagination={false}
         showPagination
-        fileName="group-command" 
-       page={page}
+        page={page}
         totalPages={totalPages}
         setPage={setPage}
         rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={setRowsPerPage}  
-        showFilter={false}   
+        onRowsPerPageChange={setRowsPerPage}
+        showFilter={false}
+        allData={allDataForExport}
+        fileName="group-command"
       />
 
       {/* Add/Edit Modal */}
       <CustomModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        dialogTitle={editData.id ? "Edit Command Configuration" : "Add Command Configuration"}
+        dialogTitle={
+          editData.id
+            ? "Edit Command Configuration"
+            : "Add Command Configuration"
+        }
         dialogDescription={
           editData.id
             ? "Update command configuration details."
@@ -360,10 +361,12 @@ const handleGetList = () => {
         height="h-auto"
       >
         <CommandConfigForm
+          selectedData={editData}
+          selectedAction={editData?.action}
+          selectedCommandId={editData?.commandId}
+          isEditMode={!!editData?.id}
           onSubmit={handleSubmit}
           formId="command-config-form"
-          defaultValues={editData}
-          isEdit={!!editData.id}
         />
       </CustomModal>
 

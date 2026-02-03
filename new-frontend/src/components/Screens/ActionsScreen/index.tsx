@@ -1,7 +1,7 @@
 
 
 import { useState, useMemo, useEffect } from "react";
-import { Activity, Loader2, RefreshCw } from "lucide-react";
+import { Activity, CombineIcon, Loader2, RefreshCw } from "lucide-react";
 import DataTable from "@/components/common/DataTable";
 import CustomModal from "@/components/common/Modal/DialogModal";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,16 @@ import {
 import ActionForm from "./form";
 import UploadActionForm from "./upload-form";
 import Breadcrumb from "@/components/common/breadcrumb";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ActionRoute = () => {
   const [page, setPage] = useState(1);
@@ -26,7 +36,8 @@ const ActionRoute = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
   const [editData, setEditData] = useState<any>(null);
   const [selectedRow] = useState<any>(null);
 
@@ -37,7 +48,7 @@ const ActionRoute = () => {
 
   const { data, isLoading, refetch, isFetching } =
     useGetActions(page, rowsPerPage);
-  const { data: count } = useGetActionCount();
+  const { data: count ,refetch: refetchCount} = useGetActionCount();
 
   const addMutation = useAddAction();
   const updateMutation = useUpdateAction();
@@ -251,6 +262,24 @@ const ActionRoute = () => {
     </Button>
   );
 
+
+      const handleDelete = (data: any) => {
+    setDeleteTarget(data);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTarget) {
+      deleteMutation.mutate(deleteTarget.id, {
+        onSuccess: () => {
+         refetch();
+        refetchCount();
+          setDeleteDialogOpen(false);
+          setDeleteTarget(null);
+        },
+      });
+    }
+  };
   /* ---------------- UI ---------------- */
 
   return (
@@ -299,11 +328,7 @@ const ActionRoute = () => {
           setEditData(row);
           setIsModalOpen(true);
         }}
-        onDeleteClick={(row) =>
-          deleteMutation.mutate(row.id, {
-            onSuccess: () => refetch(),
-          })
-        }
+        onDeleteClick={handleDelete}
         showEdit
         showDelete
         showExportButton
@@ -349,6 +374,37 @@ const ActionRoute = () => {
           onSuccess={() => setIsUploadOpen(false)}
         />
       </CustomModal>
+
+
+      
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <AlertDialogContent className="rounded-xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="flex items-center gap-3 text-xl">
+                    <div className="p-2 bg-destructive/10 rounded-lg">
+                      <CombineIcon className="h-6 w-6 text-destructive" />
+                    </div>
+                    Confirm Delete
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-base pt-2">
+                    Are you sure you want to delete Action{" "}
+                    <span className="font-semibold text-foreground">
+                       {deleteTarget?.actionName}
+                    </span>
+                    ? This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="gap-2">
+                  <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={confirmDelete}
+                    className="bg-destructive hover:bg-destructive/90 rounded-lg"
+                  >
+                    Delete Action
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
     </div>
   );
 };
