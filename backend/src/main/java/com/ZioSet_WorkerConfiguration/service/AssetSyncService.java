@@ -134,6 +134,7 @@ public class AssetSyncService {
                 .queryParam("date",date
                         .format(DateTimeFormatter
                                 .ofPattern("dd-MM-yyyy")));
+        System.out.println("Count api ="+uri.toUriString());
 
         ResponseEntity<Long> response =
                 restTemplate.getForEntity(uri.toUriString(), Long.class);
