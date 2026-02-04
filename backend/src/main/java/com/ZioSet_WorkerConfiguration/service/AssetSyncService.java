@@ -111,8 +111,12 @@ public class AssetSyncService {
         changed |= update(asset::getProjectName, asset::setProjectName, dto.getProjectName());
         changed |= update(asset::getLastActive, asset::setLastActive, dto.getLastActive());
 
+        String locationName = dto.getLocation() != null
+                ? dto.getLocation().getLocationName()
+                : "UNKNOWN";
+
         if (dto.getLocation() != null) {
-            changed |= update(asset::getLocationName, asset::setLocationName, dto.getLocation().getLocationName());
+            changed |= update(asset::getLocationName, asset::setLocationName, locationName);
         }
 
         asset.setAssetId(dto.getAssetId());
