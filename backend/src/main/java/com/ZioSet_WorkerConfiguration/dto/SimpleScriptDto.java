@@ -35,4 +35,5 @@ public class SimpleScriptDto {
 
     private Map<String,String> params;
     private String format;
+    private Long addedBy;
 }

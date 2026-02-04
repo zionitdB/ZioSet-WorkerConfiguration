@@ -351,23 +351,35 @@ public class ScriptExecutionResultService {
                 .stream().map(this::toSummary).toList();
     }
 
-    public List<ScriptTargetSystemEntity> findTargetSystems(
-            Long scriptId,
-            String location,
-            String status
+    public List<ScriptTargetSystemResponseDTO> findTargetSystems(Long scriptId, String location, String status
     ) {
         Integer code = getCode(status);
+        List<ScriptTargetSystemEntity> ts ;
 
-        return switch (status.toUpperCase()) {
+         switch (status.toUpperCase()) {
             case "SUCCESS", "FAILED" ->
-                    targetRepo.findTargetSystemsByCodeAndLocation(scriptId, location, code);
+                    ts = targetRepo.findTargetSystemsByCodeAndLocation(scriptId, location, code);
 
             case "PENDING" ->
-                    targetRepo.findPendingTargetsByLocation(scriptId, location);
+                    ts = targetRepo.findPendingTargetsByLocation(scriptId, location);
 
             default ->
                     throw new IllegalArgumentException("Invalid status: " + status);
         };
+        return ts.stream().map(this::toMapTargetSystems).toList();
+    }
+
+    private ScriptTargetSystemResponseDTO toMapTargetSystems(ScriptTargetSystemEntity t){
+        return new ScriptTargetSystemResponseDTO(
+                t.getId(),
+                t.getSystemSerialNumber(),
+                t.getAssignedBy(),
+                t.getAssignedAt(),
+                t.getLastRunAt(),
+                t.getScript().getId(),
+                t.getHostName(),
+                t.getScript().getName()
+        );
     }
 
 
