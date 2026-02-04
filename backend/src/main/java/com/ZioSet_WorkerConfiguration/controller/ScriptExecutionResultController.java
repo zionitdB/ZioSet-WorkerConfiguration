@@ -62,6 +62,34 @@ public class ScriptExecutionResultController {
         return service.locationWiseCounts(scriptId,status);
     }
 
+    @GetMapping("/location-wise-targetSystems")
+    public ResponseEntity<Object> getTargetSystemLocationWise(@RequestParam Long scriptId,
+                                                            @RequestParam String location,
+                                                            @RequestParam String status) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.findTargetSystems(scriptId,location,status),
+                        "location",location,
+                        "message", "Data"
+                )
+        );
+    }
+
+    @GetMapping("/location-wise-data")
+    public ResponseEntity<Object> getScriptExecutionsLocationWise(
+            @RequestParam Long scriptId,
+            @RequestParam String location,
+            @RequestParam String status
+    ) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.getExecutionResults(scriptId, location, status),
+                        "location",location,
+                        "message", "Data"
+                )
+        );
+    }
+
     @GetMapping("/dashboard-statuswise")
     public ResponseEntity<Object> dashboardStatusList(@ModelAttribute ExecutionResultFilterDTO filter,
                                                       @RequestParam String status,

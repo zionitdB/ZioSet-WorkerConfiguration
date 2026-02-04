@@ -268,30 +268,32 @@ public class ScriptExecutionResultService {
         Page<ScriptTargetSystemEntity> data = targetRepo.findPendingTargets(scriptId,pageable);
 
         List<ScriptExecutionResultSummaryDTO> results = data.stream()
-                .map(ts -> {
-                    ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
-
-                    dto.setId(null);
-                    dto.setRunUuid(null);
-                    dto.setScriptId(ts.getScript().getId());
-                    dto.setScriptName(ts.getScript().getName());
-                    dto.setSystemSerialNumber(ts.getSystemSerialNumber());
-                    dto.setStartedAt(null);
-                    dto.setFinishedAt(null);
-                    dto.setReturnCode(null);
-                    dto.setStatus("PENDING");
-                    dto.setStdout(null);
-                    dto.setStderr(null);
-                    dto.setHostName(ts.getHostName());
-                    dto.setParsedData(null);
-
-                    return dto;
-                })
+                .map(this::toMapPendingResult)
                 .toList();
 
         return new PagedResponse<>(results, data.getNumber(), data.getSize(),
                 data.getTotalElements(), data.getTotalPages(), data.isLast());
 
+    }
+
+    private ScriptExecutionResultSummaryDTO toMapPendingResult(ScriptTargetSystemEntity ts){
+        ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
+
+        dto.setId(null);
+        dto.setRunUuid(null);
+        dto.setScriptId(ts.getScript().getId());
+        dto.setScriptName(ts.getScript().getName());
+        dto.setSystemSerialNumber(ts.getSystemSerialNumber());
+        dto.setStartedAt(null);
+        dto.setFinishedAt(null);
+        dto.setReturnCode(null);
+        dto.setStatus("PENDING");
+        dto.setStdout(null);
+        dto.setStderr(null);
+        dto.setHostName(ts.getHostName());
+        dto.setParsedData(null);
+
+        return dto;
     }
 
 
@@ -334,6 +336,38 @@ public class ScriptExecutionResultService {
         }
 
         return new DashboardSlotCountsDto(overallFrom, overallTo, slots);
+    }
+
+    public List<ScriptExecutionResultSummaryDTO> getExecutionResults(Long scriptId,
+                                                                     String location,
+                                                                     String status) {
+        Integer returnCode = getCode(status);
+        if (returnCode==null){
+            return targetRepo.findPendingTargetsByLocation(scriptId, location)
+                    .stream().map(this::toMapPendingResult).toList();
+        }
+
+        return repo.findByScriptStatusAndLocation(scriptId, returnCode, location)
+                .stream().map(this::toSummary).toList();
+    }
+
+    public List<ScriptTargetSystemEntity> findTargetSystems(
+            Long scriptId,
+            String location,
+            String status
+    ) {
+        Integer code = getCode(status);
+
+        return switch (status.toUpperCase()) {
+            case "SUCCESS", "FAILED" ->
+                    targetRepo.findTargetSystemsByCodeAndLocation(scriptId, location, code);
+
+            case "PENDING" ->
+                    targetRepo.findPendingTargetsByLocation(scriptId, location);
+
+            default ->
+                    throw new IllegalArgumentException("Invalid status: " + status);
+        };
     }
 
 

@@ -82,4 +82,20 @@ public interface ScriptExecutionResultRepository
     );
 
 
+    @Query("""
+        SELECT r
+        FROM ScriptExecutionResultEntity r
+        JOIN Asset a
+            ON a.serialNo = r.systemSerialNumber
+        WHERE r.script.id = :scriptId
+          AND r.returnCode = :returnCode
+          AND COALESCE(a.locationName, 'UNKNOWN') = :location
+    """)
+    List<ScriptExecutionResultEntity> findByScriptStatusAndLocation(
+            @Param("scriptId") Long scriptId,
+            @Param("returnCode") Integer returnCode,
+            @Param("location") String location
+    );
+
+
 }
