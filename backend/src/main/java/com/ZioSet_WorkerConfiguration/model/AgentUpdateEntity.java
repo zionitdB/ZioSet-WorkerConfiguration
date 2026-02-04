@@ -35,6 +35,8 @@ public class AgentUpdateEntity {
     @Transient
     private long targetSystemsCount;
 
+    private String hostName;
+
     public AgentUpdateEntity() {
     }
 
@@ -52,6 +54,14 @@ public class AgentUpdateEntity {
         this.targetSystems = targetSystems;
         this.targetDateTime = targetDateTime;
         this.createdAt = createdAt;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public long getId() {

@@ -8,6 +8,7 @@ import com.ZioSet_WorkerConfiguration.model.AgentUpdateFileEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,8 +25,8 @@ public class AgentUpdateMapper {
                     .collect(Collectors.toList()));
         }
 
-        if (dto.getSystemSerialNumbers() != null) {
-            agentUpdateEntity.setTargetSystems(dto.getSystemSerialNumbers().stream()
+        if (dto.getSerialNoHostName() != null) {
+            agentUpdateEntity.setTargetSystems(dto.getSerialNoHostName().stream()
                     .map(e-> this.toSystemEntity(e, agentUpdateEntity))
                     .collect(Collectors.toList()));
         }
@@ -43,9 +44,10 @@ public class AgentUpdateMapper {
         return fileEntity;
     }
 
-    private AgentUpdateSystemsEntity toSystemEntity(String serialNumber, AgentUpdateEntity parent) {
+    private AgentUpdateSystemsEntity toSystemEntity(Map<String,String> systems, AgentUpdateEntity parent) {
         AgentUpdateSystemsEntity systemEntity = new AgentUpdateSystemsEntity();
-        systemEntity.setSystemSerialNumber(serialNumber);
+        systemEntity.setSystemSerialNumber(systems.get("serialNo"));
+        systemEntity.setHostName(systems.get("hostName"));
         systemEntity.setAgentUpdate(parent);
         return systemEntity;
     }

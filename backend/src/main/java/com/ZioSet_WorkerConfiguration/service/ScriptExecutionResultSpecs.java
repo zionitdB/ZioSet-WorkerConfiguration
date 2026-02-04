@@ -1,41 +1,56 @@
 package com.ZioSet_WorkerConfiguration.service;
 
-
 import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
 import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ScriptExecutionResultSpecs {
 
     public static Specification<ScriptExecutionResultEntity> filter(ExecutionResultFilterDTO f) {
         return (root, query, cb) -> {
-            var predicates = cb.conjunction();
+            List<Predicate> predicates = new ArrayList<>();
 
-            if (f.getSerialNumber() != null && !f.getSerialNumber().isEmpty()) {
-                predicates.getExpressions().add(
-                        cb.equal(root.get("systemSerialNumber"), f.getSerialNumber())
+            if (hasText(f.getSerialNumberOrHostName())) {
+                predicates.add(
+                        cb.or(
+                                cb.equal(root.get("systemSerialNumber"), f.getSerialNumberOrHostName().trim()),
+                                cb.equal(root.get("hostName"), f.getSerialNumberOrHostName().trim())
+                        )
                 );
             }
 
             if (f.getScriptId() != null) {
-                predicates.getExpressions().add(
-                        cb.equal(root.get("script").get("id"), f.getScriptId())
+                predicates.add(
+                        cb.equal(root.join("script", JoinType.INNER).get("id"), f.getScriptId())
                 );
             }
 
-            if (f.getFinishedAfter() != null) {
-                predicates.getExpressions().add(
-                        cb.greaterThanOrEqualTo(root.get("finishedAt"), f.getFinishedAfter())
-                );
+            Instant after = f.getFinishedAfter();
+            Instant before = f.getFinishedBefore();
+
+            if (after != null || before != null) {
+                predicates.add(cb.isNotNull(root.get("finishedAt")));
             }
 
-            if (f.getFinishedBefore() != null) {
-                predicates.getExpressions().add(
-                        cb.lessThanOrEqualTo(root.get("finishedAt"), f.getFinishedBefore())
-                );
+            if (after != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("finishedAt"), after));
             }
 
-            return predicates;
+            if (before != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("finishedAt"), before));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    private static boolean hasText(String s) {
+        return s != null && !s.trim().isEmpty();
     }
 }

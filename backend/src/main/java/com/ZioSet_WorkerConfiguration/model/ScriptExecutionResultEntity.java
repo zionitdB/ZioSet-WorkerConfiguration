@@ -42,4 +42,7 @@ public class ScriptExecutionResultEntity {
 
     @Column(name = "received_at", nullable = false, updatable = false)
     private Instant receivedAt = Instant.now();
+
+    @Column(name = "host_name")
+    private String hostName;
 }
