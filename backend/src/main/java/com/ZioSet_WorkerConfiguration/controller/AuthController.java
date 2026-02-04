@@ -9,15 +9,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ZioSet_WorkerConfiguration.dto.LoginRequest;
-import com.ZioSet_WorkerConfiguration.model.UserInfo;
-import com.ZioSet_WorkerConfiguration.service.UserDetailsImpl;
+import com.ZioSet_WorkerConfiguration.security.UserDetailsImpl;
 import com.ZioSet_WorkerConfiguration.utils.JwtUtils;
 
 import java.util.Map;

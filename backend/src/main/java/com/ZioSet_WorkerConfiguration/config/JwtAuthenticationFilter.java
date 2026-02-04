@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.ZioSet_WorkerConfiguration.service.UserDetailsServiceImpl;
+import com.ZioSet_WorkerConfiguration.security.UserDetailsServiceImpl;
 import com.ZioSet_WorkerConfiguration.utils.JwtUtils;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

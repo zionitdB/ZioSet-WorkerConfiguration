@@ -13,7 +13,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ZioSet_WorkerConfiguration.service.UserDetailsImpl;
+import com.ZioSet_WorkerConfiguration.security.UserDetailsImpl;
 import com.ZioSet_WorkerConfiguration.utils.JwtUtils;
 
 public class JwtUtilsTest {

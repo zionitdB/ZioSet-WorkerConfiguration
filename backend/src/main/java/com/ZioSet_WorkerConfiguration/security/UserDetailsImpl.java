@@ -1,8 +1,9 @@
-package com.ZioSet_WorkerConfiguration.service;
+package com.ZioSet_WorkerConfiguration.security;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import org.springframework.security.core.GrantedAuthority;
@@ -56,7 +57,8 @@ public class UserDetailsImpl implements UserDetails {
 				user.getFirstName(),
 				user.getLastName(),
 				user.getActive(),
-				user.getRole(),
+//				user.getRole(),
+				new Role(),
 				Collections.emptyList());
 	}
 

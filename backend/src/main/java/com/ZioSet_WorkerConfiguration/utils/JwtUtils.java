@@ -12,7 +12,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.ZioSet_WorkerConfiguration.service.UserDetailsImpl;
+import com.ZioSet_WorkerConfiguration.security.UserDetailsImpl;
 
 import io.jsonwebtoken.*;
 import java.security.Key;

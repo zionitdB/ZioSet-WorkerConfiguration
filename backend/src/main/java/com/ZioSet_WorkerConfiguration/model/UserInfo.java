@@ -2,11 +2,14 @@ package com.ZioSet_WorkerConfiguration.model;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "user_mst",
@@ -14,6 +17,7 @@ import jakarta.persistence.*;
                 @UniqueConstraint(columnNames = "username"),
                 @UniqueConstraint(columnNames = "email")
         })
+@Data
 public class UserInfo {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,83 +46,15 @@ public class UserInfo {
   @Column(name = "upd_datetime")
   private Date updDatetime;
 
-  @ManyToOne
-  @JoinColumn(name = "role_id")
-  private Role role;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
-    public Role getRole() {
-        return role;
-    }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
 
-    public int getUserId() {
-	return userId;
-}
-
-public void setUserId(int userId) {
-	this.userId = userId;
-}
-
-public String getUsername() {
-	return username;
-}
-
-public void setUsername(String username) {
-	this.username = username;
-}
-
-public String getPassword() {
-	return password;
-}
-
-public void setPassword(String password) {
-	this.password = password;
-}
-
-public String getFirstName() {
-	return firstName;
-}
-
-public void setFirstName(String firstName) {
-	this.firstName = firstName;
-}
-
-public String getLastName() {
-	return lastName;
-}
-
-public void setLastName(String lastName) {
-	this.lastName = lastName;
-}
-
-public String getEmail() {
-	return email;
-}
-
-public void setEmail(String email) {
-	this.email = email;
-}
-
-public int getActive() {
-	return active;
-}
-
-public void setActive(int active) {
-	this.active = active;
-}
-
-public Date getUpdDatetime() {
-	return updDatetime;
-}
-
-public void setUpdDatetime(Date updDatetime) {
-	this.updDatetime = updDatetime;
-}
-  
-
- 
   
 }
