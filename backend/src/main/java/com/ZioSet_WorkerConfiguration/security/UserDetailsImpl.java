@@ -1,12 +1,10 @@
 package com.ZioSet_WorkerConfiguration.security;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.ZioSet_WorkerConfiguration.model.UserInfo;
@@ -21,7 +19,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	private String email;
 
-	private Role role;
+	private Set<Role> roles;
 
 	private String firstName;
 
@@ -34,7 +32,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(int id, String username, String email, String password, String firstName, String lastName, int active, Role role,
+	public UserDetailsImpl(int id, String username, String email, String password, String firstName, String lastName, int active, Set<Role> roles,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
@@ -43,27 +41,42 @@ public class UserDetailsImpl implements UserDetails {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.active = active;
-		this.role = role;
+		this.roles = roles;
 		this.authorities = authorities;
 	}
 
 	public static UserDetailsImpl build(UserInfo user) {
-		
+
 		return new UserDetailsImpl(
-				user.getUserId(), 
-				user.getUsername(), 
+				user.getUserId(),
+				user.getUsername(),
 				user.getEmail(),
 				user.getPassword(),
 				user.getFirstName(),
 				user.getLastName(),
 				user.getActive(),
-//				user.getRole(),
-				new Role(),
-				Collections.emptyList());
+				user.getRoles(),
+				getAuthorities(user)
+		);
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return authorities;
+	}
+
+
+	private static Collection<? extends GrantedAuthority> getAuthorities(UserInfo user) {
+		Set<GrantedAuthority> authorities = new HashSet<>();
+
+		user.getRoles().forEach(role -> {
+			authorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleName()));
+
+			role.getPermissions().forEach(permission ->
+					authorities.add(new SimpleGrantedAuthority(permission.getName()))
+			);
+		});
+
 		return authorities;
 	}
 
@@ -115,8 +128,8 @@ public class UserDetailsImpl implements UserDetails {
 		return Objects.equals(id, user.id);
 	}
 
-    public Role getRole() {
-        return role;
+    public Set<Role> getRole() {
+        return roles;
     }
 
     public String getFirstName() {

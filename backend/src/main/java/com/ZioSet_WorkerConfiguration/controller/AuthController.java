@@ -34,18 +34,23 @@ public class AuthController {
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
+    System.out.println("In sign in1");
     Authentication authentication = authenticationManager
             .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+    System.out.println("In sign in");
     SecurityContextHolder.getContext().setAuthentication(authentication);
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
+    System.out.println("set authority context");
     if ("cookie".equalsIgnoreCase(authMode)) {
       ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
       Map<String,Object> body = Map.of(
               "user", userDetails
       );
-      return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+      System.out.println("Cookie="+jwtCookie);
+      return ResponseEntity.ok()
+              .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
               .body(body);
     } else {
       String jwt = jwtUtils.generateTokenFromUsername(userDetails.getUsername());
@@ -53,6 +58,7 @@ public class AuthController {
               "token", jwt,
               "user", userDetails
       );
+      System.out.println("body="+body);
       return ResponseEntity.ok(body);
     }
   }

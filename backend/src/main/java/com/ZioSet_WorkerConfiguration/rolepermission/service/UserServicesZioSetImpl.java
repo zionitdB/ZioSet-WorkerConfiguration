@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -70,9 +72,10 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
         if (userRepo.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
-
-        Role role = roleRepo.findById(dto.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Invalid role"));
+        Set<Role> roles = dto.getRoleIds().stream()
+                .map(roleId -> roleRepo.findById(roleId)
+                        .orElseThrow(() -> new RuntimeException("Invalid role id: " + roleId)))
+                .collect(Collectors.toSet());
 
         UserInfo user = new UserInfo();
         user.setUsername(dto.getUsername());
@@ -80,7 +83,7 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
         user.setLastName(dto.getLastName());
         user.setEmail(dto.getEmail());
         user.setActive(dto.getActive());
-        user.setRole(role);
+        user.setRoles(roles);
 
         // Encrypt password
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -110,7 +113,7 @@ public class UserServicesZioSetImpl implements UserServicesZioSet {
         dbUser.setLastName(userInfo.getLastName());
         dbUser.setEmail(userInfo.getEmail());
         dbUser.setActive(userInfo.getActive());
-        dbUser.setRole(userInfo.getRole());
+        dbUser.setRoles(userInfo.getRoles());
         return userRepo.save(dbUser);
     }
 

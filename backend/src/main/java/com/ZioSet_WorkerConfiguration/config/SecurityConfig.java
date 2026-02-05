@@ -93,6 +93,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // API auth
+                        .requestMatchers("/api/user/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // existing endpoints
@@ -105,7 +106,7 @@ public class SecurityConfig {
 
                         //swagger
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 );
 
         http.authenticationProvider(authenticationProvider());

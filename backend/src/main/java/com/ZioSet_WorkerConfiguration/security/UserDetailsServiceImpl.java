@@ -28,29 +28,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     UserInfo user = userRepository.getUsersByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
-    return User.builder()
-            .username(user.getUsername())
-            .password(user.getPassword())
-            .authorities(getAuthorities(user))
-            .accountExpired(false)
-            .accountLocked(!(user.getActive()==1))
-            .credentialsExpired(false)
-            .disabled(!(user.getActive()==10))
-            .build();
+    return UserDetailsImpl.build(user);
+
+//    return User.builder()
+//            .username(user.getUsername())
+//            .password(user.getPassword())
+//            .authorities(getAuthorities(user))
+//            .accountExpired(false)
+//            .accountLocked(!(user.getActive()==1))
+//            .credentialsExpired(false)
+//            .disabled(!(user.getActive()==1))
+//            .build();
   }
 
-  private Collection<? extends GrantedAuthority> getAuthorities(UserInfo user) {
-    Set<GrantedAuthority> authorities = new HashSet<>();
-
-    user.getRoles().forEach(role -> {
-      authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
-
-      role.getPermissions().forEach(permission ->
-              authorities.add(new SimpleGrantedAuthority(permission.getName()))
-      );
-    });
-
-    return authorities;
-  }
 
 }
