@@ -24,15 +24,27 @@ public class AgentUpdateSystemsEntity {
     @Column(name = "updated_at")
     private String updatedAt;
 
+    @Column(name = "host_name")
+    private String hostName;
+
     public AgentUpdateSystemsEntity() {
     }
 
-    public AgentUpdateSystemsEntity(long id, AgentUpdateEntity agentUpdate, String systemSerialNumber, boolean isUpdated, String updatedAt) {
+    public AgentUpdateSystemsEntity(long id, AgentUpdateEntity agentUpdate, String systemSerialNumber, boolean isUpdated, String updatedAt, String hostName) {
         this.id = id;
         this.agentUpdate = agentUpdate;
         this.systemSerialNumber = systemSerialNumber;
         this.isUpdated = isUpdated;
         this.updatedAt = updatedAt;
+        this.hostName = hostName;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
     public long getId() {

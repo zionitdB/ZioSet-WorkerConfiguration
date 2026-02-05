@@ -59,6 +59,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.UUID;
@@ -137,6 +138,25 @@ public class ScriptFileService {
         BlobClient blobClient = containerClient.getBlobClient(storageKey);
 
         return blobClient.getBlobUrl();
+    }
+
+    public byte[] download(String storageKey) {
+        try {
+            BlobServiceClient serviceClient = new BlobServiceClientBuilder()
+                    .connectionString(azureConnectionString)
+                    .buildClient();
+
+            BlobContainerClient containerClient =
+                    serviceClient.getBlobContainerClient(containerName);
+
+            BlobClient blobClient = containerClient.getBlobClient(storageKey);
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            blobClient.download(out);
+            return out.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Blob download failed: " + storageKey, e);
+        }
     }
 
 

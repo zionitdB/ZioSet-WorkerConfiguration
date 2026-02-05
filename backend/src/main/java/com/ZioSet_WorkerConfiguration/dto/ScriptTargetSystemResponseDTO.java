@@ -8,5 +8,7 @@ public record ScriptTargetSystemResponseDTO (
     String assignedBy,
     Instant assignedAt,
     Instant lastRunAt,
-    Long scriptId
+    Long scriptId,
+    String hostName,
+    String scriptName
 ) {}

@@ -1,15 +1,15 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
-import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptTargetSystemResponseDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptTypeResponseDTO;
+import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -27,7 +27,17 @@ public class ScriptController {
 
     @PostMapping
     public ScriptEntity createOrUpdate(@RequestBody ScriptDTO dto) {
-        return scriptService.createOrUpdateScript(dto);
+        return scriptService.createOrUpdateScriptExecution(dto);
+    }
+
+    @PostMapping("/create")
+    public ScriptEntity create(@RequestBody CreateScriptArgDto dto) {
+        return scriptService.createScriptArgDto(dto);
+    }
+
+    @PostMapping("/simple-create")
+    public ScriptEntity createSimpleScript(@RequestBody SimpleScriptDto dto) {
+        return scriptService.createSimpleScriptDto(dto);
     }
 
     @GetMapping
@@ -149,6 +159,82 @@ public class ScriptController {
         return list;
     }
 
+    @GetMapping({"/count"})
+    public long getScriptEntityCount() {
+        long count = 0;
+        try {
+            count = scriptService.getScriptCount();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> pending(@RequestParam(defaultValue = "1") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getPendingScripts(pageable),
+                        "message", "Pending scripts"
+                )
+        );
+    }
+
+    @GetMapping("/approved")
+    public ResponseEntity<?> approved(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getApprovedScripts(pageable),
+                        "message", "Approved scripts"
+                )
+        );
+    }
+
+    @GetMapping("/rejected")
+    public ResponseEntity<?> getRejectedScripts(@RequestParam(defaultValue = "1") int page,
+                                      @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page-1,size);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getRejectedScripts(pageable),
+                        "message", "Rejected scripts"
+                )
+        );
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<?> approve(@PathVariable Long id) {
+        scriptService.approveScript(id);
+        return ResponseEntity.ok(Map.of("message", "Script approved"));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<?> reject(@PathVariable Long id) {
+        scriptService.rejectScript(id);
+        return ResponseEntity.ok(Map.of("message", "Script rejected"));
+    }
+
+
+    @GetMapping("/with-parsing-rule")
+    public ResponseEntity<?> getScriptsWithParsingRules(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", scriptService.getScriptsWithParsingRules(pageable),
+                        "message", "Scripts with parsing rules"
+                )
+        );
+    }
 
 
 }

@@ -23,6 +23,8 @@ public class ScriptTargetSystemEntity {
     @Column(name = "system_serial_number", nullable = false)
     private String systemSerialNumber;
 
+    private String hostName;
+
     @Column(name = "assigned_by", length = 128)
     private String assignedBy;
 

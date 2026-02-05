@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class AgentUpdateCreateDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime targetDateTime;
     private List<AgentUpdateFileCreateDto> files;
-    private List<String> systemSerialNumbers;
+    private List<Map<String,String>> serialNoHostName;
+
+
 
     public LocalDateTime getTargetDateTime() {
         return targetDateTime;
@@ -27,11 +30,11 @@ public class AgentUpdateCreateDto {
         this.files = files;
     }
 
-    public List<String> getSystemSerialNumbers() {
-        return systemSerialNumbers;
+    public List<Map<String, String>> getSerialNoHostName() {
+        return serialNoHostName;
     }
 
-    public void setSystemSerialNumbers(List<String> systemSerialNumbers) {
-        this.systemSerialNumbers = systemSerialNumbers;
+    public void setSerialNoHostName(List<Map<String, String>> serialNoHostName) {
+        this.serialNoHostName = serialNoHostName;
     }
 }

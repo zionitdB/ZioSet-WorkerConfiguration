@@ -8,20 +8,26 @@ import lombok.Data;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class ScriptDTO {
-    private Long id;
     private String name;
-    private String description;
     private ScriptType scriptType;
     private String scriptText;
     private Long scriptFileId;
+    private Long templateId;
     private Boolean isActive;
+    private String description;
 
     private List<Long> dependencyFileIds;
-    private List<String> targetSystemSerials;
+//    private List<String> targetSystemSerials;
     private List<ScriptTargetPlatform> targetPlatforms;
+
+    //for req_parameter_value and for script_argument_value
+    private Map<String,String> params;
+
+    private Long addedBy;
 
     // Schedule fields
     private ScheduleType scheduleType;
@@ -30,5 +36,7 @@ public class ScriptDTO {
     private List<String> weekDays;   // ["MON","FRI"]
     private Integer monthDay;        // 2, 10, 31
     private LocalTime timeOfDay;        // "09:00"
+    private List<Map<String,String> > serialNoHostName;
+    private String format;
 }
 

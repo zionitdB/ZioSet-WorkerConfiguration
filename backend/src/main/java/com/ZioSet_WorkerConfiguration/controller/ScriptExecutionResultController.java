@@ -1,11 +1,16 @@
 package com.ZioSet_WorkerConfiguration.controller;
 
-import com.ZioSet_WorkerConfiguration.dto.ExecutionResultFilterDTO;
-import com.ZioSet_WorkerConfiguration.dto.ScriptExecutionResultSummaryDTO;
+import com.ZioSet_WorkerConfiguration.dto.*;
 import com.ZioSet_WorkerConfiguration.service.ScriptExecutionResultService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/execution-results")
@@ -16,11 +21,105 @@ public class ScriptExecutionResultController {
     private final ScriptExecutionResultService service;
 
     @GetMapping
-    public Page<ScriptExecutionResultSummaryDTO> getResults(
-            ExecutionResultFilterDTO filter,
+    public Page<?> getResults(
+            @ModelAttribute ExecutionResultFilterDTO filter,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
+        System.out.println("scriptId=" + filter.getScriptId()
+                + ", after=" + filter.getFinishedAfter()
+                + ", before=" + filter.getFinishedBefore());
         return service.getPaginatedResults(filter, page, size);
+    }
+
+    @GetMapping("/getAllByScriptId")
+    public List<ScriptExecutionResultSummaryDTO> findAllByScriptId(@RequestParam Long scriptId    ) {
+        return service.findAllByScriptId(scriptId);
+    }
+
+    @GetMapping("/getCountByScriptId")
+    public ResponceObj getResults(@RequestParam Long scriptId) {
+        long count = service.findByScriptId(scriptId);
+        ResponceObj obj = new ResponceObj();
+        obj.setData(count);
+        obj.setCode(200);
+        obj.setMessage("data");
+        return obj;
+    }
+
+    @GetMapping("/getSummaryBySerialNo")
+    public List<ScriptExecutionResultSummaryDTO> getSummaryBySerialNo(@RequestParam String serialNo) {
+        return service.getExecutionHistoryBySerial(serialNo);
+    }
+
+    @GetMapping("/dashboard-counts")
+    public DashboardCountsDto dashboardCounts(@RequestParam(required = false)Long scriptId) {
+        return service.dashboardCounts(scriptId);
+    }
+
+    @GetMapping("/location-wise")
+    public List<LocationWiseDto> dashboardCounts(@RequestParam Long scriptId, @RequestParam String status) {
+        return service.locationWiseCounts(scriptId,status);
+    }
+
+    @GetMapping("/location-wise-targetSystems")
+    public ResponseEntity<Object> getTargetSystemLocationWise(@RequestParam Long scriptId,
+                                                            @RequestParam String location,
+                                                            @RequestParam String status) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.findTargetSystems(scriptId,location,status),
+                        "location",location,
+                        "message", "Data"
+                )
+        );
+    }
+
+    @GetMapping("/location-wise-data")
+    public ResponseEntity<Object> getScriptExecutionsLocationWise(
+            @RequestParam Long scriptId,
+            @RequestParam String location,
+            @RequestParam String status
+    ) {
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.getExecutionResults(scriptId, location, status),
+                        "location",location,
+                        "message", "Data"
+                )
+        );
+    }
+
+    @GetMapping("/dashboard-statuswise")
+    public ResponseEntity<Object> dashboardStatusList(@ModelAttribute ExecutionResultFilterDTO filter,
+                                                      @RequestParam String status,
+                                                      @RequestParam(defaultValue = "1") int page,
+                                                      @RequestParam(defaultValue = "10") int pageSize) {
+        Pageable pageable = PageRequest.of(page-1,pageSize);
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.dashboardCountList(filter,status,pageable),
+                        "message", "Data"
+                )
+        );
+
+    }
+
+    @GetMapping("/parsed-report")
+    public ResponseEntity<Object> paredReport( @ModelAttribute ExecutionResultFilterDTO filter,
+                                               @RequestParam(defaultValue = "1") int page,
+                                               @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(service.parse(filter,page,size));
+    }
+
+    @GetMapping("/last-24-hours-count")
+    public ResponseEntity<?> getLast24HourSlotCounts(@RequestParam(required = false) Long scriptId) {
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "data", service.getLast24HourExecutionCountsSlotted(scriptId),
+                        "message", "Last 24 hours execution counts"
+                )
+        );
     }
 }

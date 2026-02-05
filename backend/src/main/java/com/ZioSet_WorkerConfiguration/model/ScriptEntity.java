@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.model;
 
+import com.ZioSet_WorkerConfiguration.enums.ScriptApprovalStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,7 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -23,21 +26,36 @@ public class ScriptEntity {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false, unique = true)
+    private String scriptId;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "template_id")
+    private ScriptTemplateEntity template;
+
     @Lob
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "script_type", nullable = false)
+    @Column(name = "script_type")
     private ScriptType scriptType;
 
-    @Lob
+    @Column(name = "script_text", columnDefinition = "TEXT")
     private String scriptText; // For inline scripts
 
-    // Many-to-one relationship with ScriptFile (nullable if inline)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "script_file_id")
     @JsonIgnore
     private ScriptFileEntity scriptFile; // For file-based scripts
+
+    @ElementCollection
+    @CollectionTable(
+            name = "script_arguments",
+            joinColumns = @JoinColumn(name = "script_id")
+    )
+    @MapKeyColumn(name = "arg_key")
+    @Column(name = "arg_value")
+    private Map<String, String> scriptArgument;
 
     // One-to-many relationship with dependencies
     @OneToMany(mappedBy = "script", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,7 +81,6 @@ public class ScriptEntity {
     @Column(nullable = false)
     private Boolean isActive = true;
 
-
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
 
@@ -78,8 +95,33 @@ public class ScriptEntity {
 
     private LocalTime timeOfDay;
 
+    private Long addedBy;
+
     @PreUpdate
     public void setUpdatedAt() {
         this.updatedAt = Instant.now();
     }
+
+    @Lob
+    private String parsingFormat;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status", nullable = false)
+    private ScriptApprovalStatus approvalStatus = ScriptApprovalStatus.PENDING;
+
+
+    // for security purpose
+    @Column(name = "approval_digest_json", columnDefinition = "TEXT")
+    private String approvalDigestJson;
+
+    @Lob
+    @Column(name = "approval_signature")
+    private String approvalSignature;
+
+    @Column(name = "approved_at")
+    private Instant approvedAt;
+
+    @Column(name = "approved_by")
+    private Long approvedBy;
+
 }
