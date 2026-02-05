@@ -25,7 +25,7 @@ const pages = {
         //   id: 'login',
         //   title: 'login',
         //   type: 'item',
-        //   url: '/pages/login',
+        //   url: '/pages/app/login',
         //   target: true
         // },
         // {

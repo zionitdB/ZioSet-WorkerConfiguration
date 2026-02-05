@@ -61,7 +61,7 @@ import { useState } from "react";
 import { ScrollArea } from "../ui/scroll-area";
 export default function RootRoute() {
   const location = useLocation();
-  const hideSidebarRoutes = ["/dashboard", "/settings"];
+  const hideSidebarRoutes = ["/app/dashboard", "/settings"];
   const shouldHideSidebar = hideSidebarRoutes.includes(location.pathname);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 

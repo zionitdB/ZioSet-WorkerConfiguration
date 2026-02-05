@@ -13,7 +13,7 @@ function AppWrapper({ children }) {
 
   React.useEffect(() => {
     // Exclude the login page from showing the inactivity warning
-    // if (location.pathname === '/Login') return;
+    // if (location.pathname === '/app/login') return;
 
     const timeout = setTimeout(() => {
       setIdleWarning(true);
@@ -44,9 +44,9 @@ function AppWrapper({ children }) {
       }, 1000);
     }
 
-    // If countdown reaches 0, navigate to /Login
+    // If countdown reaches 0, navigate to /app/login
     if (countdown === 0) {
-      // navigate('/Login');
+      // navigate('/app/login');
       // Clear all local storage data
       // localStorage.clear();
     }
@@ -72,7 +72,7 @@ function AppWrapper({ children }) {
     <AuthProvider>
       {children}
       <Modal
-        open={idleWarning && location.pathname !== '/login'}
+        open={idleWarning && location.pathname !== '/app/login'}
         onClose={handleStayHere}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"

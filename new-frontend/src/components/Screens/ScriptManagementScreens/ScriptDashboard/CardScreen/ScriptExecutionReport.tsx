@@ -153,8 +153,8 @@ const ScriptExecutionReport = () => {
     <div className="container mx-auto pb-8">
       <Breadcrumb
         items={[
-          { label: "Module Dashboard", path: "/dashboard" },
-          { label: "Script Command Center", path: "/scriptRunner/scriptWiseDashboard" },
+          { label: "Module Dashboard", path: "/app/dashboard" },
+          { label: "Script Command Center", path: "/app/scriptRunner/scriptWiseDashboard" },
           { label: "Execution Report" },
         ]}
       />

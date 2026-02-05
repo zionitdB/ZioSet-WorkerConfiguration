@@ -83,7 +83,7 @@ export default function ScriptTemplateList() {
   const navigate = useNavigate();
 
   const handleRunNow = (template: any) => {
-    navigate('/scriptRunner/scriptTemplateRun', { state: { template } });
+    navigate('/app/scriptRunner/scriptTemplateRun', { state: { template } });
   };
 
   const deleteMutation = useDeleteScriptTemplate();
@@ -110,8 +110,8 @@ export default function ScriptTemplateList() {
       <div className="mb-6 px-8 pt-4">
         <Breadcrumb
           items={[
-            { label: "Module Dashboard", path: "/dashboard" },
-            { label: "Script Templates", path: "/scriptRunner/scriptTemplate" },
+            { label: "Module Dashboard", path: "/app/dashboard" },
+            { label: "Script Templates", path: "/app/scriptRunner/scriptTemplate" },
           ]}
         />
       </div>
@@ -129,7 +129,7 @@ export default function ScriptTemplateList() {
           </Button>
           <Button 
             className="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 gap-2 px-6"
-            onClick={() => navigate("/scriptRunner/scriptTemplateForm")}
+            onClick={() => navigate("/app/scriptRunner/scriptTemplateForm")}
           >
             <Plus className="h-4 w-4" /> Create Script Template
           </Button>

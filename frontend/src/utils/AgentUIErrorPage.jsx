@@ -17,7 +17,7 @@ function AgentUIErrorPage() {
           Sorry, the page you're looking for doesn't exist. If you think something is broken, report a problem.
        </p>
        <div className="btns">
-          <Link to="/app/login">return login</Link>
+          <Link to="/app/app/login">return login</Link>
        </div>
     </div>
  </div>

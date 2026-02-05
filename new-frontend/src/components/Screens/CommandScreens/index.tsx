@@ -54,7 +54,7 @@ export default function CommandScreen() {
     items={[
       {
         label: "Module Dashboard",
-        path: "/dashboard",
+        path: "/app/dashboard",
       },
       {
         label: "Command",

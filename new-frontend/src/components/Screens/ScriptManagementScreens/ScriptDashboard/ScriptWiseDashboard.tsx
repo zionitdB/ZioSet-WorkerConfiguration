@@ -22,8 +22,10 @@ import {
   Cell,
   Area,
   AreaChart,
+  CartesianGrid,
+  Legend,
 } from "recharts";
-import {  useGetAvgExecutionMetric, useGetDashboardCountsData, useGetDashboardRecentExecution, useGetScripts } from "./hooks";
+import {  useGetAvgExecutionMetric, useGetDashboardCountsByTimelineByScriptId, useGetDashboardCountsData, useGetDashboardRecentExecution, useGetScripts } from "./hooks";
 import { ComboboxDropdown } from "@/components/common/ComboBox";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +41,28 @@ export default function ScriptOpsDashboard() {
   
   const { data: scripts = [] } = useGetScripts();
   const { data: recentExecution = [] } = useGetDashboardRecentExecution(scriptId);
+    const {data:timelineCount} = useGetDashboardCountsByTimelineByScriptId(scriptId);
+
+
+  const timelineData = useMemo(() => {
+    if (!timelineCount?.data?.slots) return [];
+  
+    return timelineCount.data.slots.map((slot: any) => {
+      const from = new Date(slot.from);
+      const to = new Date(slot.to);
+  
+      const format = (d: Date) =>
+        d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  
+      return {
+        time: `${format(from)} - ${format(to)}`,
+        success: slot.success,
+        failed: slot.failed,
+        pending: slot.pending,
+      };
+    });
+  }, [timelineCount]);
+  
   
   const processedData = useMemo(() => {
     const hasRealData = dashboardCount ;
@@ -51,29 +75,18 @@ export default function ScriptOpsDashboard() {
           pending: dashboardCount.pending || 0,
           total: dashboardCount.total || 0,
         },
-        chartTimeline: [
-          { time: "09:00", success: Math.floor(dashboardCount.success * 0.4), failed: 2 },
-          { time: "12:00", success: Math.floor(dashboardCount.success * 0.7), failed: 5 },
-          { time: "15:00", success: dashboardCount.success, failed: dashboardCount.failed },
-        ],
         isDemo: false
       };
     }
 
     // fallback DEMO DATA
     return {
-      stats: { success: 84, failed: 12, pending: 4, total: 100 },
-      chartTimeline: [
-        { time: "08:00", success: 10, failed: 1 },
-        { time: "12:00", success: 45, failed: 5 },
-        { time: "16:00", success: 70, failed: 8 },
-        { time: "20:00", success: 84, failed: 12 },
-      ],
+      stats: { success: 0, failed: 0, pending: 0, total: 0 },
       isDemo: true
     };
   }, [dashboardCount]);
 
-  const { stats, chartTimeline } = processedData;
+  const { stats } = processedData;
 
   const completion = Math.min((stats.success / stats.total) * 100, 100) || 0;
 
@@ -98,10 +111,36 @@ const navigate = useNavigate();
 
 const handleKpiClick = (status: string) => {
   if (!scriptId) return;
-  navigate("/scriptRunner/executionReport", { 
+  navigate("/app/scriptRunner/executionReport", { 
     state: { scriptId, status: status.toUpperCase() } 
   });
 };
+
+
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-slate-900/95 backdrop-blur-sm text-white p-4 rounded-xl shadow-2xl border border-slate-700">
+ <p className="text-sm font-semibold mb-2">
+  Time Slot: {payload[0].payload.time}
+</p>
+
+          {payload.map((item: any, index: number) => (
+            <div key={index} className="flex items-center justify-between gap-4 mb-1">
+              <span className="text-xs flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.stroke || item.fill }}></div>
+                {item.name}:
+              </span>
+              <span className="font-bold text-sm">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="min-h-screen  ">
       {/* HEADER */}
@@ -207,62 +246,67 @@ const handleKpiClick = (status: string) => {
               gradient="from-orange-500/10 to-amber-500/10"
             />
           </div>
-
-          {/* MAIN ANALYTICS */}
-          <div className="grid grid-cols-3 gap-6 mb-8">
-            {/* Cumulative Progress */}
+          
+          <div className="grid grid-cols-2 gap-6 mb-8">
             <GlassCard
               title="Cumulative Progress"
               icon={<TrendingUp className="w-5 h-5" />}
             >
-              <ResponsiveContainer width="100%" height={260}>
-                <AreaChart data={chartTimeline}>
-                  <defs>
-                    <linearGradient id="successGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.1} />
-                    </linearGradient>
-                    <linearGradient id="failedGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1} />
-                    </linearGradient>
-                  </defs>
-                  <XAxis
-                    dataKey="time"
-                    stroke="#64748b"
-                    fontSize={12}
-                  />
-                  <YAxis stroke="#64748b" fontSize={12} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "var(--card)",
-                     color: "var(--foreground)",    
-    border: "1px solid var(--border)",
-    borderRadius: "12px",
-    padding: "12px",
-    fontSize: "0.875rem",
-                    }}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="success"
-                    stroke="#10b981"
-                    fill="url(#successGradient)"
-                    strokeWidth={3}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="failed"
-                    stroke="#ef4444"
-                    fill="url(#failedGradient)"
-                    strokeWidth={2}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={260}>
+                            <AreaChart data={timelineData}>
+                              <defs>
+                                <linearGradient id="successGradient" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                                  <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                </linearGradient>
+                                <linearGradient id="failedGradient" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3}/>
+                                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+                                </linearGradient>
+                                <linearGradient id="pendingGradient" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3}/>
+                                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#334155" strokeOpacity={0.3} />
+                              <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} fontWeight={600} />
+                              <YAxis stroke="#94a3b8" fontSize={12} fontWeight={600} />
+                              <Tooltip content={<CustomTooltip />} />
+                              <Legend 
+                                wrapperStyle={{ paddingTop: '20px' }}
+                                iconType="circle"
+                                formatter={(value) => <span className=" font-medium">{value}</span>}
+                              />
+                              <Area 
+                                type="monotone" 
+                                dataKey="success" 
+                                stroke="#10b981" 
+                                strokeWidth={3}
+                                fill="url(#successGradient)"
+                                name="Success"
+                              />
+                              <Area 
+                                type="monotone" 
+                                dataKey="failed" 
+                                stroke="#ef4444" 
+                                strokeWidth={3}
+                                fill="url(#failedGradient)"
+                                name="Failed"
+                              />
+                              <Area 
+                                type="monotone" 
+                                dataKey="pending" 
+                                stroke="#f59e0b" 
+                                strokeWidth={3}
+                                fill="url(#pendingGradient)"
+                                name="Pending"
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
             </GlassCard>
 
             {/* Status Distribution Pie */}
-            <GlassCard
+            {/* <GlassCard
               title="Status Distribution"
               icon={<Activity className="w-5 h-5" />}
             >
@@ -311,7 +355,7 @@ const handleKpiClick = (status: string) => {
                   </div>
                 ))}
               </div>
-            </GlassCard>
+            </GlassCard> */}
 
             {/* Target Progress */}
             <GlassCard

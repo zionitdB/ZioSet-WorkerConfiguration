@@ -47,6 +47,7 @@ import {
 import * as XLSX from "xlsx";
 import { Progress } from "@/components/ui/progress";
 import CustomModal from "@/components/common/Modal/DialogModal";
+import { useAuth } from "@/components/context/auth-context";
 
 const STEPS = [
   "Script Info",
@@ -273,6 +274,8 @@ case 3:
     }
   };
 
+  const {user}=useAuth();
+  
   const handleSubmit = () => {
     let repeatSeconds = 0;
     if (form.scheduleType === "REPEAT_EVERY") {
@@ -290,6 +293,7 @@ case 3:
       scriptText: form.scriptCategory === "TEXT" ? form.commandText : "",
       scriptFileId: form.scriptCategory === "FILE" ? form.scriptFileId : null,
       isActive: form.isActive,
+       addedBy: user?.id || 0,
       dependencyFileIds: form.dependencyFileIds,
       targetPlatforms: form.selectedPlatforms,
       serialNoHostName: [

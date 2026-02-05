@@ -19,15 +19,15 @@ export const TreeViewPage = () => {
                   items={[
                     {
                       label: "Module Dashboard",
-                      path: "/dashboard",
+                      path: "/app/dashboard",
                     },
                     {
                       label: "Category",
-                          path: "/agentConfiguration/category",
+                          path: "/app/agentConfiguration/category",
                     },
                      {
                       label: "Category Hierarchy",
-                          path: "/agentConfiguration/CategoriesTreeview",
+                          path: "/app/agentConfiguration/CategoriesTreeview",
                     },
                   ]}
                 />
@@ -44,7 +44,7 @@ export const TreeViewPage = () => {
 <div></div>
         {/* <Button
           variant="outline"
-          onClick={() => navigate("/agentConfiguration/category")}
+          onClick={() => navigate("/app/agentConfiguration/category")}
           className="flex items-center gap-2"
         >
           <ArrowLeft className="h-4 w-4" />

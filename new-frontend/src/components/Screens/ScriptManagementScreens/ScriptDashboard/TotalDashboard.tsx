@@ -38,13 +38,15 @@ const {data:targetDistribution}=useGetSystemListCount(activePlatform);
   const { data: recentExecution = [] } = useGetDashboardRecentExecutionAll();
   
 
-  const {data:timelineCount} = useGetDashboardCountsByTimeline();
   const { data: scriptCount } = useGetScriptCount();
+  
+  
+  const {data:dashboardEndPointData} = useGetOverviewDashboardEndPoint();
+  
+  const dashboardEndPoint = dashboardEndPointData?.cardCount||{};
 
 
-    const {data:dashboardEndPointData} = useGetOverviewDashboardEndPoint();
-   
-    const dashboardEndPoint = dashboardEndPointData?.cardCount||{};
+  const {data:timelineCount} = useGetDashboardCountsByTimeline();
 const timelineData = useMemo(() => {
   if (!timelineCount?.data?.slots) return [];
 
@@ -122,7 +124,7 @@ const platforms: PlatformConfig[] = [
                     items={[
                       {
                         label: "Module Dashboard",
-                        path: "/dashboard",
+                        path: "/app/dashboard",
                       },
                       {
                         label: "Script Dashboard",
@@ -167,7 +169,7 @@ const platforms: PlatformConfig[] = [
           
           <div className="group relative">
             <div className="absolute inset-0 bg-linear-to-r from-blue-500/30 to-cyan-500/30 blur-xl group-hover:blur-xl transition-all duration-300 rounded-3xl"></div>
-            <Card className="relative  shadow-md hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={()=>navigate('/scriptRunner/scriptTemplate')}>
+            <Card className="relative  shadow-md hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={()=>navigate('/app/scriptRunner/scriptTemplate')}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full -mr-16 -mt-16"></div>
               <CardHeader >
                 <div className="flex items-center justify-between">
@@ -190,7 +192,7 @@ const platforms: PlatformConfig[] = [
 
   <div className="group relative">
             <div className="absolute inset-0 bg-linear-to-r from-violet-500/30 to-violet-500/30 blur-xl group-hover:blur-xl transition-all duration-300 rounded-3xl"></div>
-            <Card className="relative  shadow-md hover:shadow-violet-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={()=>navigate('/scriptRunner/scriptCardList')}>
+            <Card className="relative  shadow-md hover:shadow-violet-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={()=>navigate('/app/scriptRunner/scriptCardList')}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 rounded-full -mr-16 -mt-16"></div>
               <CardHeader >
                 <div className="flex items-center justify-between">
@@ -212,7 +214,7 @@ const platforms: PlatformConfig[] = [
 
           <div className="group relative">
             <div className="absolute inset-0 bg-linear-to-r from-green-500/30 to-emerald-500/30 blur-xl group-hover:blur-xl transition-all duration-300 rounded-3xl"></div>
-            <Card className="relative shadow-md hover:shadow-green-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={() => navigate('/scriptRunner/executionReportAll', { state: {scriptId:null,  status: 'success' } })}>
+            <Card className="relative shadow-md hover:shadow-green-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={() => navigate('/app/scriptRunner/executionReportAll', { state: {scriptId:null,  status: 'success' } })}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full -mr-16 -mt-16"></div>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -236,7 +238,7 @@ const platforms: PlatformConfig[] = [
         
           <div className="group relative">
             <div className="absolute inset-0 bg-linear-to-r from-amber-500/30 to-orange-500/30 blur-xl group-hover:blur-xl transition-all duration-300 rounded-3xl"></div>
-            <Card className="relative shadow-md hover:shadow-amber-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={() => navigate('/scriptRunner/executionReportAll', { state: {scriptId:null, status: 'failed' } })}>
+            <Card className="relative shadow-md hover:shadow-amber-500/20 transition-all duration-300 hover:scale-105 overflow-hidden" onClick={() => navigate('/app/scriptRunner/executionReportAll', { state: {scriptId:null, status: 'failed' } })}>
               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full -mr-16 -mt-16"></div>
               <CardHeader >
                 <div className="flex items-center justify-between">
@@ -266,7 +268,7 @@ const platforms: PlatformConfig[] = [
               {/* Total Card */}
               <div 
                 className="p-8 border-b lg:border-b-0 lg:border-r bg-muted hover:bg-primary/10 transition-colors cursor-pointer group"
-                onClick={() => navigate('/scriptRunner/totalEndPoints')}
+                onClick={() => navigate('/app/scriptRunner/totalEndPoints')}
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="p-3 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-200">
@@ -306,7 +308,7 @@ const platforms: PlatformConfig[] = [
                 <div className="grid grid-cols-2 gap-4">
                   <div 
                     className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100 cursor-pointer hover:shadow-md transition-all"
-                    onClick={() => navigate('/scriptRunner/activeEndPoints')}
+                    onClick={() => navigate('/app/scriptRunner/activeEndPoints')}
                   >
                     <Link className="w-4 h-4 text-emerald-600" />
                     <div>
@@ -316,7 +318,7 @@ const platforms: PlatformConfig[] = [
                   </div>
                   <div 
                     className="flex items-center gap-3 p-3 rounded-xl bg-rose-50 border border-rose-100 cursor-pointer hover:shadow-md transition-all"
-                    onClick={() => navigate('/scriptRunner/inActiveEndPoints')}
+                    onClick={() => navigate('/app/scriptRunner/inActiveEndPoints')}
                   >
                     <Link2Off className="w-4 h-4 text-rose-600" />
                     <div>
@@ -495,14 +497,14 @@ const platforms: PlatformConfig[] = [
               </div>
               <div>
                 <p className="text-xs font-bold text-muted-foreground uppercase">{activePlatformData?.label}</p>
-                <p className="text-sm font-semibold">Active Systems</p>
+                <p className="text-sm font-semibold">Total Systems</p>
               </div>
             </div>
             <div className="text-right">
               <p className="text-2xl font-black text-foreground">{targetDistribution ?? 0}</p>
               <div className="flex items-center gap-1 text-[10px] font-medium text-green-500">
                 <Monitor size={10} />
-                <span>Online</span>
+                {/* <span>Online</span> */}
               </div>
             </div>
           </div>

@@ -46,7 +46,7 @@ export default function ScriptCardList() {
 
 
 //   const handleRunNow = () => {
-//     navigate(`/scriptRunner/scriptRunner`);
+//     navigate(`/app/scriptRunner/app/scriptRunner`);
 //   };
 
   return (
@@ -54,9 +54,9 @@ export default function ScriptCardList() {
       <div className="mb-6 px-8 pt-4">
         <Breadcrumb
           items={[
-            { label: "Module Dashboard", path: "/dashboard" },
-              { label: "Script Dashboard", path: "/scriptRunner/scriptDashboard" },
-            { label: "Script List", path: "/scriptRunner/scriptDashboard" },
+            { label: "Module Dashboard", path: "/app/dashboard" },
+              { label: "Script Dashboard", path: "/app/scriptRunner/scriptDashboard" },
+            { label: "Script List", path: "/app/scriptRunner/scriptDashboard" },
           ]}
         />
       </div>
@@ -71,7 +71,7 @@ export default function ScriptCardList() {
         <div className="flex items-center gap-3">
           <Button 
             className="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 gap-2 px-6"
-            onClick={() => navigate("/scriptRunner/scriptRunner")}
+            onClick={() => navigate("/app/scriptRunner/app/scriptRunner")}
           >
             <Plus className="h-4 w-4" /> New Script Configuration
           </Button>

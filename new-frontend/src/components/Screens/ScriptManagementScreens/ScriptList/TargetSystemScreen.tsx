@@ -67,6 +67,13 @@ const ScriptTargetSystemsRoute = () => {
         cellRenderer: (p: any) =>
           p.value ? format(new Date(p.value), "dd-MM-yyyy HH:mm") : "-",
       },
+        {
+        field: "assignedAt",
+        headerName: "Assigned At",
+        flex: 1.2,
+        cellRenderer: (p: any) =>
+          p.value ? format(new Date(p.value), "dd-MM-yyyy HH:mm") : "-",
+      },
       {
         headerName: "Action",
         width: 100,
@@ -110,15 +117,15 @@ const ScriptTargetSystemsRoute = () => {
               items={[
                 {
                   label: "Module Dashboard",
-                  path: "/dashboard",
+                  path: "/app/dashboard",
                 },
                 {
                   label: "Script List",
-                      path: "/scriptRunner/scriptRunner",
+                      path: "/app/scriptRunner/app/scriptRunner",
                 },
                  {
                   label: "Target Systems",
-                      path: "/scriptRunner/scriptTargetSystems",
+                      path: "/app/scriptRunner/scriptTargetSystems",
                 },
               ]}
             />

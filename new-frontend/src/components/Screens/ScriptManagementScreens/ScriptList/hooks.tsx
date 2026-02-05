@@ -13,7 +13,7 @@ const onError = (error: any) => {
 export const useGetScripts = (page: number, size: number) => {
   return useQuery({
     queryKey: ["scripts", page, size],
-    queryFn: () => fetchData(`/api/scripts?pageNo=${page}&perPage=${size}`),
+    queryFn: () => fetchData(`/api/scripts/getScriptEntityByLimit?pageNo=${page}&perPage=${size}`),
   });
 };
 

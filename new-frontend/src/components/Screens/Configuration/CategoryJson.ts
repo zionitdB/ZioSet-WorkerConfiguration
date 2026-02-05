@@ -2,22 +2,22 @@ export const CategoryJson = {
   Dashboard: [
     {
       permissionsName: "Agent Dashboard",
-      navigationUrl: "/agentConfiguration/dashboard",
+      navigationUrl: "/app/agentConfiguration/dashboard",
       actions: ["View", "Add", "Edit", "Delete"],
     },
       {
       permissionsName: "Access Dashboard",
-      navigationUrl: "/accessControl/dashboard",
+      navigationUrl: "/app/accessControl/dashboard",
       actions: ["View", "Add", "Edit", "Delete"],
     },
         {
       permissionsName: "Script Dashboard",
-      navigationUrl: "/scriptRunner/scriptDashboard",
+      navigationUrl: "/app/scriptRunner/scriptDashboard",
       actions: ["View", "Add", "Edit", "Delete"],
     },
        {
       permissionsName: "Script Wise Dashboard",
-      navigationUrl: "/scriptRunner/scriptWiseDashboard",
+      navigationUrl: "/app/scriptRunner/scriptWiseDashboard",
       actions: ["View", "Add", "Edit", "Delete"],
     },
     
@@ -26,28 +26,28 @@ export const CategoryJson = {
     Master: [
        {
       permissionsName: "Category",
-      navigationUrl: "/agentConfiguration/category",
+      navigationUrl: "/app/agentConfiguration/category",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
     {
       permissionsName: "Actions",
-      navigationUrl: "/agentConfiguration/action",
+      navigationUrl: "/app/agentConfiguration/action",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
 
      {
       permissionsName: "Command",
-      navigationUrl: "/agentConfiguration/command",
+      navigationUrl: "/app/agentConfiguration/command",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
      {
       permissionsName: "Standalone Application",
-      navigationUrl: "/agentConfiguration/standaloneApplication",
+      navigationUrl: "/app/agentConfiguration/standaloneApplication",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
      {
       permissionsName: "User Management",
-      navigationUrl: "/accessControl/user-management",
+      navigationUrl: "/app/accessControl/user-management",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
    
@@ -57,18 +57,18 @@ export const CategoryJson = {
   SystemAsset: [
       {
       permissionsName: "Agent Update",
-      navigationUrl: "/agentInstallation/agentUpdate",
+      navigationUrl: "/app/agentInstallation/agentUpdate",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
       
     {
       permissionsName: "Installed Systems",
-      navigationUrl: "/agentInstallation/installedSystemScreen",
+      navigationUrl: "/app/agentInstallation/installedSystemScreen",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
   {
       permissionsName: "Unregistered Assets",
-      navigationUrl: "/agentInstallation/unregisteredAssets",
+      navigationUrl: "/app/agentInstallation/unregisteredAssets",
       actions: ["View", "Add", "Edit", "Delete", "Upload", "Export"],
     },
 
@@ -89,12 +89,12 @@ export const CategoryJson = {
   
      {
       permissionsName: "Script Management",
-      navigationUrl: "/scriptRunner/scriptRunner",
+      navigationUrl: "/app/scriptRunner/app/scriptRunner",
       actions: ["View",  "Export"],
     },
       {
       permissionsName: "Script Templates",
-      navigationUrl: "/scriptRunner/scriptTemplate",
+      navigationUrl: "/app/scriptRunner/scriptTemplate",
       actions: ["View",  "Export"],
     },
 
@@ -106,17 +106,17 @@ export const CategoryJson = {
   
      {
       permissionsName: "Execution Result",
-      navigationUrl: "/scriptRunner/executionResult",
+      navigationUrl: "/app/scriptRunner/executionResult",
       actions: ["View",  "Export"],
     },
        {
       permissionsName: "Parsed Result",
-      navigationUrl: "/scriptRunner/parsedReport",
+      navigationUrl: "/app/scriptRunner/parsedReport",
       actions: ["View",  "Export"],
     },
    {
       permissionsName: "LocationWise Execution",
-      navigationUrl: "/scriptRunner/locationWiseExecutionReport",
+      navigationUrl: "/app/scriptRunner/locationWiseExecutionReport",
       actions: ["View",  "Export"],
     },
     
@@ -125,33 +125,33 @@ export const CategoryJson = {
   Settings: [
     {
       permissionsName: "Role",
-      navigationUrl: "/accessControl/role",
+      navigationUrl: "/app/accessControl/role",
       actions: ["View", "Preview", "Edit", "Delete", "Add"],
     },
       {
       permissionsName: "Module",
-      navigationUrl: "/accessControl/module",
+      navigationUrl: "/app/accessControl/module",
       actions: ["View", "Edit"],
     },
     {
       permissionsName: "Role Permission",
-      navigationUrl: "/accessControl/role-permission",
+      navigationUrl: "/app/accessControl/role-permission",
       actions: ["View", "Edit"],
     },
     {
       permissionsName: "Permission",
-      navigationUrl: "/accessControl/permission",
+      navigationUrl: "/app/accessControl/permission",
       actions: ["View", "Add"],
     },
     {
       permissionsName: "Permission Action",
-      navigationUrl: "/accessControl/permission-action",
+      navigationUrl: "/app/accessControl/permission-action",
       actions: ["View", "Add"],
     },
 
  {
       permissionsName: "Script Approval",
-      navigationUrl: "/scriptRunner/scriptApproval",
+      navigationUrl: "/app/scriptRunner/scriptApproval",
       actions: ["View",  "Export"],
     },
     

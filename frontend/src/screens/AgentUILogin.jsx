@@ -15,7 +15,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import "../css/Login.css";
+import "../css/app/login.css";
 import { useNavigate } from "react-router-dom";
 import { ToastTypes, showToast } from "../utils/toast";
 import { AgentUIAuthProvider, useAgentUILoginAuth } from "../utils/AgentUIAuthContext";
@@ -78,7 +78,7 @@ function AgentUILogin() {
 
       // Store user information in local storage
       sessionStorage.setItem("agentUser", JSON.stringify(responseData));
-      navigate("/app/Dashboard");
+      navigate("/app/app/dashboard");
     } else {
       // Handle error response
       setError("Invalid username or password");

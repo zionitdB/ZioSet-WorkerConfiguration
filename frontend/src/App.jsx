@@ -39,7 +39,7 @@ import AgentUpdatesTargetSystemsScreen from "./screens/AgentUpdatesTargetSystems
 import WindowsInstalledSystemsScreen from "./screens/WindowsInstalledSystems/WindowsInstalledSystemsScreen";
 import MacInstalledSystemsScreen from "./screens/MacInstalledSystems/MacInstalledSystemsScreen";
 import UnRegisteredAssetsScreen from "./screens/UnRegisteredAssets/UnRegisteredAssetsScreen";
-import ScriptRunnerScreen from "./screens/ScriptRunner";
+import ScriptRunnerScreen from "./screens/app/scriptRunner";
 import ExecutionResultScreen from "./screens/ExecutionResult";
 import AgentListScreen from "./screens/AgentList";
 
@@ -95,14 +95,14 @@ function LocationAwareApp() {
   const location = useLocation();
   const isLoginPage =
     location.pathname === "/ErrorPage" ||
-    location.pathname === "/app/login" ||
+    location.pathname === "/app/app/login" ||
     location.pathname === "/app/ErrorPage" ||
     location.pathname === "/app/redirect" ||
     location.pathname === "*";
 
   const isAgentScreen =
     location.pathname.startsWith("/app/") &&
-    location.pathname !== "/app/login" &&
+    location.pathname !== "/app/app/login" &&
     location.pathname !== "/app/redirect";
 
   const [showModal, setShowModal] = useState(false);
@@ -171,7 +171,7 @@ function LocationAwareApp() {
 
   const navigateToLogin = () => {
     // Navigate to login page
-    navigate("/app/login");
+    navigate("/app/app/login");
   };
   useEffect(() => {
     if (countdown === 0) {
@@ -215,14 +215,14 @@ function LocationAwareApp() {
         >
           <div>
             <Routes>
-              {/* Root route redirecting to /app/Dashboard */}
+              {/* Root route redirecting to /app/app/dashboard */}
               <Route
                 path="/"
-                element={<Navigate to="/app/Dashboard" replace />}
+                element={<Navigate to="/app/app/dashboard" replace />}
               />
               <Route
                 exact
-                path="/app/Dashboard"
+                path="/app/app/dashboard"
                 element={
                   <AgentUIPrivateRoute>
                     <AgentUIDashboard />
@@ -334,7 +334,7 @@ function LocationAwareApp() {
               />
                  <Route
                 exact
-                path="/app/scriptRunner"
+                path="/app/app/scriptRunner"
                 element={
                   <AgentUIPrivateRoute>
                     <ScriptRunnerScreen />
@@ -366,13 +366,13 @@ function LocationAwareApp() {
               <Route path="/ErrorPage" element={<ErrorPage />} />
               <Route path="/app/ErrorPage" element={<AgentUIErrorPage />} />
 
-              <Route path="/app/login" element={<AgentUILogin />} />
+              <Route path="/app/app/login" element={<AgentUILogin />} />
               <Route
                 exact
                 path="/app/redirect"
                 element={
                   <AgentUIRedirectPage
-                    redirectTo="/app/login"
+                    redirectTo="/app/app/login"
                     countdownDuration={3}
                   />
                 }

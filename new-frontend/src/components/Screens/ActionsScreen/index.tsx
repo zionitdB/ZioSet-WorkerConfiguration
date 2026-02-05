@@ -286,7 +286,7 @@ const ActionRoute = () => {
     <div className="container mx-auto py-6 space-y-6">
       <Breadcrumb
         items={[
-          { label: "Module Dashboard", path: "/dashboard" },
+          { label: "Module Dashboard", path: "/app/dashboard" },
           { label: "Actions" },
         ]}
       />

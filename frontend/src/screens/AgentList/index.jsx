@@ -105,7 +105,7 @@ const AgentListScreen = () => {
           variant="contained"
           color="primary"
           value="Add Agent"
-          onClick={() => navigate("/app/scriptRunner")}
+          onClick={() => navigate("/app/app/scriptRunner")}
         />
       </div> */}
 
@@ -118,7 +118,7 @@ const AgentListScreen = () => {
                             loading: loading,
                             addButton: (
                               <GlobleBtn
-                               onClick={() => navigate("/app/scriptRunner")}
+                               onClick={() => navigate("/app/app/scriptRunner")}
                                 variant="text"
                                 color="error"
                                       value="Add Script"

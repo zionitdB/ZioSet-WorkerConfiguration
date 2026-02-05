@@ -14,7 +14,6 @@ import PermissionActionRoute from "../Screens/Configuration/permission-action";
 import UserRoute from "../Screens/UserManagement";
 import CategoryRoute from "../Screens/CategoryManagement";
 import ZiosetAgentDashboard from "../Screens/SuperAdminDashboard";
-import AgentConfigDashboard from "../Screens/Dashboard";
 import { TreeViewPage } from "../Screens/CategoryManagement/TreeViewPage";
 import ActionRoute from "../Screens/ActionsScreen";
 import UnregisteredAssetsRoute from "../Screens/UnregistredAssets";
@@ -44,6 +43,7 @@ import ParsedExecutionDetails from "../Screens/ScriptManagementScreens/ParsedRep
 import ScriptApprovalScreen from "../Screens/ScriptManagementScreens/ScriptApproval/index.tsx";
 import ScriptExecutionReportAll from "../Screens/ScriptManagementScreens/ScriptDashboard/CardScreen/ScriptExecutionReportAll.tsx";
 import ScriptExecutionDrillReport from "../Screens/ScriptManagementScreens/ScriptExecutionDrillReport/index.tsx";
+import PremiumAgentDashboard from "../Screens/Dashboard/index.tsx";
 
 // Define the type for authenticated route objects
 interface AuthenticatedRoute {
@@ -54,14 +54,14 @@ interface AuthenticatedRoute {
 // Define the list of authenticated routes with types
 const authenticatedRoutes: AuthenticatedRoute[] = [
   {
-    path: "/agentConfiguration/dashboard",
+    path: "/app/agentConfiguration/dashboard",
     element: (
-      <HelmetedRoute title="dashboard" element={<AgentConfigDashboard />} />
+      <HelmetedRoute title="dashboard" element={<PremiumAgentDashboard />} />
     ),
   },
 
    {
-    path: "/dashboard",
+    path: "/app/dashboard",
     element: (
       <HelmetedRoute title="dashboard" element={<ZiosetAgentDashboard />} />
     ),
@@ -71,26 +71,26 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
   
   
    {
-    path: "/accessControl/dashboard",
+    path: "/app/accessControl/dashboard",
     element: (
       <HelmetedRoute title="dashboard" element={<AccessControlDashboard />} />
     ),
   },
    {
-    path: "/accessControl/user-management",
+    path: "/app/accessControl/user-management",
     element: (
       <HelmetedRoute title="user" element={<UserRoute />} />
     ),
   },
 
     {
-    path: "/accessControl/role",
+    path: "/app/accessControl/role",
     element: (
       <HelmetedRoute title="role" element={<RoleRoute />} />
     ),
   },
      {
-    path: "/accessControl/module",
+    path: "/app/accessControl/module",
     element: (
       <HelmetedRoute title="role" element={<ModuleRoute />} />
     ),
@@ -99,179 +99,179 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
   
 
     {
-    path: "/accessControl/role-permission",
+    path: "/app/accessControl/role-permission",
     element: (
       <HelmetedRoute title="role-permission" element={<RolePermission />} />
     ),
   },
    {
-    path: "/accessControl/permission",
+    path: "/app/accessControl/permission",
     element: (
       <HelmetedRoute title="permission" element={<PermissionRoute />} />
     ),
   },
     {
-    path: "/accessControl/permission-action",
+    path: "/app/accessControl/permission-action",
     element: (
       <HelmetedRoute title="action" element={<PermissionActionRoute />} />
     ),
   },
   
     {
-    path: "/agentConfiguration/category",
+    path: "/app/agentConfiguration/category",
     element: (
       <HelmetedRoute title="category" element={<CategoryRoute />} />
     ),
   },
   
     {
-    path: "/agentConfiguration/CategoriesTreeview",
+    path: "/app/agentConfiguration/CategoriesTreeview",
     element: (
       <HelmetedRoute title="CategoriesTreeview" element={<TreeViewPage />} />
     ),
   },
 
    {
-    path: "/agentConfiguration/command",
+    path: "/app/agentConfiguration/command",
     element: (
       <HelmetedRoute title="command" element={<CommandScreen />} />
     ),
   },
   {
-    path: "/agentConfiguration/action",
+    path: "/app/agentConfiguration/action",
     element: (
       <HelmetedRoute title="Action" element={<ActionRoute />} />
     ),
   },
 
     {
-    path: "/agentConfiguration/standaloneApplication",
+    path: "/app/agentConfiguration/standaloneApplication",
     element: (
       <HelmetedRoute title="StandaloneApp" element={<StandaloneAppRoute />} />
     ),
   },
      {
-    path: "/agentInstallation/installedSystemScreen",
+    path: "/app/agentInstallation/installedSystemScreen",
     element: (
       <HelmetedRoute title="installedSystemScreen" element={<InstalledSystemScreen />} />
     ),
   },
   
    {
-    path: "/agentInstallation/unregisteredAssets",
+    path: "/app/agentInstallation/unregisteredAssets",
     element: (
       <HelmetedRoute title="unregisteredAssets" element={<UnregisteredAssetsRoute />} />
     ),
   },
     {
-    path: "/scriptRunner/scriptDashboard",
+    path: "/app/scriptRunner/scriptDashboard",
     element: (
       <HelmetedRoute title="Dashboard" element={<ScriptDashboard />} />
     ),
   },
       {
-    path: "/scriptRunner/scriptWiseDashboard",
+    path: "/app/scriptRunner/scriptWiseDashboard",
     element: (
       <HelmetedRoute title="Dashboard" element={<ScriptWiseDashboard />} />
     ),
   },
   
   {
-    path: "/scriptRunner/scriptRunner",
+    path: "/app/scriptRunner/scriptRunner",
     element: (
       <HelmetedRoute title="ScriptRunner" element={<ScriptManagementScreen />} />
     ),
   },
  {
-    path: "/scriptRunner/scriptTemplate",
+    path: "/app/scriptRunner/scriptTemplate",
     element: (
       <HelmetedRoute title="scriptTemplate" element={<ScriptTemplateList />} />
     ),
   },
    {
-    path: "/scriptRunner/scriptTemplateForm",
+    path: "/app/scriptRunner/scriptTemplateForm",
     element: (
       <HelmetedRoute title="scriptTemplate" element={<ScriptTemplateForm />} />
     ),
   },
  {
-    path: "/scriptRunner/scriptTemplateRun",
+    path: "/app/scriptRunner/scriptTemplateRun",
     element: (
       <HelmetedRoute title="scriptTemplate" element={<ScriptTemplateRun />} />
     ),
   },
   
   {
-    path: "/scriptRunner/executionResult",
+    path: "/app/scriptRunner/executionResult",
     element: (
       <HelmetedRoute title="executionResult" element={<ExecutionResultRoute />} />
     ),
   },
  
    {
-    path: "/agentInstallation/agentUpdate",
+    path: "/app/agentInstallation/agentUpdate",
     element: (
       <HelmetedRoute title="AgentUpdate" element={<AgentUpdateRoute />} />
     ),
   },
    {
-    path: "/agentInstallation/agentUpdateForm",
+    path: "/app/agentInstallation/agentUpdateForm",
     element: (
       <HelmetedRoute title="AgentUpdate" element={<AgentUpdateForm />} />
     ),
   },
   
   {
-    path: "/agentInstallation/targetSystems",
+    path: "/app/agentInstallation/targetSystems",
     element: (
       <HelmetedRoute title="targetSystems" element={<AgentUpdatesTargetSystemsRoute />} />
     ),
   },
     {
-    path: "/scriptRunner/scriptTargetSystems",
+    path: "/app/scriptRunner/scriptTargetSystems",
     element: (
       <HelmetedRoute title="targetSystems" element={<ScriptTargetSystemsRoute />} />
     ),
   },
      {
-    path: "/scriptRunner/totalEndPoints",
+    path: "/app/scriptRunner/totalEndPoints",
     element: (
       <HelmetedRoute title="totalEndPoints" element={<TotalEndPointsRoute />} />
     ),
   },
      {
-    path: "/scriptRunner/activeEndPoints",
+    path: "/app/scriptRunner/activeEndPoints",
     element: (
       <HelmetedRoute title="ActiveEndPoints" element={<ActiveEndPointsRoute />} />
     ),
   },
      {
-    path: "/scriptRunner/inActiveEndPoints",
+    path: "/app/scriptRunner/inActiveEndPoints",
     element: (
       <HelmetedRoute title="InActiveEndPoints" element={<InActiveEndPointsRoute />} />
     ),
   },
   {
-    path: "/scriptRunner/scriptCardList",
+    path: "/app/scriptRunner/scriptCardList",
     element: (
       <HelmetedRoute title="ScriptCardList" element={<ScriptCardList />} />
     ),
   },
   {
-    path: "/scriptRunner/executionReport",
+    path: "/app/scriptRunner/executionReport",
     element: (
       <HelmetedRoute title="executionReport" element={<ScriptExecutionReport />} />
     ),
   },
     {
-    path: "/scriptRunner/executionReportAll",
+    path: "/app/scriptRunner/executionReportAll",
     element: (
       <HelmetedRoute title="executionReport" element={<ScriptExecutionReportAll />} />
     ),
   },
 
   {
-    path: "/scriptRunner/locationWiseExecutionReport",
+    path: "/app/scriptRunner/locationWiseExecutionReport",
     element: (
       <HelmetedRoute title="executionReport" element={<ScriptExecutionDrillReport />} />
     ),
@@ -279,19 +279,19 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
   
   
     {
-    path: "/scriptRunner/parsedReport",
+    path: "/app/scriptRunner/parsedReport",
     element: (
       <HelmetedRoute title="parsedReport" element={<ParsedReport />} />
     ),
   },
     {
-    path: "/scriptRunner/parsedExecution",
+    path: "/app/scriptRunner/parsedExecution",
     element: (
       <HelmetedRoute title="parsedExecution" element={<ParsedExecutionDetails />} />
     ),
   },
      {
-    path: "/scriptRunner/scriptApproval",
+    path: "/app/scriptRunner/scriptApproval",
     element: (
       <HelmetedRoute title="scriptApproval" element={<ScriptApprovalScreen />} />
     ),
@@ -301,20 +301,20 @@ const authenticatedRoutes: AuthenticatedRoute[] = [
 
 const router = createBrowserRouter([
   {
-    path: "/login",
+    path: "/app/login",
     element: (
         <HelmetedRoute title="LoginPage" element={<LoginPage />} />
     ),
   },
     {
-    path: "/forgot-password",
+    path: "/app/forgot-password",
     element: (
         <HelmetedRoute title="forgot-password" element={<ForgotPassword />} />
     ),
   },
   {
     path: "/",
-    element: <Navigate to="/login" replace />, 
+    element: <Navigate to="/app/login" replace />, 
   },
   {
     element: <RootRoute />, 

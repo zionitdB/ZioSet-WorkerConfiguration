@@ -21,7 +21,7 @@ export const useGetTotalOpenMaintenance = (
     ],
     queryFn: () =>
       fetchData(
-        `/dashboard2/totalOpenBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
+        `/app/dashboard2/totalOpenBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
 
       ),
   });

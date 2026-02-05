@@ -71,6 +71,14 @@ export const useSubmitScript = () => {
 
 
 
+export const useSubmitScriptForTemplate = () => {
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetchData("/api/scripts", { method: "POST", body: JSON.stringify(payload) }),
+    onSuccess: () => toast.success("Script created successfully!"),
+    onError: (err: any) => toast.error(err?.message || "Failed to create script"),
+  });
+};
 
 export const useGetScriptTemplatesList = (page:any,pageSize:any) => {
   return useQuery({

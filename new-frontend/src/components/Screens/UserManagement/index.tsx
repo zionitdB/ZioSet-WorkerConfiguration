@@ -290,7 +290,7 @@ const UserRoute = () => {
             items={[
               {
                 label: "Module Dashboard",
-                path: "/dashboard",
+                path: "/app/dashboard",
               },
               {
                 label: "User Management",

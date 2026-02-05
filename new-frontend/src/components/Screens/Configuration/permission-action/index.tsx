@@ -142,7 +142,7 @@ const PermissionActionRoute = () => {
             items={[
               {
                 label: "Module Dashboard",
-                path: "/dashboard",
+                path: "/app/dashboard",
               },
               {
                 label: "Permission Action",
