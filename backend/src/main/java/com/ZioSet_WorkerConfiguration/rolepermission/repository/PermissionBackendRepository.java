@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface PermissionBackendRepository extends JpaRepository<PermissionBackend,Long> {
     Optional<PermissionBackend> findByName(String name);
+    boolean existsByName(String name);
 }

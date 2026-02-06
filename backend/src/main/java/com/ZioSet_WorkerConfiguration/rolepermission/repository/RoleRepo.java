@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface RoleRepo extends JpaRepository<Role, Integer> {
     @Query("From Role r where trim(r.roleName)=?1")
     Optional<Role> getRoleByName(String paramString);
+
+    boolean existsByRoleName(String roleName);
 }
 

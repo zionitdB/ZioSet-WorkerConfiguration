@@ -9,6 +9,7 @@ import java.util.Set;
 import com.ZioSet_WorkerConfiguration.rolepermission.model.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 @Entity
