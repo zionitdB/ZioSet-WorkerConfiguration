@@ -287,12 +287,11 @@ public class ScriptService {
         return scriptRepository.findById(id);
     }
 
-    //TODO("Implement soft delete")
     public void deleteScript(Long id) {
-        scriptRepository.findById(id)
+        ScriptEntity entity = scriptRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ScriptEntity not found"));
-
-        scriptRepository.deleteById(id);
+        entity.setIsActive(false);
+        scriptRepository.save(entity);
     }
 
     @Transactional

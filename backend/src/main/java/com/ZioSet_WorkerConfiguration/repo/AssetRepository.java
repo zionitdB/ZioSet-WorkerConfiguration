@@ -11,4 +11,5 @@ public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     Optional<Asset> findByAssetId(String assetId);
     List<Asset> findByAssetIdIn(Set<String> assetIds);
+    List<Asset> findBySerialNoIn(Set<String> serialNos);
 }

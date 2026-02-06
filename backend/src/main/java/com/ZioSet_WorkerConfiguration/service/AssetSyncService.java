@@ -30,8 +30,8 @@ public class AssetSyncService {
 
     public void syncAssets(){
         LocalDate syncDate = LocalDate.now();
-//        long totalCount = assetCountApi(syncDate);
-        long totalCount = 100;
+        long totalCount = assetCountApi(syncDate);
+//        long totalCount = 100;
         log.info("Total count={}",totalCount);
 
         int pageSize = 1000;
@@ -80,7 +80,7 @@ public class AssetSyncService {
                 boolean changed = mapIfChanged(dto, asset);
 
                 if (isNew || changed) {
-                    asset.setSyncId(UUID.randomUUID().toString());
+                    asset.setSyncId(dto.getAssetId());
                     assetsToSave.add(asset);
                 }
 
@@ -111,8 +111,12 @@ public class AssetSyncService {
         changed |= update(asset::getProjectName, asset::setProjectName, dto.getProjectName());
         changed |= update(asset::getLastActive, asset::setLastActive, dto.getLastActive());
 
+        String locationName = dto.getLocation() != null
+                ? dto.getLocation().getLocationName()
+                : "UNKNOWN";
+
         if (dto.getLocation() != null) {
-            changed |= update(asset::getLocationName, asset::setLocationName, dto.getLocation().getLocationName());
+            changed |= update(asset::getLocationName, asset::setLocationName, locationName);
         }
 
         asset.setAssetId(dto.getAssetId());
@@ -134,6 +138,7 @@ public class AssetSyncService {
                 .queryParam("date",date
                         .format(DateTimeFormatter
                                 .ofPattern("dd-MM-yyyy")));
+        System.out.println("Count api ="+uri.toUriString());
 
         ResponseEntity<Long> response =
                 restTemplate.getForEntity(uri.toUriString(), Long.class);

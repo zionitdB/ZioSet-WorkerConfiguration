@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 public interface ScriptExecutionResultRepository
         extends JpaRepository<ScriptExecutionResultEntity, Long>,
@@ -72,23 +73,29 @@ public interface ScriptExecutionResultRepository
             Pageable pageable
     );
 
+
+    @Query("SELECT DISTINCT s.systemSerialNumber FROM ScriptExecutionResultEntity s " +
+            "WHERE s.script.id = :scriptId AND s.returnCode = :returnCode")
+    Set<String> findSerialNumbersByScriptIdAndReturnCode(
+            @Param("scriptId") Long scriptId,
+            @Param("returnCode") Integer returnCode
+    );
+
+
     @Query("""
-    SELECT ts
-    FROM ScriptTargetSystemEntity ts
-    WHERE (:scriptId IS NULL OR ts.script.id = :scriptId)
-    AND NOT EXISTS (
-        SELECT 1
-        FROM ScriptExecutionResultEntity ser
-        WHERE ser.systemSerialNumber = ts.systemSerialNumber
-        AND (:scriptId IS NULL OR ser.script.id = :scriptId)
-    )
-""")
-    List<ScriptTargetSystemEntity> findPendingSystems(@Param("scriptId") Long scriptId);
-
-
-
-
-
+        SELECT r
+        FROM ScriptExecutionResultEntity r
+        JOIN Asset a
+            ON a.serialNo = r.systemSerialNumber
+        WHERE r.script.id = :scriptId
+          AND r.returnCode = :returnCode
+          AND COALESCE(a.locationName, 'UNKNOWN') = :location
+    """)
+    List<ScriptExecutionResultEntity> findByScriptStatusAndLocation(
+            @Param("scriptId") Long scriptId,
+            @Param("returnCode") Integer returnCode,
+            @Param("location") String location
+    );
 
 
 }

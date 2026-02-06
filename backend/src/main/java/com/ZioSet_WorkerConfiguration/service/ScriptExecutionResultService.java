@@ -1,11 +1,13 @@
 package com.ZioSet_WorkerConfiguration.service;
 
 import com.ZioSet_WorkerConfiguration.dto.*;
+import com.ZioSet_WorkerConfiguration.model.Asset;
 import com.ZioSet_WorkerConfiguration.model.ScriptExecutionResultEntity;
 import com.ZioSet_WorkerConfiguration.model.ScriptTargetSystemEntity;
 import com.ZioSet_WorkerConfiguration.parsing.JsonExecutionResultParsingEngine;
 import com.ZioSet_WorkerConfiguration.parsing.ParsedExecutionResult;
 import com.ZioSet_WorkerConfiguration.parsing.RawExecutionResult;
+import com.ZioSet_WorkerConfiguration.repo.AssetRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptExecutionResultRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptRepository;
 import com.ZioSet_WorkerConfiguration.repo.ScriptTargetSystemRepository;
@@ -28,6 +30,7 @@ public class ScriptExecutionResultService {
     private final JsonExecutionResultParsingEngine parsingEngine;
     private final ScriptTargetSystemRepository targetRepo;
     private final ScriptRepository scriptRepository;
+    private final AssetRepository assetRepository;
 
     public PagedResponse<ScriptExecutionResultSummaryDTO> parse(ExecutionResultFilterDTO filter, int page, int size) {
 
@@ -190,6 +193,38 @@ public class ScriptExecutionResultService {
                 .toList();
     }
 
+    public List<LocationWiseDto> locationWiseCounts(Long scriptId, String status){
+        Set<String> serialNumbers = fetchSerialNumbersByStatus(scriptId,status);
+        if (serialNumbers.isEmpty()){
+           return Collections.emptyList();
+        }
+        List<Asset> assets = assetRepository.findBySerialNoIn(serialNumbers);
+        return getLocationWiseData(assets);
+    }
+
+    private Set<String> fetchSerialNumbersByStatus(Long scriptId, String status) {
+        Integer code = getCode(status);
+
+        if (code == null) {
+            return targetRepo.findPendingTargets(scriptId)
+                    .stream()
+                    .map(ScriptTargetSystemEntity::getSystemSerialNumber)
+                    .collect(Collectors.toSet());
+        }
+
+        return repo.findSerialNumbersByScriptIdAndReturnCode(scriptId, code);
+    }
+
+    private List<LocationWiseDto> getLocationWiseData(List<Asset> assets){
+        return assets.stream()
+                .collect(Collectors.groupingBy(Asset::getLocationName, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .map(entry -> new LocationWiseDto(entry.getValue().intValue(), entry.getKey()))
+                .toList();
+    }
+
+
     public DashboardCountsDto dashboardCounts(Long scriptId) {
         DashboardCountsView v = repo.dashboardCounts(scriptId, null, null, null, null);
 
@@ -202,7 +237,7 @@ public class ScriptExecutionResultService {
     }
 
     public long countPendingSystems(Long scriptId){
-        return repo.findPendingSystems(scriptId).size();
+        return targetRepo.findPendingTargets(scriptId).size();
     }
 
 
@@ -233,30 +268,32 @@ public class ScriptExecutionResultService {
         Page<ScriptTargetSystemEntity> data = targetRepo.findPendingTargets(scriptId,pageable);
 
         List<ScriptExecutionResultSummaryDTO> results = data.stream()
-                .map(ts -> {
-                    ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
-
-                    dto.setId(null);
-                    dto.setRunUuid(null);
-                    dto.setScriptId(ts.getScript().getId());
-                    dto.setScriptName(ts.getScript().getName());
-                    dto.setSystemSerialNumber(ts.getSystemSerialNumber());
-                    dto.setStartedAt(null);
-                    dto.setFinishedAt(null);
-                    dto.setReturnCode(null);
-                    dto.setStatus("PENDING");
-                    dto.setStdout(null);
-                    dto.setStderr(null);
-                    dto.setHostName(ts.getHostName());
-                    dto.setParsedData(null);
-
-                    return dto;
-                })
+                .map(this::toMapPendingResult)
                 .toList();
 
         return new PagedResponse<>(results, data.getNumber(), data.getSize(),
                 data.getTotalElements(), data.getTotalPages(), data.isLast());
 
+    }
+
+    private ScriptExecutionResultSummaryDTO toMapPendingResult(ScriptTargetSystemEntity ts){
+        ScriptExecutionResultSummaryDTO dto = new ScriptExecutionResultSummaryDTO();
+
+        dto.setId(null);
+        dto.setRunUuid(null);
+        dto.setScriptId(ts.getScript().getId());
+        dto.setScriptName(ts.getScript().getName());
+        dto.setSystemSerialNumber(ts.getSystemSerialNumber());
+        dto.setStartedAt(null);
+        dto.setFinishedAt(null);
+        dto.setReturnCode(null);
+        dto.setStatus("PENDING");
+        dto.setStdout(null);
+        dto.setStderr(null);
+        dto.setHostName(ts.getHostName());
+        dto.setParsedData(null);
+
+        return dto;
     }
 
 
@@ -299,6 +336,38 @@ public class ScriptExecutionResultService {
         }
 
         return new DashboardSlotCountsDto(overallFrom, overallTo, slots);
+    }
+
+    public List<ScriptExecutionResultSummaryDTO> getExecutionResults(Long scriptId,
+                                                                     String location,
+                                                                     String status) {
+        Integer returnCode = getCode(status);
+        if (returnCode==null){
+            return targetRepo.findPendingTargetsByLocation(scriptId, location)
+                    .stream().map(this::toMapPendingResult).toList();
+        }
+
+        return repo.findByScriptStatusAndLocation(scriptId, returnCode, location)
+                .stream().map(this::toSummary).toList();
+    }
+
+    public List<ScriptTargetSystemEntity> findTargetSystems(
+            Long scriptId,
+            String location,
+            String status
+    ) {
+        Integer code = getCode(status);
+
+        return switch (status.toUpperCase()) {
+            case "SUCCESS", "FAILED" ->
+                    targetRepo.findTargetSystemsByCodeAndLocation(scriptId, location, code);
+
+            case "PENDING" ->
+                    targetRepo.findPendingTargetsByLocation(scriptId, location);
+
+            default ->
+                    throw new IllegalArgumentException("Invalid status: " + status);
+        };
     }
 
 

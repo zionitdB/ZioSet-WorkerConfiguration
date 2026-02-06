@@ -14,7 +14,8 @@ public class AssetDataSyncScheduler {
 
     private final AssetSyncService assetSyncService;
 
-    @Scheduled(cron = "0 28 16 * * ?")
+    @Scheduled(cron = "0 30 10 * * ?")
+//    @Scheduled(cron = "0 */2 * * * ?")
     public void syncAssets() {
         log.info("In Asset Syncing");
         log.info("Syncing Started");
