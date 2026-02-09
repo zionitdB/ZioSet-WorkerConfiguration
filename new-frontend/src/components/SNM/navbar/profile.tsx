@@ -69,7 +69,7 @@ const handlePasswordSubmit = () => {
 
   // const handleLogout = () => {
   //   localStorage.removeItem("user");
-  //   navigate("/login");
+  //   navigate("/app/login");
   // };
 
 
@@ -80,7 +80,7 @@ const handleLogout = () => {
   logoutMutation.mutate(undefined, {
     onSuccess: () => {
       localStorage.removeItem("user");
-      navigate("/login");
+      navigate("/app/login");
     },
   });
 };

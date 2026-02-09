@@ -56,7 +56,7 @@ const LoginPage = () => {
             sessionStorage.setItem("user", JSON.stringify(user));
             login(user);
           }
-          navigate("/dashboard");
+          navigate("/app/dashboard");
         },
 
         onError: () => {
@@ -256,7 +256,7 @@ const LoginPage = () => {
 
                 <div className="mt-8 text-center">
                   <a
-                    href="/forgot-password"
+                    href="/app/forgot-password"
                     className="text-cyan-500 dark:text-cyan-400 hover:text-cyan-400 dark:hover:text-cyan-300 text-sm font-medium transition-colors"
                   >
                     Forgot your password?

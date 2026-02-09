@@ -1,4 +1,4 @@
-import dashboard from './dashboard';
+import dashboard from './app/dashboard';
 import other from './other';
 import pages from './pages';
 import utilities from './utilities';

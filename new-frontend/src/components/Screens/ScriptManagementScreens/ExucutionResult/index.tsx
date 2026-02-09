@@ -172,7 +172,7 @@ const handleClearFilters = () => {
             items={[
               {
                 label: "Module Dashboard",
-                path: "/dashboard",
+                path: "/app/dashboard",
               },
               {
                 label: "Execution Result",

@@ -9,7 +9,7 @@ const onError = (err: any) => toast.error(err?.message || "Operation failed")
 export const useForgetPasswordVerify = () => {
   return useMutation({
     mutationFn: (data: any) =>
-      fetchData(`/login/forgot_password/verify_otp`, {
+      fetchData(`/app/login/forgot_password/verify_otp`, {
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -22,7 +22,7 @@ export const useForgetPasswordVerify = () => {
 export const useRequestOtp = () => {
   return useMutation({
     mutationFn: (data: any) =>
-      fetchData(`/login/forgot_password/request_otp`, {
+      fetchData(`/app/login/forgot_password/request_otp`, {
         method: "POST",
         body: JSON.stringify(data),
       }),

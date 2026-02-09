@@ -47,23 +47,37 @@ console.log("uuid",uuid);
         headerName: "Serial Number",
         flex: 1.5,
       },
-      {
-        field: "isUpdated",
-        headerName: "Updated",
-        flex: 1,
-        cellRenderer: (p: any) =>
-          p.value ? (
-            <Badge className="gap-1" variant="default">
-              <CheckCircle className="h-3 w-3" />
-              Yes
-            </Badge>
-          ) : (
-            <Badge className="gap-1" variant="secondary">
-              <XCircle className="h-3 w-3" />
-              No
-            </Badge>
-          ),
-      },
+    {
+  feld: "updated",
+  headerName: "Updated",
+  flex: 1,
+  cellRenderer: (p: any) => {
+    const isUpdated = Boolean(p.value);
+
+    return  isUpdated ? (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
+      <CheckCircle className="h-3 w-3" />
+      Yes
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700">
+      <XCircle className="h-3 w-3" />
+      No
+    </span>
+  );isUpdated ? (
+      <Badge variant="default">
+        <CheckCircle className="h-3 w-3 mr-1" />
+        Yes
+      </Badge>
+    ) : (
+      <Badge variant="secondary">
+        <XCircle className="h-3 w-3 mr-1" />
+        No
+      </Badge>
+    );
+  },
+},
+
       {
         field: "updatedAt",
         headerName: "Updated At",
@@ -114,15 +128,15 @@ console.log("uuid",uuid);
               items={[
                 {
                   label: "Module Dashboard",
-                  path: "/dashboard",
+                  path: "/app/dashboard",
                 },
                 {
                   label: "Agent Update",
-                      path: "/agentInstallation/agentUpdate",
+                      path: "/app/agentInstallation/agentUpdate",
                 },
                  {
                   label: "Agent Form",
-                      path: "/agentInstallation/agentUpdate",
+                      path: "/app/agentInstallation/agentUpdate",
                 },
               ]}
             />

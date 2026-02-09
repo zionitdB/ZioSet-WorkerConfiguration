@@ -215,7 +215,7 @@ const AgentUpdateRoute = () => {
             variant="link"
             className="flex items-center gap-1 px-0 text-primary"
             onClick={() =>
-              router(`/agentInstallation/targetSystems?uuid=${p.data.uuid}`)
+              router(`/app/agentInstallation/targetSystems?uuid=${p.data.uuid}`)
             }
           >
             <Smartphone className="h-4 w-4" />
@@ -259,11 +259,11 @@ const AgentUpdateRoute = () => {
               items={[
                 {
                   label: "Module Dashboard",
-                  path: "/dashboard",
+                  path: "/app/dashboard",
                 },
                 {
                   label: "Agent Update",
-                      path: "/agentInstallation/agentUpdate",
+                      path: "/app/agentInstallation/agentUpdate",
                 },
               ]}
             />
@@ -295,7 +295,7 @@ const AgentUpdateRoute = () => {
         colDefs={columnDefs}
         isLoading={isLoading}
         onAddClick={() =>
-          router("/agentInstallation/agentUpdateForm")
+          router("/app/agentInstallation/agentUpdateForm")
         }
         showEdit={false}
         onDeleteClick={handleDelete}

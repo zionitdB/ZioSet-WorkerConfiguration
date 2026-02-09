@@ -71,7 +71,7 @@ const navigate = useNavigate();
           setUsername("");
           setOtp("");
           setNewPassword("");
-              navigate("/login");
+              navigate("/app/login");
 
         },
         onError: (err: any) => console.log(err?.message || "OTP verification failed"),

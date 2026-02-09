@@ -151,7 +151,7 @@ export const useGetExecutionReport = (
       params.append("page", String(page));
       params.append("pageSize", String(pageSize));
 
-      return fetchData(`/api/execution-results/dashboard-statuswise?${params.toString()}`);
+      return fetchData(`/api/execution-results/app/dashboard-statuswise?${params.toString()}`);
     },
   });
 };

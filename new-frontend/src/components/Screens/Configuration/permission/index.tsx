@@ -104,7 +104,7 @@ const PermissionRoute = () => {
                   items={[
                     {
                       label: "Module Dashboard",
-                      path: "/dashboard",
+                      path: "/app/dashboard",
                     },
                     {
                       label: "Permission",

@@ -9,7 +9,13 @@ import {
   CheckCircle2, XCircle, Clock, ShieldCheck, 
   LayoutGrid, List, Search, ChevronRight, 
   ChevronLeft, ChevronsLeft, ChevronsRight,
-  FileCode, Sparkles, Zap
+  FileCode, Sparkles, Zap,
+  Terminal,
+  Code2,
+  User,
+  Laptop,
+  Globe,
+  Calendar
 } from "lucide-react";
 import { format } from "date-fns";
 import { useGetScriptsByStatus, useScriptActions } from "./hooks";
@@ -97,8 +103,8 @@ export default function ScriptApprovalScreen() {
         <div className="mb-4">
                <Breadcrumb
         items={[
-          { label: "Module Dashboard", path: "/dashboard" },
-          { label: "Script Approval", path: "/scriptRunner/scriptApproval" },
+          { label: "Module Dashboard", path: "/app/dashboard" },
+          { label: "Script Approval", path: "/app/scriptRunner/scriptApproval" },
         ]}
       />
 
@@ -372,125 +378,110 @@ export default function ScriptApprovalScreen() {
         </div>
       </footer>
 
-      {/* Script Details Dialog */}
-   <Dialog open={!!dialogData} onOpenChange={() => setDialogData(null)}>
-  <DialogContent className="max-w-5xl w-full h-[85vh] p-0 rounded-3xl overflow-hidden">
 
-    {/* Header */}
-   <DialogHeader className="
-      relative px-6 py-4 border-b 
-      bg-linear-to-r from-background via-muted/40 to-background
-      backdrop-blur top-0 z-10
-    ">
-      <DialogTitle className="text-2xl font-bold bg-linear-to-r from-primary to-emerald-500 bg-clip-text text-transparent">
-        {dialogData?.type === 'pending' ? 'Script Action' : 'Script Details'}
-      </DialogTitle>
-      <DialogDescription className="text-sm text-muted-foreground">
-        Review and manage all details of this script
-      </DialogDescription>
-
-      {/* TOP RIGHT CLOSE BUTTON */}
-      <button
-        onClick={() => setDialogData(null)}
-        className="
-          absolute top-4 right-4
-          h-9 w-9 rounded-full
-          flex items-center justify-center
-          bg-muted/40 hover:bg-rose-500/10
-          text-muted-foreground hover:text-rose-600
-          transition-all duration-200
-        "
-      >
-        ✕
-      </button>
+<Dialog open={!!dialogData} onOpenChange={() => setDialogData(null)}>
+  <DialogContent className="max-w-5xl w-full h-[90vh] p-0 flex flex-col gap-0 overflow-hidden sm:rounded-3xl">
+    
+    <DialogHeader className="p-6 pb-4 border-b bg-muted/20">
+      <div className="flex justify-between items-start">
+        <div className="space-y-1">
+          <DialogTitle className="text-2xl font-bold tracking-tight">
+            {dialogData?.type === 'pending' ? 'Approve Script Action' : 'Script Metadata'}
+          </DialogTitle>
+          <DialogDescription className="flex items-center gap-2">
+            <Badge variant="outline" className="font-mono uppercase text-[10px]">
+              ID: {dialogData?.id}
+            </Badge>
+            <span>Review configuration and execution logic.</span>
+          </DialogDescription>
+        </div>
+      </div>
     </DialogHeader>
 
-    {/* Body */}
-    <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+    <ScrollArea className="flex-1 h-70">
+      <div className=" p-6">
       {dialogData && (() => {
-        const script = scripts.find((s: { id: number }) => s.id === dialogData.id);
-        if (!script) return <p className="text-center text-muted-foreground">Script not found</p>;
+        const script = scripts.find((s: any) => s.id === dialogData.id);
+        if (!script) return <div className="py-20 text-center text-muted-foreground">Script not found</div>;
 
         return (
-          <>
-            {/* Top Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <InfoCard title="General Info">
-                <Info label="Name" value={script.name} />
-                <Info label="Description" value={script.description || 'N/A'} />
-                <Info label="Script Type" value={script.scriptType} />
-                <Info label="Schedule Type" value={script.scheduleType} />
-                <Info label="Start Date" value={script.startDateTime ? format(new Date(script.startDateTime), 'PPpp') : 'N/A'} />
-                <Info label="Repeat Every (Seconds)" value={script.repeatEverySeconds || 0} />
-                <Info label="Week Days" value={script.weekDaysCsv || 'N/A'} />
-                <Info label="Month Day" value={script.monthDay || 'N/A'} />
-              </InfoCard>
-
-              <InfoCard title="Template Info">
-                <Info label="Template Name" value={script.template?.name || 'N/A'} />
-                <Info label="Command" value={script.template?.command || 'N/A'} />
-                <Info label="Script Type" value={script.template?.scriptType || 'N/A'} />
-                <Info label="Version" value={script.template?.version || 'N/A'} />
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="font-semibold">Active:</span>
-                  {script.template?.isActive
-                    ? <Badge className="bg-emerald-100 text-emerald-700">Yes</Badge>
-                    : <Badge className="bg-rose-100 text-rose-700">No</Badge>}
-                </div>
-
-                <div className="text-sm">
-                  <span className="font-semibold">Parameters:</span>
-                  {script.template?.parameters?.length ? (
-                    <ul className="list-disc ml-5 mt-1 space-y-1">
-                      {script.template.parameters.map((p: any, idx: number) => (
-                        <li key={idx}>
-                          {p.paramName} ({p.paramType})
-                          {p.required && <span className="text-red-500 font-semibold ml-1">*</span>}
-                          <span className="text-muted-foreground ml-1">
-                            Default: {p.defaultValue || 'N/A'}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-muted-foreground">No parameters</p>
-                  )}
-                </div>
-              </InfoCard>
-            </div>
-
-            {/* Targets */}
-            <InfoCard title="Execution Targets">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Info label="Platforms" value={script.targetPlatformsCsv || 'N/A'} />
-                <Info label="Added By" value={script.addedBy || 'N/A'} />
-                <Info label="Host Name" value={script.hostName || 'N/A'} />
-                <Info label="Dependencies" value={script.dependencies.length ? script.dependencies.join(', ') : 'None'} />
+          <div className="space-y-8 pb-4">
+            
+            <section>
+              <h4 className="text-sm font-semibold mb-4 flex items-center gap-2 text-primary">
+                <Globe className="w-4 h-4" /> General Information
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-muted/30 p-4 rounded-xl border">
+                <DetailItem label="Script Name" value={script.name} bold />
+                <DetailItem label="Type" value={<Badge variant="secondary">{script.scriptType}</Badge>} />
+                <DetailItem label="Schedule" value={script.scheduleType} />
+                <DetailItem label="Start Date" value={script.startDateTime ? format(new Date(script.startDateTime), 'PPp') : 'N/A'} icon={<Calendar className="w-3 h-3"/>} />
+                <DetailItem label="Interval" value={`${script.repeatEverySeconds || 0}s`} icon={<Clock className="w-3 h-3"/>} />
+                <DetailItem label="Active Status" value={
+                  script.template?.isActive 
+                    ? <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-200">Active</Badge> 
+                    : <Badge variant="destructive">Inactive</Badge>
+                } />
               </div>
-            </InfoCard>
+            </section>
 
-            {/* Script */}
-            <InfoCard title="Script Content & Arguments">
-              <pre className="bg-muted/40 p-3 rounded-lg text-xs overflow-x-auto">
-                {script.scriptText || 'No script content'}
-              </pre>
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Laptop className="w-4 h-4" /> Targets & Hosts
+                </h4>
+                <div className="space-y-3 text-sm border-l-2 border-muted pl-4">
+                  <DetailItem inline label="Platforms" value={script.targetPlatformsCsv} />
+                  <DetailItem inline label="Host Name" value={script.hostName} />
+                  <DetailItem inline label="Added By" value={script.addedBy} icon={<User className="w-3 h-3"/>} />
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <Code2 className="w-4 h-4" /> Template Parameters
+                </h4>
+                <div className="bg-background border rounded-lg p-3">
+                  {script.template?.parameters?.length ? (
+                    <div className="space-y-2">
+                      {script.template.parameters.map((p: any, idx: number) => (
+                        <div key={idx} className="flex justify-between text-xs border-b border-dotted pb-1 last:border-0">
+                          <span className="font-mono text-muted-foreground">{p.paramName}</span>
+                          <span className="font-medium">{p.defaultValue || '—'}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : <p className="text-xs text-muted-foreground italic">No parameters defined</p>}
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h4 className="text-sm font-semibold flex items-center gap-2">
+                <Terminal className="w-4 h-4" /> Script Execution Content
+              </h4>
+              <div className="relative group">
+                <pre className="bg-zinc-950 text-zinc-50 p-5 w-240 rounded-xl text-[13px] font-mono leading-relaxed overflow-x-auto border shadow-inner">
+                  {script.scriptText || '// No content available'}
+                </pre>
+              </div>
 
               {Object.keys(script.scriptArgument || {}).length > 0 && (
-                <div className="mt-3 text-sm">
-                  <h5 className="font-semibold mb-1">Arguments</h5>
-                  <pre className="bg-muted/40 p-3 rounded-lg overflow-x-auto">
+                <div className="mt-4">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">Arguments (JSON)</p>
+                  <pre className="bg-muted p-3 rounded-lg text-xs font-mono">
                     {JSON.stringify(script.scriptArgument, null, 2)}
                   </pre>
                 </div>
               )}
-            </InfoCard>
-          </>
+            </section>
+          </div>
         );
       })()}
-    </div>
+      </div>
+    </ScrollArea>
 
-    {/* Footer */}
-    <DialogFooter className="px-6 py-4 border-t bg-background/80 backdrop-blur sticky bottom-0">
+ <DialogFooter className="px-6 py-4 border-t bg-background/80 backdrop-blur sticky bottom-0">
       {activeTab === 'pending' && dialogData?.type === 'pending' ? (
         <div className="flex gap-3 w-full">
           <Button
@@ -524,7 +515,6 @@ export default function ScriptApprovalScreen() {
         </Button>
       )}
     </DialogFooter>
-
   </DialogContent>
 </Dialog>
 
@@ -536,16 +526,22 @@ export default function ScriptApprovalScreen() {
   );
 }
 
-const InfoCard = ({ title, children }: any) => (
-  <Card className="p-4 bg-card/60 backdrop-blur border border-border/20 shadow-sm space-y-2">
-    <h4 className="text-lg font-semibold">{title}</h4>
-    {children}
-  </Card>
-);
-
-const Info = ({ label, value }: any) => (
-  <p className="text-sm">
-    <span className="font-semibold">{label}:</span>{' '}
-    <span className="text-muted-foreground">{value}</span>
-  </p>
-);
+function DetailItem({ label, value, bold, icon, inline }: any) {
+  if (inline) {
+    return (
+      <div className="flex justify-between items-center py-1">
+        <span className="text-muted-foreground flex items-center gap-1.5">{icon} {label}</span>
+        <span className="font-medium">{value || 'N/A'}</span>
+      </div>
+    )
+  }
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-[10px] uppercase font-bold text-muted-foreground/70 tracking-tight">{label}</span>
+      <div className={`text-sm flex items-center gap-1.5 ${bold ? 'font-semibold' : 'font-medium'}`}>
+        {icon && <span className="text-muted-foreground">{icon}</span>}
+        {value || 'N/A'}
+      </div>
+    </div>
+  );
+}

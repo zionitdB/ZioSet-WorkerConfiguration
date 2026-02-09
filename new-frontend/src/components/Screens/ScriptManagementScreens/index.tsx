@@ -52,7 +52,7 @@ export default function ScriptManagementScreen() {
             items={[
               {
                 label: "Module Dashboard",
-                path: "/dashboard",
+                path: "/app/dashboard",
               },
               {
                 label: "Script Management",

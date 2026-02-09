@@ -636,11 +636,11 @@ export default function PremiumAgentDashboard() {
     items={[
       {
         label: "Module Dashboard",
-        path: "/dashboard",
+        path: "/app/dashboard",
       },
       {
         label: "Agent Dashboard",
-        path: "/agentManagement/dashboard",
+        path: "/agentManagement/app/dashboard",
       },
     ]}
   />

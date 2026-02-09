@@ -470,7 +470,7 @@ const RolePermission = () => {
                   items={[
                     {
                       label: "Module Dashboard",
-                      path: "/dashboard",
+                      path: "/app/dashboard",
                     },
                     {
                       label: "Role Permission",

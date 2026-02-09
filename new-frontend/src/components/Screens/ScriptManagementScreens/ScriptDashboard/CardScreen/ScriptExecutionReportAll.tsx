@@ -154,8 +154,8 @@ console.log("initialStatus",initialStatus);
     <div className="container mx-auto pb-8">
       <Breadcrumb
         items={[
-          { label: "Module Dashboard", path: "/dashboard" },
-          { label: "Script Dashboard", path: "/scriptRunner/scriptDashboard" },
+          { label: "Module Dashboard", path: "/app/dashboard" },
+          { label: "Script Dashboard", path: "/app/scriptRunner/scriptDashboard" },
           { label: "Script Execution Report" },
         ]}
       />

@@ -247,15 +247,15 @@ export default function ScriptTemplateForm() {
           items={[
             {
               label: "Module Dashboard",
-              path: "/dashboard",
+              path: "/app/dashboard",
             },
             {
               label: "Script Templates",
-              path: "/scriptRunner/scriptTemplate",
+              path: "/app/scriptRunner/scriptTemplate",
             },
             {
               label: "Template Form",
-              path: "/scriptRunner/scriptTemplateForm",
+              path: "/app/scriptRunner/scriptTemplateForm",
             },
           ]}
         />
@@ -845,7 +845,7 @@ export default function ScriptTemplateForm() {
 
               <Button
                 className="bg-primary hover:bg-primary/90"
-                onClick={() => navigate("/scriptRunner/scriptTemplate")}
+                onClick={() => navigate("/app/scriptRunner/scriptTemplate")}
               >
                 Go to Template List
               </Button>

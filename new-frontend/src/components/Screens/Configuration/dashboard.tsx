@@ -71,7 +71,7 @@ export default function AccessControlDashboard() {
                 items={[
                   {
                     label: "Module Dashboard",
-                    path: "/dashboard",
+                    path: "/app/dashboard",
                   },
                   {
                     label: "Access Dashboard",

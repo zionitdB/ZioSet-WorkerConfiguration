@@ -94,7 +94,7 @@ function AgentUINavbar() {
                 }
                 localStorage.removeItem("agentUser");
                 sessionStorage.clear();
-                navigate("/app/login");
+                navigate("/app/app/login");
               }}
             />
           </Tooltip>

@@ -37,7 +37,7 @@ const sidebarData: SidebarGroupedData = {
       items: [
         {
           label: "Dashboard",
-          path: "/agentManagement/dashboard",
+          path: "/agentManagement/app/dashboard",
           icon: <LayoutGrid />,
         },
       ],
@@ -97,7 +97,7 @@ const sidebarData: SidebarGroupedData = {
       items: [
         {
           label: "Script Management",
-          path: "/agentManagement/scriptRunner",
+          path: "/agentManagement/app/scriptRunner",
           icon: <Bot />,
          
         },
@@ -112,7 +112,7 @@ const sidebarData: SidebarGroupedData = {
       items: [
         {
           label: "Dashboard",
-          path: "/accessManagement/dashboard",
+          path: "/accessManagement/app/dashboard",
           icon: <LayoutGrid />,
         },
       ],

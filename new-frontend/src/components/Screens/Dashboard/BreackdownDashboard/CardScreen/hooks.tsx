@@ -12,7 +12,7 @@ export const useGetTotalOpenPPM = (fromDate:any,toDate:any) =>
 export const useGetTotalOpenPPMCount = () =>
   useQuery({
     queryKey: ["useGetTotalPPMCounts"],
-    queryFn: () => fetchData(`/dashboard/maintaince_count`),
+    queryFn: () => fetchData(`/app/dashboard/maintaince_count`),
   });
 
 
@@ -43,7 +43,7 @@ export const useGetTotalOpenPPMCount = () =>
 export const useGetAllPPMHistory = (machineId: any,fromDate:any,toDate:any) =>
   useQuery({
     queryKey: ["useGetAllPPMHistory", machineId,fromDate,toDate],
-    queryFn: () => fetchData(`/dashboard/maintaince_records/${machineId}?fromDate=${fromDate}&toDate=${fromDate}`),
+    queryFn: () => fetchData(`/app/dashboard/maintaince_records/${machineId}?fromDate=${fromDate}&toDate=${fromDate}`),
     enabled: !!machineId,
   });
 

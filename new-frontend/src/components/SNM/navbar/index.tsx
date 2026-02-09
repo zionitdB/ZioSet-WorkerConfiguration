@@ -14,7 +14,7 @@ const SimpleNavbar: React.FC<{ toggleSidebar: any }> = ({ toggleSidebar }) => {
   const location = useLocation();
 
   // Routes where sidebar button should be hidden
-  const hideSidebarRoutes = ["/dashboard", "/settings"];
+  const hideSidebarRoutes = ["/app/dashboard", "/settings"];
   const shouldHideSidebarButton = hideSidebarRoutes.includes(location.pathname);
 
   return (
