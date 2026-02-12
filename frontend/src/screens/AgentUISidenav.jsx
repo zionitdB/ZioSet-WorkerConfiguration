@@ -3,7 +3,7 @@ import "../css/Sidenav.css";
 import { Link } from "react-router-dom";
 import { ListItemText, List, ListItem, ListItemIcon } from "@mui/material";
 
-import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
+import DashboardCustomizeIcon from "@mui/icons-material/app/dashboardCustomize";
 import AttractionsIcon from "@mui/icons-material/Attractions";
 import PermDataSettingIcon from "@mui/icons-material/PermDataSetting";
 import CategoryIcon from "@mui/icons-material/Category";
@@ -21,7 +21,7 @@ function AgentUISidenav() {
     <nav className="sidebar">
       <div className="menu_content">
         <List style={{ paddingTop: "50px" }}>
-          <Link to="/app/Dashboard">
+          <Link to="/app/app/dashboard">
             <ListItem button id="menuDashboard">
               <ListItemIcon>
                 <span className="navlink_icon2">
@@ -214,7 +214,7 @@ function AgentUISidenav() {
             </ListItem>
           </Link>
 
-  <Link to="/app/scriptRunner">
+  <Link to="/app/app/scriptRunner">
             <ListItem button className="">
               <ListItemIcon>
                 <span className="navlink_icon2">

@@ -21,7 +21,7 @@ export const useGetTotalApproveMaintenance = (
     ],
     queryFn: () =>
       fetchData(
-        `/dashboard2/totalClosedBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
+        `/app/dashboard2/totalClosedBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
 
       ),
   });

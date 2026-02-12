@@ -62,7 +62,7 @@ export default function AccountMenu() {
     dispatch({ type: "LOGOUT" });
 
     // Navigate to the login page
-    navigate("/Login");
+    navigate("/app/login");
   };
 
   // const handleClose = () => {

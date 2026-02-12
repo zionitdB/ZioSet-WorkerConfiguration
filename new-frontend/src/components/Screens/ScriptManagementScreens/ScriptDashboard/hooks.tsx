@@ -22,7 +22,7 @@ scriptId:any
       if (scriptId) params.append("scriptId", scriptId);
 
 
-      return fetchData(`/api/execution-results/dashboard-counts?${params.toString()}`);
+      return fetchData(`/api/execution-results/app/dashboard-counts?${params.toString()}`);
     },
   });
 };
@@ -68,7 +68,7 @@ export const useGetDashboardCounts = (
     queryKey: ["dashboard-counts"],
     queryFn: () => {
  
-      return fetchData(`/api/execution-results/dashboard-counts`);
+      return fetchData(`/api/execution-results/app/dashboard-counts`);
     },
   });
 };
@@ -106,6 +106,18 @@ export const useGetDashboardCountsByTimeline = (
 };
 
 
+export const useGetDashboardCountsByTimelineByScriptId = (scriptId:any
+) => {
+  return useQuery({
+    queryKey: ["useGetDashboardCountsByTimelineByScriptId",scriptId],
+    queryFn: () => {
+ 
+      return fetchData(`/api/execution-results/last-24-hours-count?scriptId=${scriptId}`);
+    },
+  });
+};
+
+
 
 
 
@@ -113,6 +125,6 @@ export const useGetDashboardCountsByTimeline = (
 export const useGetOverviewDashboardEndPoint= () => {
   return useQuery({
     queryKey: ["useGetOverviewDashboardEndPoint"],
-    queryFn: () => fetchDataSam(`/dashboard/getOverviewDashboardEndPoint`),
+    queryFn: () => fetchDataSam(`/app/dashboard/getOverviewDashboardEndPoint`),
   });
 };

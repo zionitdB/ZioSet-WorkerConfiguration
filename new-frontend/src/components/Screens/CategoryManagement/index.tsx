@@ -295,7 +295,7 @@ const CategoryRoute = () => {
   };
 
   const handleDetailView = (row: any) => {
-    navigate("/agentConfiguration/CategoriesTreeview", {
+    navigate("/app/agentConfiguration/CategoriesTreeview", {
       state: { row },
     });
   };
@@ -304,7 +304,7 @@ const CategoryRoute = () => {
     <div className="container mx-auto py-6 space-y-6">
       <Breadcrumb
         items={[
-          { label: "Module Dashboard", path: "/dashboard" },
+          { label: "Module Dashboard", path: "/app/dashboard" },
           { label: "Category" },
         ]}
       />

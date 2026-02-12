@@ -45,7 +45,7 @@ export const useGetAllMachines = () =>
     export const useGetTotalMachineCountBreakdowns = () =>
   useQuery({
     queryKey: ["useGetTotalMachineCountBreakdowns"],
-    queryFn: () => fetchData(`/dashboard/total_count`),
+    queryFn: () => fetchData(`/app/dashboard/total_count`),
   });
 
   
@@ -53,13 +53,13 @@ export const useGetAllMachines = () =>
     export const useGetBreakdownCountsByMachine = () =>
   useQuery({
     queryKey: ["useGetBreakdownCountsByMachine"],
-    queryFn: () => fetchData(`/dashboard/getBreakdownCountsByMachine`),
+    queryFn: () => fetchData(`/app/dashboard/getBreakdownCountsByMachine`),
   });
   
     export const useGetBreakdownGraphData = () =>
   useQuery({
     queryKey: ["useGetBreakdownGraphData"],
-    queryFn: () => fetchData(`/dashboard/getBreakdownGraphData`),
+    queryFn: () => fetchData(`/app/dashboard/getBreakdownGraphData`),
   });
 
   

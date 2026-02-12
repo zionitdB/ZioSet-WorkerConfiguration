@@ -117,7 +117,7 @@ const handleToggleStatus = (data: any) => {
       variant="link"
       className="flex items-center gap-1 px-0 text-primary"
       onClick={() =>
-        router(`/scriptRunner/scriptTargetSystems?id=${p.data.id}`)
+        router(`/app/scriptRunner/scriptTargetSystems?id=${p.data.id}`)
       }
     >
       <Smartphone className="h-4 w-4" />
@@ -236,7 +236,7 @@ const handleToggleStatus = (data: any) => {
         rowData={serviceData}
         colDefs={columnDefs}
         isLoading={isLoading}
-        // onAddClick={() => router("/agentManagement/scriptRunner")}
+        // onAddClick={() => router("/agentManagement/app/scriptRunner")}
         onDeleteClick={(data) => { setDeleteTarget(data); setDeleteDialogOpen(true); }}
         showEdit={false}
         showDelete

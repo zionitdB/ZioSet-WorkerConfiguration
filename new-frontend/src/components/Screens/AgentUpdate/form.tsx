@@ -465,15 +465,15 @@ const updateFile = (index: number, field: string, value: string) => {
               items={[
                 {
                   label: "Module Dashboard",
-                  path: "/dashboard",
+                  path: "/app/dashboard",
                 },
                 {
                   label: "Agent Update",
-                      path: "/agentInstallation/agentUpdate",
+                      path: "/app/agentInstallation/agentUpdate",
                 },
                  {
                   label: "Agent Form",
-                      path: "/agentInstallation/agentUpdate",
+                      path: "/app/agentInstallation/agentUpdate",
                 },
               ]}
             />

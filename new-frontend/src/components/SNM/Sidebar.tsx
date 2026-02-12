@@ -450,7 +450,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
 const moduleKeyFromUrl = location.pathname
   .split("/")
-  .filter(Boolean)[0]     
+  .filter(Boolean)[1]     
   ?.toLowerCase();
 
 

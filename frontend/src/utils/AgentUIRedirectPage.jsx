@@ -18,7 +18,7 @@ const AgentUIRedirectPage = ({ redirectTo, countdownDuration }) => {
       localStorage.removeItem("agentUser");
       sessionStorage.clear("agentUser");
       // Redirect to the specified page
-      navigate('/app/login');
+      navigate('/app/app/login');
     }
   }, [countdown, redirectTo]);
 

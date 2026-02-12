@@ -21,7 +21,7 @@ export const useGetTotalOverdueMaintenance = (
     ],
     queryFn: () =>
       fetchData(
-        `/dashboard2/totalTrialBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
+        `/app/dashboard2/totalTrialBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
    
       ),
   });

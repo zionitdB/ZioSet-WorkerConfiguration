@@ -53,7 +53,7 @@ export default function InstalledSystemScreen() {
               items={[
                 {
                   label: "Module Dashboard",
-                  path: "/dashboard",
+                  path: "/app/dashboard",
                 },
                 {
                   label: "Installed Systems",

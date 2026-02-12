@@ -139,6 +139,7 @@ public class ScriptService {
         script.setIsActive(dto.getIsActive() != null ? dto.getIsActive() : true);
         script.setScriptArgument(dto.getParams());
         script.setParsingFormat(dto.getFormat());
+        script.setAddedBy(dto.getAddedBy());
 
         if (dto.getScriptFileId() != null) {
             ScriptFileEntity file = scriptFileRepository.findById(dto.getScriptFileId())
@@ -310,7 +311,9 @@ public class ScriptService {
                         t.getAssignedBy(),
                         t.getAssignedAt(),
                         t.getLastRunAt(),
-                        t.getScript().getId()
+                        t.getScript().getId(),
+                        t.getHostName(),
+                        t.getScript().getName()
                 )
         ).toList();
     }
@@ -340,7 +343,9 @@ public class ScriptService {
                         t.getAssignedBy(),
                         t.getAssignedAt(),
                         t.getLastRunAt(),
-                        t.getScript().getId()
+                        t.getScript().getId(),
+                        t.getHostName(),
+                        t.getScript().getName()
                 ));
     }
 

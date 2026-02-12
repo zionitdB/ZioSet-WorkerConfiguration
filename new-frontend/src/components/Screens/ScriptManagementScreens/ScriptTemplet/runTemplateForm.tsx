@@ -35,18 +35,13 @@ import {
 import DataTable from "@/components/common/DataTable";
 import { Badge } from "@/components/ui/badge";
 import * as XLSX from "xlsx";
-import {
-  useGetSystemList,
-  useUploadFile,
-  useSubmitScript,
-  useGetAllAssetByLimitAndGroupSearch,
-  useGetCountAllAssetByLimitAndGroupSearch,
-  useGetSystemListCount,
-} from "../ScriptRunner/hooks";
+
 import CustomModal from "@/components/common/Modal/DialogModal";
 import { Progress } from "@/components/ui/progress";
 import Breadcrumb from "@/components/common/breadcrumb";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/components/context/auth-context";
+import {  useGetAllAssetByLimitAndGroupSearch, useGetCountAllAssetByLimitAndGroupSearch, useGetSystemList, useGetSystemListCount, useSubmitScriptForTemplate, useUploadFile } from "../ScriptRunner/hooks";
 
 const STEPS = ["Configuration", "Scheduling","Format", "Targeting", "Finalize"];
 
@@ -111,7 +106,7 @@ export default function ScriptTemplateRun() {
   });
 
   const uploadMutation = useUploadFile();
-  const submitMutation = useSubmitScript();
+  const submitMutation = useSubmitScriptForTemplate();
 
     const navigate = useNavigate();
 
@@ -247,7 +242,7 @@ export default function ScriptTemplateRun() {
   };
 
 
-
+  const {user}=useAuth();
 
   const handleSubmit = () => {
     let repeatSeconds = 0;
@@ -266,6 +261,7 @@ export default function ScriptTemplateRun() {
       scriptFileId: form.scriptFileId,
       dependencyFileIds: form.dependencyFileIds,
       isActive: form.isActive,
+          addedBy: user?.id || 0,
       targetPlatforms: form.selectedPlatforms,
    serialNoHostName: [
   ...form.selectedWindowsSystems,
@@ -526,15 +522,15 @@ const isSuccess = submitMutation.isSuccess;
           items={[
             {
               label: "Module Dashboard",
-              path: "/dashboard",
+              path: "/app/dashboard",
             },
             {
               label: "Script Templates",
-              path: "/scriptRunner/scriptTemplate",
+              path: "/app/scriptRunner/scriptTemplate",
             },
             {
               label: "Script Template Run",
-              path: "/scriptRunner/scriptTemplateRun",
+              path: "/app/scriptRunner/scriptTemplateRun",
             },
           ]}
         />
@@ -1452,7 +1448,7 @@ const isSuccess = submitMutation.isSuccess;
           <Button
             variant="outline"
             className="rounded-full px-8"
-            onClick={()=> navigate("/scriptRunner/scriptTemplate")}
+            onClick={()=> navigate("/app/scriptRunner/scriptTemplate")}
           >
             Back to Templates
           </Button>

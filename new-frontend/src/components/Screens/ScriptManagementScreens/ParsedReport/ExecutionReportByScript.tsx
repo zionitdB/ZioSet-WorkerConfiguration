@@ -67,27 +67,16 @@ const toCamelCase = (str: string) =>
     .replace(/^./, (c) => c.toUpperCase());
 
 
-    const flattenedRowData = rowData.map((row: any) => {
-  const fields = row?.parsedData?.fields;
-  let flatFields = {};
 
-  if (Array.isArray(fields)) flatFields = fields[0] || {};
-  else if (fields && typeof fields === "object") flatFields = fields;
-
-  return {
-    ...row,
-    ...flatFields,
-  };
-});
 
 const dynamicFieldColumns = useMemo(() => {
-  const fieldKeys = extractFieldKeys(flattenedRowData);
-console.log("fieldKeys",fieldKeys);
+  if (!rowData.length) return [];
+
+  const fieldKeys = extractFieldKeys(rowData);
 
   return fieldKeys.map((key) => ({
-    
-   headerName: toCamelCase(key),
-    field: key, 
+    headerName: toCamelCase(key),
+    field: key,
     flex: 1,
     valueGetter: (p: any) => {
       const fields = p.data?.parsedData?.fields;
@@ -128,31 +117,11 @@ const columnDefs = useMemo(() => [
       </Badge>
     ),
   },
-
   ...dynamicFieldColumns,
-
 ], [page, rowsPerPage, dynamicFieldColumns]);
 
 
 
-const flattenParsedFields = (rows: any[]) => {
-  return rows.map((row) => {
-    const fields = row?.parsedData?.fields;
-    let flatFields: Record<string, any> = {};
-
-    if (Array.isArray(fields)) {
-      flatFields = fields[0] || {};
-    } else if (typeof fields === "object" && fields !== null) {
-      flatFields = fields;
-    }
-    const { parsedData, ...topLevelFields } = row;
-
-    return {
-      ...topLevelFields,
-      ...flatFields,
-    };
-  });
-};
 
   const { refetch: fetchAllData } = useGetParsedExecutionReport(1, totalItems || 10, {
     scriptId,
@@ -162,12 +131,14 @@ const flattenParsedFields = (rows: any[]) => {
     finishedBefore: endDate,
   });
 
-  
- const allDataForExport = async () => {
+
+
+const allDataForExport = async () => {
   const res = await fetchAllData();
   const rows = res?.data?.content || [];
-  return flattenParsedFields(rows);
+  return rows;
 };
+
 
     const resetFilters = () => {
     setSearchQuery("");
@@ -179,8 +150,8 @@ const flattenParsedFields = (rows: any[]) => {
     <div className="container mx-auto pb-8">
       <Breadcrumb
         items={[
-            { label: "Module Dashboard", path: "/dashboard" },
-            { label: "Parsed Report", path: "/scriptRunner/parsedReport" },
+            { label: "Module Dashboard", path: "/app/dashboard" },
+            { label: "Parsed Report", path: "/app/scriptRunner/parsedReport" },
           { label: `Details: ${scriptName || 'Script'}` },
         ]}
       />
@@ -234,6 +205,7 @@ const flattenParsedFields = (rows: any[]) => {
 
 
           <DataTable
+          key={`table-${dynamicFieldColumns.length}-${isLoading}`}
             rowData={rowData}
             colDefs={columnDefs}
             isLoading={isLoading}

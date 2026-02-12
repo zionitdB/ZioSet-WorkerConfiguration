@@ -21,7 +21,7 @@ export const useGetTotalMaintenance = (
     ],
     queryFn: () =>
       fetchData(
-        `/dashboard2/totalBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
+        `/app/dashboard2/totalBreakdownsWithPageSearchDatewise?fromDate=${fromDate}&toDate=${toDate}&keyword=${keyword}&page=${page}&size=${size}`
 
       ),
   });

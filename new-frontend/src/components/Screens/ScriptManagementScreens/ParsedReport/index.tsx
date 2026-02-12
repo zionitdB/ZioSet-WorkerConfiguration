@@ -47,7 +47,7 @@ export default function ParsedReport() {
 
 
 const handleViewReport = (script: any) => {
-    navigate("/scriptRunner/parsedExecution", { 
+    navigate("/app/scriptRunner/parsedExecution", { 
       state: { 
         scriptId: script.id, 
         scriptName: script.name,
@@ -62,8 +62,8 @@ const handleViewReport = (script: any) => {
       <div className="mb-6 ">
         <Breadcrumb
           items={[
-            { label: "Module Dashboard", path: "/dashboard" },
-            { label: "Parsed Report", path: "/scriptRunner/parsedReport" },
+            { label: "Module Dashboard", path: "/app/dashboard" },
+            { label: "Parsed Report", path: "/app/scriptRunner/parsedReport" },
           ]}
         />
       </div>
@@ -82,7 +82,7 @@ const handleViewReport = (script: any) => {
         <div className="flex items-center gap-3">
           <Button 
             className="bg-primary hover:opacity-90 shadow-lg shadow-primary/20 gap-2 px-6"
-            onClick={() => navigate("/scriptRunner/scriptRunner")}
+            onClick={() => navigate("/app/scriptRunner/app/scriptRunner")}
           >
             <Plus className="h-4 w-4" /> New Script Configuration
           </Button>
