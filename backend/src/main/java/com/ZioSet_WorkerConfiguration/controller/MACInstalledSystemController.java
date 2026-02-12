@@ -8,7 +8,10 @@ import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.MACInstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.SystemOs;
 import com.ZioSet_WorkerConfiguration.repo.MACInstalledSystemRepository;
+import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
 import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +38,12 @@ public class MACInstalledSystemController {
     @GetMapping("/get-installed-systems-list")
     public List<MACInstalledSystemEntity> getInstalledSystemsList() {
         return repository.findAll().stream().filter(MACInstalledSystemEntity::isInstalled).collect(Collectors.toList());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Object> getAllCount() {
+        var count= repository.count();
+        return ResponseGenerator.generateResponse("Count", HttpStatus.OK,count);
     }
 
     @GetMapping("/get-not-installed-systems-list")

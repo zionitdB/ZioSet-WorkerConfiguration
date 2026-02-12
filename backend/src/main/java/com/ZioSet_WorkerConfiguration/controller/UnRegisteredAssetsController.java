@@ -4,6 +4,8 @@ import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.UnRegisteredAssets;
 import com.ZioSet_WorkerConfiguration.repo.UnRegisteredAssetsRepository;
+import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,12 @@ class UnRegisteredAssetsController {
     public ResponseEntity<List<UnRegisteredAssets>> getAllAssets() {
         var list= unregisteredAssetsRepo.findAll();
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Object> getAllAssetsCount() {
+        var count= unregisteredAssetsRepo.count();
+        return ResponseGenerator.generateResponse("Count", HttpStatus.OK,count);
     }
 
     @DeleteMapping("/delete-by-system-serial-number")

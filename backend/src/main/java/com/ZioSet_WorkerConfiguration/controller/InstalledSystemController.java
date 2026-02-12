@@ -8,7 +8,10 @@ import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.model.SystemOs;
 import com.ZioSet_WorkerConfiguration.repo.DeletedSystemsRepo;
 import com.ZioSet_WorkerConfiguration.repo.InstalledSystemRepo;
+import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
 import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +48,12 @@ public class InstalledSystemController {
     @GetMapping("/get-not-installed-systems-list")
     public List<InstalledSystemEntity> getNotInstalledSystemsList(){
         return repository.findAll().stream().filter((e) -> !e.isInstalled()).collect(Collectors.toList());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Object> getAllAssetsCount() {
+        var count= repository.count();
+        return ResponseGenerator.generateResponse("Count", HttpStatus.OK, count);
     }
 
     @GetMapping("/get-installed-systems-by-date-range")

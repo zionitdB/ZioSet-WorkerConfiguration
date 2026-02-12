@@ -52,6 +52,10 @@ public class AgentUpdateService {
         return list;
     }
 
+    public Long getAgentUpdatesCount(){
+        return agentUpdateRepository.count();
+    }
+
     public List<AgentUpdateSystemsEntity> getSystemsByUpdateUuid(String updateId) {
         return agentUpdateSystemsRepository.getSystemsByUpdateUuid(updateId);
     }

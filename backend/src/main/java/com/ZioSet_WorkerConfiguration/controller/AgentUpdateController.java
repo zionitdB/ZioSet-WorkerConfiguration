@@ -7,6 +7,9 @@ import com.ZioSet_WorkerConfiguration.model.AgentUpdateEntity;
 import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
 import com.ZioSet_WorkerConfiguration.service.AgentUpdateService;
 import com.ZioSet_WorkerConfiguration.utils.AgentFolderStructure;
+import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -56,6 +59,11 @@ public class AgentUpdateController {
     @GetMapping("/get-all-updates")
     public List<AgentUpdateEntity> getAllAgentUpdates() {
         return agentUpdateService.getAllAgentUpdates();
+    }
+
+    @GetMapping("/update-count")
+    public ResponseEntity<?> getAgentUpdatesCount() {
+        return ResponseGenerator.generateResponse("Update Count", HttpStatus.OK,agentUpdateService.getAgentUpdatesCount());
     }
 
     @GetMapping("/get-systems/{updateUuid}")

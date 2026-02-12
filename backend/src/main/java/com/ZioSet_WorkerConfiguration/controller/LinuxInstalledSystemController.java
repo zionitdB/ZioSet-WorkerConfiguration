@@ -5,7 +5,10 @@ import com.ZioSet_WorkerConfiguration.dto.MultipleSerialNumberDto;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
 import com.ZioSet_WorkerConfiguration.model.LinuxInstalledSystemEntity;
 import com.ZioSet_WorkerConfiguration.repo.LinuxInstalledSystemRepo;
+import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
 import com.ZioSet_WorkerConfiguration.utils.SerialNumberExcelParser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +35,12 @@ public class LinuxInstalledSystemController {
     @GetMapping("/get-installed-systems-list")
     public List<LinuxInstalledSystemEntity> getInstalledSystemsList() {
         return repository.findAll().stream().filter(LinuxInstalledSystemEntity::isInstalled).collect(Collectors.toList());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Object> getAllCount() {
+        var count= repository.count();
+        return ResponseGenerator.generateResponse("Count", HttpStatus.OK,count);
     }
 
     @GetMapping("/get-not-installed-systems-list")
