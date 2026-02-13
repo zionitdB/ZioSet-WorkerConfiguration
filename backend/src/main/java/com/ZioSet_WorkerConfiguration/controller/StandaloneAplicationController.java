@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ZioSet_WorkerConfiguration.dto.CammandDTO;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
 import com.ZioSet_WorkerConfiguration.dto.ResponceObj;
-import com.ZioSet_WorkerConfiguration.model.CommandConfiguration;
 import com.ZioSet_WorkerConfiguration.model.StandalonApplication;
 import com.ZioSet_WorkerConfiguration.repo.StandalonApplicationRepo;
 
@@ -26,10 +24,7 @@ import com.ZioSet_WorkerConfiguration.repo.StandalonApplicationRepo;
 @RequestMapping({"/standaloneApplicationController"})
 public class StandaloneAplicationController {
 	
-	
-	
-	
-	
+
 	@Autowired 
 	StandalonApplicationRepo standalonApplicationRepo;
 	

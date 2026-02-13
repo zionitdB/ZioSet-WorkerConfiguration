@@ -7,8 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.model.Action;
 import com.ZioSet_WorkerConfiguration.model.CommandConfiguration;
 import org.springframework.data.repository.query.Param;
 
@@ -27,4 +25,19 @@ public interface CommandConfigurationRepo extends JpaRepository<CommandConfigura
 
 	@Query("SELECT DISTINCT c.commandId FROM CommandConfiguration c WHERE c.action.id=?1")
 	List<String> getCommandIdListByAction(int actionId);
+
+
+	@Query("from CommandConfiguration c order by c.createdAt ASC")
+	List<CommandConfiguration> getCommandList();
+
+	@Query("""
+    SELECT a.id, a.actionName, COUNT(c)
+    FROM CommandConfiguration c
+    JOIN c.action a
+    GROUP BY a.id, a.actionName
+""")
+	List<Object[]> countCommandsPerAction();
+
+
+
 }

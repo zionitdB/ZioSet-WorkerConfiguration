@@ -69,4 +69,10 @@ public class AgentDashBoardController {
                 dashBoardService.getLatestUpdateData());
     }
 
+    @GetMapping("/recent-agent-installation-systems")
+    public ResponseEntity<?> getRecentInstallationSystem() {
+        return ResponseGenerator.generateResponse("Recent Agent Installation Systems data", HttpStatus.OK,
+                dashBoardService.getRecentInstalledCombined());
+    }
+
 }

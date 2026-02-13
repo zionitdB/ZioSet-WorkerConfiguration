@@ -12,28 +12,15 @@ import jakarta.persistence.Table;
 @Table(name = "action")
 public class Action {
 
-	
-	 @Id
+	  @Id
 	  @GeneratedValue
 	  @Column(name = "id")
 	  private int id;
-	  
 	 
 	  @Column(name = "action_name")
 	  private String actionName;
-	 
-	 
-	  public String getActionName() {
-		return actionName;
-	}
 
-
-	public void setActionName(String actionName) {
-		this.actionName = actionName;
-	}
-
-
-	@ManyToOne
+	  @ManyToOne
 	  @JoinColumn(name = "category_id")
 	  private Category  category;
 	  
@@ -44,10 +31,17 @@ public class Action {
 	  @Column(name = "information_type")
 	  private String informationtype;
 	   
-	  
 	  @Column(name = "information_detail")
 	  private String informationdetail ;
 
+
+	public String getActionName() {
+		return actionName;
+	}
+
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
 
 	public int getId() {
 		return id;

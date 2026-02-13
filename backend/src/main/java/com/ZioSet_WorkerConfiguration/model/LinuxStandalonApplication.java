@@ -9,16 +9,12 @@ public class LinuxStandalonApplication {
 	  @GeneratedValue
 	  @Column(name = "id")
 	  private int id;
-	  
-	 
-	 
+
 	  @Column(name = "standalone_application_name")
 	  private String standaloneApplicationName;
 	  
-	  
 	  @Column(name = "added_date")
 	  private String addedDate;
-	  
 	  
 	  @Column(name = "active")
 	  private int active;
@@ -62,12 +58,6 @@ public class LinuxStandalonApplication {
 	public void setActive(int active) {
 		this.active = active;
 	}
-	  
-	  
-	  
-	  
-	  
-	  
-	  
+
 	  
 }

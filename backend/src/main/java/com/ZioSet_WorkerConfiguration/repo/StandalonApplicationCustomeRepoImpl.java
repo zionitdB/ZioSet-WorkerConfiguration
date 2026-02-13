@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.ZioSet_WorkerConfiguration.dto.ColumnSearch;
 import com.ZioSet_WorkerConfiguration.dto.GroupSearchDTO;
-import com.ZioSet_WorkerConfiguration.model.CommandConfiguration;
 import com.ZioSet_WorkerConfiguration.model.StandalonApplication;
 
 import jakarta.persistence.EntityManager;

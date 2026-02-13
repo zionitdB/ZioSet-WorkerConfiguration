@@ -1,5 +1,6 @@
 package com.ZioSet_WorkerConfiguration.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.ZioSet_WorkerConfiguration.dto.CammandDTO;
@@ -12,20 +13,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "commands_configuration")
+@Data
 public class CommandConfiguration {
-
 	
-	 @Id
+	  @Id
 	  @GeneratedValue
 	  @Column(name = "id")
 	  private int id;
-	  
-	 
-	 
-	  
+
 	  @ManyToOne
 	  @JoinColumn(name = "action_id")
 	  private Action  action;
@@ -35,73 +36,19 @@ public class CommandConfiguration {
 	  
 	  @Column(name = "command_id")
 	  private String commandId;
-	   
-	  
-	  public String getCommandId() {
-		return commandId;
-	}
 
-
-	public void setCommandId(String commandId) {
-		this.commandId = commandId;
-	}
-
-
-	@Column(name = "schemastr")
+	  @Column(name = "schemastr")
 	  private String schemastr ;
 	  
 	  @Transient
 	  List<CammandDTO> list;
 
+	  @CreationTimestamp
+	  private LocalDateTime createdAt;
 
-	public List<CammandDTO> getList() {
-		return list;
-	}
+	  @UpdateTimestamp
+	  private LocalDateTime updatedAt;
 
-
-	public void setList(List<CammandDTO> list) {
-		this.list = list;
-	}
-
-
-	public int getId() {
-		return id;
-	}
-
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-
-	public Action getAction() {
-		return action;
-	}
-
-
-	public void setAction(Action action) {
-		this.action = action;
-	}
-
-
-	public String getCommandstr() {
-		return commandstr;
-	}
-
-
-	public void setCommandstr(String commandstr) {
-		this.commandstr = commandstr;
-	}
-
-
-	public String getSchemastr() {
-		return schemastr;
-	}
-
-
-	public void setSchemastr(String schemastr) {
-		this.schemastr = schemastr;
-	}
 
 
 	@Override
