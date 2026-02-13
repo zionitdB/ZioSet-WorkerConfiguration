@@ -1,6 +1,8 @@
 package com.ZioSet_WorkerConfiguration.repo;
 
 import com.ZioSet_WorkerConfiguration.model.InstalledSystemEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,6 +47,8 @@ public interface InstalledSystemRepo extends JpaRepository<InstalledSystemEntity
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    Page<InstalledSystemEntity> findByInstalledTrueOrderByInstalledAtDesc(Pageable pageable);
 
 
 }

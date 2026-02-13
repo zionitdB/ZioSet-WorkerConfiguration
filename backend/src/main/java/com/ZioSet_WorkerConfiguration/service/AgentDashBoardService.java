@@ -1,7 +1,11 @@
 package com.ZioSet_WorkerConfiguration.service;
 
+import com.ZioSet_WorkerConfiguration.dto.RecentInstalledDTO;
+import com.ZioSet_WorkerConfiguration.model.AgentUpdateSystemsEntity;
 import com.ZioSet_WorkerConfiguration.repo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,6 +20,7 @@ public class AgentDashBoardService {
     private final MACInstalledSystemRepository macInstalledSystemRepository;
     private final InstalledSystemRepo installedSystemRepo;
     private final AgentUpdateRepository agentUpdateRepository;
+    private final AgentUpdateSystemsRepository agentUpdateSystemsRepository;
 
     public long getLinuxCount(){
         return linuxInstalledSystemRepo.count();
@@ -124,6 +129,112 @@ public class AgentDashBoardService {
         return weekMap;
     }
 
+
+    public List<Map<String, Object>> getLast7DaysDashboard() {
+
+        LocalDate today = LocalDate.now();
+        LocalDate startDate = today.minusDays(6);
+        LocalDateTime fromDateTime = startDate.atStartOfDay();
+
+        List<Object[]> dbResult = agentUpdateSystemsRepository.getLast7DaysCounts(fromDateTime);
+
+        Map<LocalDate, long[]> dbMap = new HashMap<>();
+
+        for (Object[] row : dbResult) {
+            LocalDate date = ((java.sql.Date) row[0]).toLocalDate();
+            long success = row[1] != null ? (Long) row[1] : 0L;
+            long failed = row[2] != null ? (Long) row[2] : 0L;
+            long pending = row[3] != null ? (Long) row[3] : 0L;
+
+            dbMap.put(date, new long[]{success, failed, pending});
+        }
+
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = startDate.plusDays(i);
+            long[] counts = dbMap.getOrDefault(date, new long[]{0L, 0L, 0L});
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("date", date);
+            map.put("success", counts[0]);
+            map.put("failed", counts[1]);
+            map.put("pending", counts[2]);
+
+            response.add(map);
+        }
+
+        return response;
+    }
+
+    public Map<String, Long> getOverallDashboard() {
+
+        Object[] result = agentUpdateSystemsRepository.getOverallDashboard();
+
+        Long total   = result[0] != null ? (Long) result[0] : 0L;
+        Long success = result[1] != null ? (Long) result[1] : 0L;
+        Long failed = result[2] != null ? (Long) result[2] : 0L;
+        Long pending = result[3] != null ? (Long) result[3] : 0L;
+
+        Map<String, Long> response = new LinkedHashMap<>();
+        response.put("TOTAL", total);
+        response.put("SUCCESS", success);
+        response.put("PENDING", pending);
+        response.put("FAILED", failed);
+
+        return response;
+    }
+
+    public List<AgentUpdateSystemsEntity> getLatestUpdateData(){
+        return agentUpdateSystemsRepository.findAllData().stream().limit(15).toList();
+    }
+
+    public List<AgentUpdateSystemsEntity> getRecentAgentInstallationData(){
+        return agentUpdateSystemsRepository.findAllData().stream().limit(15).toList();
+    }
+
+    public List<RecentInstalledDTO> getRecentInstalledCombined() {
+
+        Pageable pageable = PageRequest.of(0, 5);
+
+        List<RecentInstalledDTO> combined = new ArrayList<>();
+
+        // Windows
+        installedSystemRepo.findByInstalledTrueOrderByInstalledAtDesc(pageable)
+                .forEach(w ->
+                        combined.add(new RecentInstalledDTO(
+                                w.getSystemSerialNo(),
+                                w.getHostName(),
+                                "WINDOWS",
+                                w.getInstalledAt()
+                        )));
+
+        // Linux
+        linuxInstalledSystemRepo.findByInstalledTrueOrderByInstalledAtDesc(pageable)
+                .forEach(l ->
+                        combined.add(new RecentInstalledDTO(
+                                l.getSystemSerialNo(),
+                                null,
+                                "LINUX",
+                                l.getInstalledAt()
+                        )));
+
+        // Mac
+        macInstalledSystemRepository.findByInstalledTrueOrderByInstalledAtDesc(pageable)
+                .forEach(m ->
+                        combined.add(new RecentInstalledDTO(
+                                m.getSystemSerialNo(),
+                                null,
+                                "MAC",
+                                m.getInstalledAt()
+                        )));
+
+        combined.sort(Comparator.comparing(RecentInstalledDTO::installedAt).reversed());
+
+        return combined.stream()
+                .limit(15)
+                .toList();
+    }
 
 
 

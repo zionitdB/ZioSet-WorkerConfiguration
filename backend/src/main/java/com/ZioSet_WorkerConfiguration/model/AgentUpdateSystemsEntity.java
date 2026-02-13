@@ -2,6 +2,9 @@ package com.ZioSet_WorkerConfiguration.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agent_update_systems")
@@ -26,6 +29,9 @@ public class AgentUpdateSystemsEntity {
 
     @Column(name = "host_name")
     private String hostName;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     public AgentUpdateSystemsEntity() {
     }
@@ -85,5 +91,13 @@ public class AgentUpdateSystemsEntity {
 
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

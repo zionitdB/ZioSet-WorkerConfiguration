@@ -51,4 +51,22 @@ public class AgentDashBoardController {
                 dashBoardService.getWeeklyInstalledCount(year,month));
     }
 
+    @GetMapping("/agent-last7days-count")
+    public ResponseEntity<?> getLast7DaysDashboard() {
+        return ResponseGenerator.generateResponse("last 7 days count", HttpStatus.OK,
+                dashBoardService.getLast7DaysDashboard());
+    }
+
+    @GetMapping("/overall-count")
+    public ResponseEntity<?> getOverallDashboard() {
+        return ResponseGenerator.generateResponse("Agent OverAll", HttpStatus.OK,
+                dashBoardService.getOverallDashboard());
+    }
+
+    @GetMapping("/recent-agent-updates")
+    public ResponseEntity<?> getRecentUpdates() {
+        return ResponseGenerator.generateResponse("Agent updates data", HttpStatus.OK,
+                dashBoardService.getLatestUpdateData());
+    }
+
 }
