@@ -5,10 +5,12 @@ import com.ZioSet_WorkerConfiguration.enums.ScriptTargetPlatform;
 import com.ZioSet_WorkerConfiguration.mapper.ScriptTypeMapper;
 import com.ZioSet_WorkerConfiguration.model.*;
 import com.ZioSet_WorkerConfiguration.service.ScriptService;
+import com.ZioSet_WorkerConfiguration.utils.ResponseGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +55,12 @@ public class ScriptController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         scriptService.deleteScript(id);
+    }
+
+    @DeleteMapping("/targetSystem/{id}")
+    public ResponseEntity<Object> deleteScriptTargetSystem(@PathVariable Long id) {
+        scriptService.deleteScriptTargetSystem(id);
+        return ResponseGenerator.generateResponse("Deleted SuccessFully.", HttpStatus.OK, null);
     }
 
     @PatchMapping("/{id}/enable")

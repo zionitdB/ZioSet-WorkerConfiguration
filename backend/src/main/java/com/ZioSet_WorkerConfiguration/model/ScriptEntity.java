@@ -81,6 +81,8 @@ public class ScriptEntity {
     @Column(nullable = false)
     private Boolean isActive = true;
 
+    private Boolean isDeleted=false;
+
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType;
 

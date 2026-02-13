@@ -58,6 +58,7 @@ public class ScriptService {
         execution.setScriptId(generateNextCode());
         execution.setParsingFormat(dto.getFormat());
 
+
         //target-platforms ,in case to run simple script for systems without needing template
         if (dto.getTargetPlatforms() != null && !dto.getTargetPlatforms().isEmpty()) {
             execution.setTargetPlatformsCsv(
@@ -76,6 +77,7 @@ public class ScriptService {
         execution.setRepeatEverySeconds(dto.getRepeatEverySeconds());
         execution.setMonthDay(dto.getMonthDay());
         execution.setTimeOfDay(dto.getTimeOfDay());
+
 
         if (dto.getScriptFileId() != null) {
             ScriptFileEntity file = getFile(dto.getScriptFileId());
@@ -101,6 +103,7 @@ public class ScriptService {
 
         execution = scriptRepository.save(execution);
 
+        // Save targets
         if (dto.getSerialNoHostName() != null) {
             for ( Map<String,String> systems : dto.getSerialNoHostName()) {
                 ScriptTargetSystemEntity target = new ScriptTargetSystemEntity();
@@ -111,6 +114,7 @@ public class ScriptService {
             }
         }
 
+        // Save dependencies
         if (dto.getDependencyFileIds() != null) {
             for (Long fileId : dto.getDependencyFileIds()) {
                 ScriptFileEntity file = scriptFileRepository.findById(fileId)
@@ -281,7 +285,9 @@ public class ScriptService {
     }
 
     public List<ScriptEntity> getAllScripts() {
-        return scriptRepository.findAll();
+        return scriptRepository.findAll().stream()
+                .filter((s)->!s.getIsDeleted())
+                .toList();
     }
 
     public Optional<ScriptEntity> getScript(Long id) {
@@ -291,8 +297,12 @@ public class ScriptService {
     public void deleteScript(Long id) {
         ScriptEntity entity = scriptRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("ScriptEntity not found"));
-        entity.setIsActive(false);
+        entity.setIsDeleted(true);
         scriptRepository.save(entity);
+    }
+
+    public void deleteScriptTargetSystem(Long id) {
+        targetSystemRepository.deleteById(id);
     }
 
     @Transactional
